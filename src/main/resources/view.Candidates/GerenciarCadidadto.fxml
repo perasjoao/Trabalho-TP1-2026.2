@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
+   <children>
+      <TextField layoutX="215.0" layoutY="112.0" promptText="Nome" />
+      <TextField layoutX="215.0" layoutY="188.0" promptText="Numero" />
+      <ComboBox layoutX="225.0" layoutY="242.0" prefHeight="24.0" prefWidth="150.0" promptText="Atualizaçao">
+          <items>
+              <FXCollections fx:factory="observableArrayList">
+                  <String fx:value="pré-canditado" />
+                  <String fx:value="candidato" />
+                  <String fx:value="candidatura inativa" />
+                  <String fx:value="candidatura validada" />
+              </FXCollections>
+          </items>
+      </ComboBox>
+      <Button layoutX="262.0" layoutY="306.0" mnemonicParsing="false" text="Atualizar" />
+      <Text layoutX="166.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Gerenciar Candidato">
+         <font>
+            <Font size="26.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>
