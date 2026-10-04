@@ -12,7 +12,7 @@ import java.io.IOException;
 public class LoginController {
 
     public void abrirMenuAdmin(ActionEvent event) throws IOException{
-        Parent root = FXMLLoader.load(getClass().getResource("/view/administration/MenuAdmin.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/MenuAdmin.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
         tela.setScene(new Scene(root));
         tela.show();
