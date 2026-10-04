@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.AdministrationController.GerenciarPermissoesController">
+   <children>
+      <Label layoutX="41.0" layoutY="66.0" prefHeight="18.0" prefWidth="153.0" text="Escolha um perfil" />
+      <ComboBox layoutX="42.0" layoutY="95.0" prefWidth="150.0" />
+      <Button layoutX="535.0" layoutY="360.0" mnemonicParsing="false" text="Salvar" />
+      <Button layoutX="535.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
+      <CheckBox layoutX="326.0" layoutY="99.0" mnemonicParsing="false" text="Acesso total" />
+      <CheckBox layoutX="326.0" layoutY="131.0" mnemonicParsing="false" text="Gerenciar pesquisa e coleta" />
+      <CheckBox layoutX="326.0" layoutY="161.0" mnemonicParsing="false" text="Processar resultados estatisticos" />
+      <CheckBox layoutX="326.0" layoutY="191.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="ETC...." />
+   </children>
+</AnchorPane>
