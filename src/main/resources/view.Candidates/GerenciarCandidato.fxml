@@ -6,8 +6,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
    <children>
@@ -23,11 +21,7 @@
               </FXCollections>
           </items>
       </ComboBox>
-      <Button layoutX="262.0" layoutY="306.0" mnemonicParsing="false" text="Atualizar" />
-      <Text layoutX="166.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Gerenciar Candidato">
-         <font>
-            <Font size="26.0" />
-         </font>
-      </Text>
+      <Button layoutX="227.0" layoutY="306.0" mnemonicParsing="false" text="Atualizar Candidato" />
+       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenu" text="Voltar" />
    </children>
 </AnchorPane>

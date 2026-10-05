@@ -11,9 +11,71 @@ import java.io.IOException;
 
 public class Candidates {
     public void AbrirCadastraCadidato(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/Candidates/CadastraUsuarios.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/CadastrarCandidato.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.setScene(new Scene(root));
+        tela.getScene().setRoot(root);
         tela.show();
     }
+
+    public void AbrirCadastraPartido(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/CadastrarPartido.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+    public void AbrirConsultaCandidato(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/ConsultarCandidato.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+    public void AbrirGerenciarCandidato(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/GerenciarCandidato.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+    public void AbrirGerenciarPartido(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/GerenciarPartido.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+    public void AbrirMenu(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/Candidatos.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+    public void AbrirExcluirPartido(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/ExcluirPartido.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+    public void AbrirBuscarPartido(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/BuscarPartido.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+    public void AbrirAtualizarPartido(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/AtualizarPartido.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+
+
+
+
+
+
 }
