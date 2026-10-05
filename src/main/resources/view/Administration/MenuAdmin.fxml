@@ -11,5 +11,6 @@
       <Button layoutX="363.0" layoutY="187.0" mnemonicParsing="false" onAction="#abrirGerenciarPermissoes" text="Gerenciar permissões" />
       <Button layoutX="115.0" layoutY="276.0" mnemonicParsing="false" text="Configurar Paramêtros" />
       <Button layoutX="363.0" layoutY="276.0" mnemonicParsing="false" text="Relatorio de Usuarios" />
+      <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuPrincipal" text="Voltar" />
    </children>
 </AnchorPane>
