@@ -13,5 +13,6 @@
       <TextField layoutX="215.0" layoutY="173.0" />
       <PasswordField layoutX="215.0" layoutY="219.0" />
       <Button fx:id="butEntrarLogin" layoutX="250.0" layoutY="258.0" mnemonicParsing="false" onAction="#abrirMenuAdmin" prefHeight="26.0" prefWidth="79.0" text="Entrar" />
+      <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuPrincipal" text="Voltar" />
    </children>
 </AnchorPane>

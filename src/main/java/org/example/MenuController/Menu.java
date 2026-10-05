@@ -13,7 +13,14 @@ public class Menu {
     public void AbrirAdm(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/Login.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.setScene(new Scene(root));
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
+    public void AbrirCandidatos(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/Candidatos.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
         tela.show();
     }
 
