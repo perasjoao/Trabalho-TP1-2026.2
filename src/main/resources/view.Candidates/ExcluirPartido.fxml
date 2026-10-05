@@ -10,6 +10,6 @@
         <TextField layoutX="215.0" layoutY="144.0" promptText="Sigla" />
         <TextField layoutX="215.0" layoutY="106.0" promptText="Nome" />
         <Button layoutX="228.0" layoutY="236.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="145.0" text="Excluir Partido" />
-        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenu" text="Voltar" />
+        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
     </children>
 </AnchorPane>

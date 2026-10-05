@@ -8,6 +8,6 @@
       <Button layoutX="211.0" layoutY="188.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="146.0" onAction="#AbrirAtualizarPartido" text="Alterar Partido" />
       <Button layoutX="210.0" layoutY="148.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="146.0" onAction="#AbrirExcluirPartido" text="Excuir Partido" />
       <Button layoutX="211.0" layoutY="225.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="146.0" onAction="#AbrirBuscarPartido" text="Listar Partido" />
-       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenu" text="Voltar" />
+      <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
    </children>
 </AnchorPane>

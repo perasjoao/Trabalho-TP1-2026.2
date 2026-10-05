@@ -14,7 +14,7 @@ public class GerenciarPermissoesController {
     public void voltarParaMenu(ActionEvent event) throws IOException{
         Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/MenuAdmin.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.setScene(new Scene(root));
+        tela.getScene().setRoot(root);
         tela.show();
     }
 }

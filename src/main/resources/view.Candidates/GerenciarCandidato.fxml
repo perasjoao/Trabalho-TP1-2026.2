@@ -22,6 +22,6 @@
           </items>
       </ComboBox>
       <Button layoutX="227.0" layoutY="306.0" mnemonicParsing="false" text="Atualizar Candidato" />
-       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenu" text="Voltar" />
+       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
    </children>
 </AnchorPane>

@@ -22,7 +22,7 @@
          </FXCollections>
       </items>
       </ComboBox>
-      <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenu" text="Voltar" />
+      <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
       <Button layoutX="212.0" layoutY="289.0" mnemonicParsing="false" text="Cadastrar Canditado" />
    </children>
 </AnchorPane>

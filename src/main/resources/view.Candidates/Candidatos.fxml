@@ -12,7 +12,7 @@
       <Button layoutX="224.0" layoutY="129.0" mnemonicParsing="false" onAction="#AbrirGerenciarCandidato" text="Gerenciar Candidato" />
       <Button layoutX="223.0" layoutY="173.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="153.0" onAction="#AbrirGerenciarPartido" text="Gerenciar Partido" />
       <Button layoutX="43.0" layoutY="222.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="153.0" onAction="#AbrirConsultaCandidato" text="Consultar Candidatos" />
-      <Button layoutX="223.0" layoutY="222.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="153.0" text="Estatisticas" />
-      <Button layoutY="2.0" mnemonicParsing="false" text="Voltar" />
+      <Button layoutX="223.0" layoutY="222.0" mnemonicParsing="false" prefHeight="24.0" onAction="#AbrirEst" prefWidth="153.0" text="Estatisticas" />
+      <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuPrincipal" text="Voltar" />
     </children>
 </AnchorPane>

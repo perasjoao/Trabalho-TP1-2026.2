@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.collections.FXCollections?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
+   <children>
+      <TableView layoutX="357.0" prefHeight="400.0" prefWidth="243.0">
+        <columns>
+          <TableColumn prefWidth="242.0" text="Criterio" />
+        </columns>
+      </TableView>
+      <ComboBox layoutX="59.0" layoutY="119.0" prefHeight="24.0" prefWidth="163.0" promptText="Obter Dados De:">
+       <items>
+           <FXCollections fx:factory="observableArrayList">
+               <String fx:value="Partidos" />
+               <String fx:value="Candidatos" />
+               <String fx:value="Candidaturas" />
+           </FXCollections>
+       </items>
+       </ComboBox>
+       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
+   </children>
+</AnchorPane>

@@ -11,6 +11,5 @@
       <TextField layoutX="215.0" layoutY="106.0" promptText="Nome" />
       <TextField layoutX="215.0" layoutY="229.0" promptText="Situaçao" />
       <Button layoutX="228.0" layoutY="283.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="146.0" text="Cadastrar Partido" />
-       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenu" text="Voltar" />
-   </children>
+       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />   </children>
 </AnchorPane>

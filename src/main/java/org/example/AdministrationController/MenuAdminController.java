@@ -13,14 +13,14 @@ public class MenuAdminController {
     public void abrirGerenciarUsuarios(ActionEvent event) throws IOException{
         Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/GerenciarUsuarios.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.setScene(new Scene(root));
+        tela.getScene().setRoot(root);
         tela.show();
     }
 
     public void abrirGerenciarPermissoes(ActionEvent event) throws IOException{
         Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/GerenciarPermissoes.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.setScene(new Scene(root));
+        tela.getScene().setRoot(root);
         tela.show();
     }
 }
