@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
    <children>
       <TextField layoutX="202.0" layoutY="107.0" promptText="Nome" />
       <TextField layoutX="202.0" layoutY="154.0" promptText="Numero" />
@@ -24,5 +22,6 @@
       </ComboBox>
       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
       <Button layoutX="212.0" layoutY="289.0" mnemonicParsing="false" text="Cadastrar Canditado" />
+      <Label layoutX="197.0" layoutY="51.0" prefHeight="38.0" prefWidth="159.0" text="CADASTRO DE CANDIDATO" />
    </children>
 </AnchorPane>

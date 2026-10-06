@@ -12,69 +12,71 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="583.0" prefWidth="772.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ResearchController.ConsultasPesquisasController">
+<AnchorPane prefHeight="583.0" prefWidth="834.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ResearchController.ConsultasPesquisasController">
     <children>
         <Button layoutX="113.0" layoutY="398.0" mnemonicParsing="false" text="Filtrar" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuResearch" text="Voltar" />
-      <TableView layoutX="296.0" layoutY="125.0" prefHeight="209.0" prefWidth="452.0">
-        <columns>
-            <TableColumn prefWidth="75.0" text="Nome" />
-            <TableColumn prefWidth="75.0" text="Tipo" />
-            <TableColumn prefWidth="75.0" text="Região" />
-            <TableColumn prefWidth="75.0" text="Cargo" />
-            <TableColumn prefWidth="75.0" text="Situação" />
-            <TableColumn prefWidth="75.0" text="Periodo" />
-        </columns>
-      </TableView>
-      <ListView layoutX="36.0" layoutY="129.0" prefHeight="226.0" prefWidth="200.0" />
-      <Button layoutX="110.0" layoutY="438.0" mnemonicParsing="false" text="Limpar" />
-      <Label layoutX="37.0" layoutY="129.0" prefHeight="25.0" prefWidth="200.0" text="Filtros" />
-      <ComboBox layoutX="36.0" layoutY="205.0" prefHeight="25.0" prefWidth="200.0" promptText="Região">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="Centro-oeste" />
-                <String fx:value="Norte" />
-                <String fx:value="Nordeste" />
-                <String fx:value="Sudeste" />
-                <String fx:value="Sul" />
-            </FXCollections>
-        </items>
-      </ComboBox>
-      <ComboBox layoutX="36.0" layoutY="229.0" prefHeight="25.0" prefWidth="200.0" promptText="Cargo">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="Deputado Estadual" />
-                <String fx:value="Deputado Federal" />
-                <String fx:value="Governador" />
-                <String fx:value="Presidente" />
-                <String fx:value="Senador" />
-            </FXCollections>
-        </items>
-    </ComboBox>
-      <ComboBox layoutX="36.0" layoutY="180.0" prefHeight="25.0" prefWidth="200.0" promptText="Tipo">
-          <items>
-              <FXCollections fx:factory="observableArrayList">
-                  <String fx:value="Intenção de voto" />
-                  <String fx:value="Conhecimento" />
-                  <String fx:value="Rejeição" />
-                  <String fx:value="Segundo turno simulado" />
-              </FXCollections>
-          </items>
-      </ComboBox>
-      <ComboBox layoutX="36.0" layoutY="254.0" prefHeight="25.0" prefWidth="200.0" promptText="Situação">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="Planejada" />
-                <String fx:value="Em andamento" />
-                <String fx:value="Encerrada" />
-                <String fx:value="Processada" />
-            </FXCollections>
-        </items>
-    </ComboBox>
-      <TextField layoutX="36.0" layoutY="155.0" prefHeight="25.0" prefWidth="200.0" promptText="Nome do candidato" />
-      <DatePicker layoutX="36.0" layoutY="305.0" prefHeight="25.0" prefWidth="200.0" />
-      <DatePicker layoutX="36.0" layoutY="330.0" prefHeight="25.0" prefWidth="200.0" />
-      <Label layoutX="37.0" layoutY="279.0" prefHeight="25.0" prefWidth="200.0" text="Filtrar por período (início-fim)" />
-      <Label layoutX="297.0" layoutY="27.0" prefHeight="64.0" prefWidth="178.0" text="CONSULTA DE PESQUISAS" />
+        <TableView layoutX="271.0" layoutY="126.0" prefHeight="209.0" prefWidth="551.0">
+            <columns>
+                <TableColumn prefWidth="75.0" text="Código" />
+                <TableColumn prefWidth="75.0" text="Nome" />
+                <TableColumn prefWidth="75.0" text="Tipo" />
+                <TableColumn prefWidth="75.0" text="Região" />
+                <TableColumn prefWidth="75.0" text="Cargo" />
+                <TableColumn prefWidth="75.0" text="Situação" />
+                <TableColumn prefWidth="75.0" text="Período" />
+            </columns>
+        </TableView>
+        <ListView layoutX="36.0" layoutY="108.0" prefHeight="247.0" prefWidth="200.0" />
+        <Button layoutX="110.0" layoutY="438.0" mnemonicParsing="false" text="Limpar" />
+        <Label layoutX="37.0" layoutY="108.0" prefHeight="25.0" prefWidth="200.0" text="Filtros" />
+        <ComboBox layoutX="36.0" layoutY="205.0" prefHeight="25.0" prefWidth="200.0" promptText="Região">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Centro-oeste" />
+                    <String fx:value="Norte" />
+                    <String fx:value="Nordeste" />
+                    <String fx:value="Sudeste" />
+                    <String fx:value="Sul" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <ComboBox layoutX="36.0" layoutY="229.0" prefHeight="25.0" prefWidth="200.0" promptText="Cargo">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Deputado Estadual" />
+                    <String fx:value="Deputado Federal" />
+                    <String fx:value="Governador" />
+                    <String fx:value="Presidente" />
+                    <String fx:value="Senador" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <ComboBox layoutX="36.0" layoutY="180.0" prefHeight="25.0" prefWidth="200.0" promptText="Tipo">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Intenção de voto" />
+                    <String fx:value="Conhecimento" />
+                    <String fx:value="Rejeição" />
+                    <String fx:value="Segundo turno simulado" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <ComboBox layoutX="36.0" layoutY="254.0" prefHeight="25.0" prefWidth="200.0" promptText="Situação">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Planejada" />
+                    <String fx:value="Em andamento" />
+                    <String fx:value="Encerrada" />
+                    <String fx:value="Processada" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <TextField layoutX="36.0" layoutY="155.0" prefHeight="25.0" prefWidth="200.0" promptText="Nome do candidato" />
+        <DatePicker layoutX="36.0" layoutY="305.0" prefHeight="25.0" prefWidth="200.0" />
+        <DatePicker layoutX="36.0" layoutY="330.0" prefHeight="25.0" prefWidth="200.0" />
+        <Label layoutX="37.0" layoutY="279.0" prefHeight="25.0" prefWidth="200.0" text="Filtrar por período (início-fim)" />
+        <Label layoutX="334.0" layoutY="27.0" prefHeight="64.0" prefWidth="178.0" text="CONSULTAR PESQUISAS" />
+        <TextField layoutX="36.0" layoutY="133.0" prefHeight="25.0" prefWidth="200.0" promptText="Código" />
     </children>
 </AnchorPane>
