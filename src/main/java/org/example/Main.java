@@ -11,7 +11,7 @@ public class Main extends Application {
 
         Parent root = FXMLLoader.load(getClass().getResource("/view.Menu/Menu.fxml"));
 
-        telaPrincipal.setTitle("Sistema de Pesquisas Eleitorias");
+        telaPrincipal.setTitle("Sistema de Pesquisas Eleitorais");
         telaPrincipal.setScene(new Scene(root));
         telaPrincipal.show();
     }
