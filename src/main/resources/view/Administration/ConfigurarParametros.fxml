@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.AdministrationController.ConfigurarParametrosController">
+   <children>
+      <TabPane layoutX="241.0" layoutY="72.0" prefHeight="230.0" prefWidth="323.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Faixa etaria">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="202.0" prefWidth="366.0" />
+            </content>
+          </Tab>
+          <Tab text="Escolaridade">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+            <Tab text="Região">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab text="Faixa de renda">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <TextField layoutX="47.0" layoutY="289.0" text="Digite uma Categoria" />
+      <Button layoutX="47.0" layoutY="334.0" mnemonicParsing="false" text="adicionar" />
+      <Button layoutX="136.0" layoutY="334.0" mnemonicParsing="false" text="remover" />
+      <ListView layoutX="22.0" layoutY="72.0" prefHeight="200.0" prefWidth="200.0" />
+      <Button layoutX="541.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="voltar" />
+   </children>
+</AnchorPane>
