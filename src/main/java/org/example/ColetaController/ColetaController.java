@@ -35,4 +35,11 @@ public class ColetaController {
         tela.getScene().setRoot(root);
         tela.show();
     }
+    @FXML
+    public void ConfigAm(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Coleta/ConfigAmostra.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
 }
