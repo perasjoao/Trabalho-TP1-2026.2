@@ -23,5 +23,11 @@ public class Menu {
         tela.getScene().setRoot(root);
         tela.show();
     }
+    public void AbrirPesquisas(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Research/MenuResearch.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
 
 }
