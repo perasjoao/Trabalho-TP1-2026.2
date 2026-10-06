@@ -33,28 +33,28 @@
          </toggleGroup>
       </RadioButton>
       <RadioButton layoutX="285.0" layoutY="93.0" mnemonicParsing="false" text="Não respondeu" toggleGroup="$GROUP1" />
-      <RadioButton layoutX="395.0" layoutY="93.0" mnemonicParsing="false" text="Nenhuma das Opcões" toggleGroup="$GROUP1" />
+      <RadioButton layoutX="395.0" layoutY="93.0" mnemonicParsing="false" text="Nenhuma das Opções" toggleGroup="$GROUP1" />
       <RadioButton layoutX="204.0" layoutY="150.0" mnemonicParsing="false" text="Não sabe">
          <toggleGroup>
             <ToggleGroup fx:id="GROUP2" />
          </toggleGroup>
       </RadioButton>
       <RadioButton layoutX="285.0" layoutY="150.0" mnemonicParsing="false" text="Não respondeu" toggleGroup="$GROUP2" />
-      <RadioButton layoutX="395.0" layoutY="150.0" mnemonicParsing="false" text="Nenhuma das Opcões" toggleGroup="$GROUP2" />
+      <RadioButton layoutX="395.0" layoutY="150.0" mnemonicParsing="false" text="Nenhuma das Opções" toggleGroup="$GROUP2" />
       <RadioButton layoutX="204.0" layoutY="211.0" mnemonicParsing="false" text="Não sabe">
          <toggleGroup>
             <ToggleGroup fx:id="GROUP3" />
          </toggleGroup>
       </RadioButton>
       <RadioButton layoutX="285.0" layoutY="211.0" mnemonicParsing="false" text="Não respondeu" toggleGroup="$GROUP3" />
-      <RadioButton layoutX="395.0" layoutY="211.0" mnemonicParsing="false" text="Nenhuma das Opcões" toggleGroup="$GROUP3" />
+      <RadioButton layoutX="395.0" layoutY="211.0" mnemonicParsing="false" text="Nenhuma das Opções" toggleGroup="$GROUP3" />
       <RadioButton layoutX="204.0" layoutY="265.0" mnemonicParsing="false" text="Não sabe">
          <toggleGroup>
             <ToggleGroup fx:id="GROUP4" />
          </toggleGroup>
       </RadioButton>
       <RadioButton layoutX="285.0" layoutY="265.0" mnemonicParsing="false" text="Não respondeu" toggleGroup="$GROUP4" />
-      <RadioButton layoutX="395.0" layoutY="265.0" mnemonicParsing="false" text="Nenhuma das Opcões" toggleGroup="$GROUP4" />
+      <RadioButton layoutX="395.0" layoutY="265.0" mnemonicParsing="false" text="Nenhuma das Opções" toggleGroup="$GROUP4" />
       <Separator layoutX="6.0" layoutY="298.0" prefHeight="17.0" prefWidth="589.0" />
       <Label layoutX="123.0" layoutY="315.0" text="A qual pesquisa essas respostas pertencem?">
          <font>

@@ -8,7 +8,7 @@
         <TextField layoutX="215.0" layoutY="188.0" promptText="Numero" />
         <TextField layoutX="215.0" layoutY="144.0" promptText="Sigla" />
         <TextField layoutX="215.0" layoutY="106.0" promptText="Nome" />
-        <TextField layoutX="215.0" layoutY="229.0" promptText="Situaçao" />
+        <TextField layoutX="215.0" layoutY="229.0" promptText="Situação" />
         <Button layoutX="230.0" layoutY="284.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="140.0" text="Pesquisar Partido" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
       <Label layoutX="238.0" layoutY="27.0" prefHeight="47.0" prefWidth="104.0" text="BUSCAR PARTIDO" />
