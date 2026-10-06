@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ColetaController.ColetaController">
+    <children>
+        <Text layoutX="170.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Configuração da Amostra">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Text>
+
+        <Label layoutX="50.0" layoutY="80.0" text="Código do Entrevistador:" />
+        <TextField fx:id="txtCodigoEntrevistador" layoutX="50.0" layoutY="100.0" prefHeight="25.0" prefWidth="150.0" promptText="Ex: E001" />
+
+        <Label layoutX="230.0" layoutY="80.0" text="Nome do Entrevistador:" />
+        <TextField fx:id="txtNomeEntrevistador" layoutX="230.0" layoutY="100.0" prefHeight="25.0" prefWidth="320.0" />
+
+        <Label layoutX="50.0" layoutY="150.0" text="Características do Participante">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+
+        <Label layoutX="50.0" layoutY="180.0" text="Faixa Etária:" />
+        <ComboBox fx:id="cbFaixaEtaria" layoutX="50.0" layoutY="200.0" prefWidth="150.0" />
+
+        <Label layoutX="230.0" layoutY="180.0" text="Escolaridade:" />
+        <ComboBox fx:id="cbEscolaridade" layoutX="230.0" layoutY="200.0" prefWidth="150.0" />
+
+        <Label layoutX="410.0" layoutY="180.0" text="Gênero:" />
+        <ComboBox fx:id="cbGenero" layoutX="410.0" layoutY="200.0" prefWidth="140.0" />
+
+        <Label layoutX="50.0" layoutY="250.0" text="Região:" />
+        <ComboBox fx:id="cbRegiao" layoutX="50.0" layoutY="270.0" prefWidth="150.0" />
+
+        <Label layoutX="230.0" layoutY="250.0" text="Faixa de Renda:" />
+        <ComboBox fx:id="cbRenda" layoutX="230.0" layoutY="270.0" prefWidth="150.0" />
+
+        <Button layoutX="230.0" layoutY="340.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Guardar Configuração" />
+        <Button layoutX="50.0" layoutY="340.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
+      <Button layoutX="480.0" layoutY="340.0" mnemonicParsing="false" onAction="#ProxPesquisa" text="Próximo" />
+    </children>
+</AnchorPane>

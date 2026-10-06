@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ColetaController.ColetaController">
+   <children>
+      <Text layoutX="169.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtro de Entrevistas" textAlignment="JUSTIFY" wrappingWidth="262.501953125">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Text>
+      <Label layoutX="183.0" layoutY="40.0" prefHeight="30.0" prefWidth="235.0" text="Caracteristicas Desejadas:" textAlignment="JUSTIFY">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <RadioButton layoutX="18.0" layoutY="81.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="88.0" text="Faixa Etária" />
+      <RadioButton layoutX="18.0" layoutY="121.0" mnemonicParsing="false" text="Escolaridade" />
+      <RadioButton layoutX="203.0" layoutY="171.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="75.0" text="Gênero" />
+      <Slider layoutX="123.0" layoutY="82.0" />
+      <ComboBox layoutX="123.0" layoutY="117.0" prefHeight="17.0" prefWidth="108.0" />
+      <ComboBox layoutX="290.0" layoutY="167.0" prefHeight="17.0" prefWidth="108.0" />
+      <RadioButton layoutX="344.0" layoutY="81.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="88.0" text="Região" />
+      <RadioButton layoutX="344.0" layoutY="121.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="108.0" text="Faixa de Renda" />
+      <ComboBox layoutX="452.0" layoutY="77.0" prefHeight="17.0" prefWidth="108.0" />
+      <ComboBox layoutX="465.0" layoutY="117.0" prefHeight="17.0" prefWidth="108.0" />
+      <Label layoutX="25.0" layoutY="223.0" text="Código do Entrevistador" />
+      <TextField layoutX="25.0" layoutY="248.0" promptText="Opcional" />
+      <Button layoutX="25.0" layoutY="353.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
+      <Button layoutX="466.0" layoutY="353.0" mnemonicParsing="false" onAction="#realizarPesquisa" text="Realizar Pesquisa" textFill="#f51010" />
+   </children>
+</AnchorPane>
