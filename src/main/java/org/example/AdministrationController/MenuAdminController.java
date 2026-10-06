@@ -30,4 +30,18 @@ public class MenuAdminController {
         tela.getScene().setRoot(root);
         tela.show();
     }
+
+    public void abrirConfigurarParametros(ActionEvent event) throws IOException{
+        Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/ConfigurarParametros.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.setScene(new Scene(root));
+        tela.show();
+    }
+
+    public void abrirRelatorioUsuarios(ActionEvent event) throws IOException{
+        Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/RelatorioUsuario.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.setScene(new Scene(root));
+        tela.show();
+    }
 }
