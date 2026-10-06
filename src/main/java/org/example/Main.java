@@ -6,8 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main extends Application{
-    public void start(Stage telaPrincipal) throws Exception{
+public class Main extends Application {
+    public void start(Stage telaPrincipal) throws Exception {
 
         Parent root = FXMLLoader.load(getClass().getResource("/view.Menu/Menu.fxml"));
 
@@ -16,7 +16,7 @@ public class Main extends Application{
         telaPrincipal.show();
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         launch(args);
     }
 }
