@@ -9,8 +9,8 @@
       <Label layoutX="235.0" layoutY="67.0" prefHeight="62.0" prefWidth="130.0" text="Menu de Administrador" />
       <Button layoutX="115.0" layoutY="187.0" mnemonicParsing="false" onAction="#abrirGerenciarUsuarios" text="Administrar usuario" />
       <Button layoutX="363.0" layoutY="187.0" mnemonicParsing="false" onAction="#abrirGerenciarPermissoes" text="Gerenciar permissões" />
-      <Button layoutX="115.0" layoutY="276.0" mnemonicParsing="false" onAction="#abrirConfigurarParametros" text="Configurar Paramêtros" />
-      <Button layoutX="363.0" layoutY="276.0" mnemonicParsing="false" onAction="#abrirRelatorioUsuarios" text="Relatorio de Usuarios" />
+      <Button layoutX="115.0" layoutY="276.0" mnemonicParsing="false" onAction="#abrirConfigurarParametros" text="Configurar Parâmetros" />
+      <Button layoutX="363.0" layoutY="276.0" mnemonicParsing="false" onAction="#abrirRelatorioUsuarios" text="Relatório de Usuários" />
       <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuPrincipal" text="Voltar" />
    </children>
 </AnchorPane>

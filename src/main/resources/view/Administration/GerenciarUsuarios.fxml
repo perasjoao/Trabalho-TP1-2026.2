@@ -26,7 +26,6 @@
         <columns>
           <TableColumn prefWidth="75.0" text="Nome" />
           <TableColumn prefWidth="75.0" text="Email" />
-            <TableColumn prefWidth="75.0" text="Senha" />
             <TableColumn prefWidth="75.0" text="Perfil" />
             <TableColumn prefWidth="75.0" text="Status" />
         </columns>
