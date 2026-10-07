@@ -9,7 +9,8 @@
    <children>
       <TableView layoutX="357.0" prefHeight="400.0" prefWidth="243.0">
         <columns>
-          <TableColumn prefWidth="242.0" text="Criterio" />
+          <TableColumn prefWidth="160.0" text="Critério" />
+          <TableColumn prefWidth="82.0" text="Quantidade" />
         </columns>
       </TableView>
       <ComboBox layoutX="59.0" layoutY="119.0" prefHeight="24.0" prefWidth="163.0" promptText="Obter Dados De:">
