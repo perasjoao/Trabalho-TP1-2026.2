@@ -5,7 +5,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
     <children>
-        <TextField layoutX="215.0" layoutY="188.0" promptText="Numero" />
+        <TextField layoutX="215.0" layoutY="188.0" promptText="Número" />
         <TextField layoutX="215.0" layoutY="144.0" promptText="Sigla" />
         <TextField layoutX="215.0" layoutY="106.0" promptText="Nome" />
         <Button layoutX="217.0" layoutY="237.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="145.0" text="Excluir Partido" />
