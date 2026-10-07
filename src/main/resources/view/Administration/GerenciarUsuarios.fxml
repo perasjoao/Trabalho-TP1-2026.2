@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -17,7 +19,27 @@
       <TextField layoutX="30.0" layoutY="160.0" />
       <Label layoutX="30.0" layoutY="200.0" prefHeight="26.0" prefWidth="150.0" text="Senha" />
       <PasswordField layoutX="30.0" layoutY="226.0" />
-      <ComboBox layoutX="30.0" layoutY="278.0" prefWidth="150.0" promptText="Escolha uma das opções." />
+      <ComboBox layoutX="30.0" layoutY="270.0" prefWidth="150.0" promptText="Perfil" />
+      <ComboBox layoutX="30.0" layoutY="305.0" prefWidth="150.0" promptText="Status">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Ativo" />
+                    <String fx:value="Inativo" />
+                </FXCollections>
+            </items>
+      </ComboBox>
+      <!-- busca por multiplos criterios -->
+      <TextField layoutX="209.0" layoutY="55.0" prefWidth="120.0" promptText="Buscar por nome" />
+      <ComboBox layoutX="335.0" layoutY="55.0" prefWidth="95.0" promptText="Perfil" />
+      <ComboBox layoutX="436.0" layoutY="55.0" prefWidth="85.0" promptText="Status">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Ativo" />
+                    <String fx:value="Inativo" />
+                </FXCollections>
+            </items>
+      </ComboBox>
+      <Button layoutX="527.0" layoutY="55.0" mnemonicParsing="false" text="Buscar" />
       <Button layoutX="300.0" layoutY="315.0" mnemonicParsing="false" text="Salvar" />
       <Button layoutX="392.0" layoutY="315.0" mnemonicParsing="false" text="Editar" />
       <Button layoutX="487.0" layoutY="315.0" mnemonicParsing="false" text="Excluir" />
