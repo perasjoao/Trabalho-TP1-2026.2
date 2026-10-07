@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ResearchController.GerenciarPesquisasController">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+            </padding>
+            <children>
+                <Label text="CADASTRO DE PESQUISA">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+                <GridPane hgap="10.0" vgap="8.0">
+                    <children>
+                        <Label text="Código:" />
+                        <TextField promptText="Ex: P001" GridPane.columnIndex="1" />
+                        <Label text="Nome:" GridPane.rowIndex="1" />
+                        <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Cargo:" GridPane.rowIndex="2" />
+                        <ComboBox prefWidth="200.0" promptText="Cargo" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Deputado Estadual" />
+                                    <String fx:value="Deputado Federal" />
+                                    <String fx:value="Governador" />
+                                    <String fx:value="Presidente" />
+                                    <String fx:value="Senador" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Label text="Tipo:" GridPane.rowIndex="3" />
+                        <ComboBox prefWidth="200.0" promptText="Tipo" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Intenção de voto" />
+                                    <String fx:value="Conhecimento" />
+                                    <String fx:value="Rejeição" />
+                                    <String fx:value="Segundo turno simulado" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Label text="Situação:" GridPane.rowIndex="4" />
+                        <ComboBox prefWidth="200.0" promptText="Situação" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Planejada" />
+                                    <String fx:value="Em coleta" />
+                                    <String fx:value="Encerrada" />
+                                    <String fx:value="Processada" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Label text="Abrangência:" GridPane.rowIndex="5" />
+                        <TextField promptText="Ex: Nacional, Estadual" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Label text="Período de coleta:" GridPane.rowIndex="6" />
+                        <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                            <children>
+                                <DatePicker prefWidth="150.0" promptText="Início" />
+                                <DatePicker prefWidth="150.0" promptText="Fim" />
+                            </children>
+                        </HBox>
+                        <Label text="Entrevistas previstas:" GridPane.rowIndex="7" />
+                        <TextField promptText="Quantidade" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <Label text="Metodologia / plano amostral:" GridPane.rowIndex="8" />
+                        <TextArea prefHeight="60.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                    </children>
+                </GridPane>
+                <HBox alignment="CENTER" spacing="15.0">
+                    <children>
+                        <Button mnemonicParsing="false" text="Salvar" />
+                        <Button mnemonicParsing="false" onAction="#abrirGerenciarPesquisas" text="Voltar" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
