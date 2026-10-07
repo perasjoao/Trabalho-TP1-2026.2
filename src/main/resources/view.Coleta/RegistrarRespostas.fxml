@@ -12,7 +12,7 @@
 
 <AnchorPane prefHeight="439.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ColetaController.ColetaController">
    <children>
-    <Button layoutX="22.0" layoutY="391.0" mnemonicParsing="false" onAction="#ConfigAm" text="Voltar" />
+    <Button layoutX="22.0" layoutY="391.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
       <Text layoutX="89.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="          Registro De Pesquisa" textAlignment="JUSTIFY" wrappingWidth="390.13671875">
          <font>
             <Font size="29.0" />
