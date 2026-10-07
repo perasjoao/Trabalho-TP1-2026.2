@@ -14,7 +14,6 @@
       <Button layoutX="535.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
       <CheckBox layoutX="326.0" layoutY="99.0" mnemonicParsing="false" text="Acesso total" />
       <CheckBox layoutX="326.0" layoutY="131.0" mnemonicParsing="false" text="Gerenciar pesquisa e coleta" />
-      <CheckBox layoutX="326.0" layoutY="161.0" mnemonicParsing="false" text="Processar resultados estatisticos" />
-      <CheckBox layoutX="326.0" layoutY="191.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="ETC...." />
+      <CheckBox layoutX="326.0" layoutY="161.0" mnemonicParsing="false" text="Processar resultados estatísticos" />
    </children>
 </AnchorPane>
