@@ -13,7 +13,7 @@
       <ComboBox layoutX="213.0" layoutY="240.0" prefWidth="150.0" promptText="Situação">
       <items>
          <FXCollections fx:factory="observableArrayList">
-            <String fx:value="pré-canditado" />
+            <String fx:value="pré-candidato" />
             <String fx:value="candidato" />
             <String fx:value="candidatura inativa" />
             <String fx:value="candidatura validada" />

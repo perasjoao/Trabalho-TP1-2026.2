@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -8,7 +10,14 @@
         <TextField layoutX="215.0" layoutY="188.0" promptText="Numero" />
         <TextField layoutX="215.0" layoutY="144.0" promptText="Sigla" />
         <TextField layoutX="215.0" layoutY="106.0" promptText="Nome" />
-        <TextField layoutX="215.0" layoutY="229.0" promptText="Situação" />
+        <ComboBox layoutX="215.0" layoutY="229.0" prefWidth="149.0" promptText="Situação">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Ativo" />
+                    <String fx:value="Inativo" />
+                </FXCollections>
+            </items>
+        </ComboBox>
         <Button layoutX="226.0" layoutY="281.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="149.0" text="Atualizar Partido" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
       <Label layoutX="221.0" layoutY="33.0" prefHeight="51.0" prefWidth="149.0" text="ATUALIZAR PARTIDO" />
