@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -13,7 +14,7 @@
 <AnchorPane prefHeight="439.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ColetaController.ColetaController">
    <children>
     <Button layoutX="22.0" layoutY="391.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
-      <Text layoutX="89.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="          Registro De Pesquisa" textAlignment="JUSTIFY" wrappingWidth="390.13671875">
+      <Text layoutX="105.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Registro de Respostas" textAlignment="CENTER" wrappingWidth="390.0">
          <font>
             <Font size="29.0" />
          </font>
@@ -56,11 +57,13 @@
       <RadioButton layoutX="285.0" layoutY="265.0" mnemonicParsing="false" text="Não respondeu" toggleGroup="$GROUP4" />
       <RadioButton layoutX="395.0" layoutY="265.0" mnemonicParsing="false" text="Nenhuma das Opções" toggleGroup="$GROUP4" />
       <Separator layoutX="6.0" layoutY="298.0" prefHeight="17.0" prefWidth="589.0" />
-      <Label layoutX="123.0" layoutY="315.0" text="A qual pesquisa essas respostas pertencem?">
+      <Label layoutX="22.0" layoutY="315.0" text="Identificação da entrevista">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <ComboBox layoutX="225.0" layoutY="345.0" prefWidth="150.0" />
+      <ComboBox layoutX="22.0" layoutY="345.0" prefWidth="170.0" promptText="Pesquisa" />
+      <TextField layoutX="212.0" layoutY="345.0" prefWidth="170.0" promptText="Código da entrevista" />
+      <TextField layoutX="402.0" layoutY="345.0" prefWidth="170.0" promptText="Código do participante" />
    </children>
 </AnchorPane>

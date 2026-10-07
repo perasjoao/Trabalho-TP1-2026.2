@@ -34,8 +34,8 @@ public class ColetaController {
     }
 
     @FXML
-    public void realizarPesquisa(ActionEvent event) throws IOException {
-        voltarParaMenu(event);
+    public void realizarPesquisa(ActionEvent event) {
+        // permanece na tela: o resultado aparece na tabela (filtragem entra na etapa 3)
     }
     @FXML
     public void ProxPesquisa(ActionEvent event) throws IOException {

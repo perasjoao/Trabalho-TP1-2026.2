@@ -8,7 +8,7 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
    <children>
       <TextField layoutX="215.0" layoutY="112.0" promptText="Nome" />
-      <TextField layoutX="215.0" layoutY="188.0" promptText="Numero" />
+      <TextField layoutX="215.0" layoutY="188.0" promptText="Número" />
       <ComboBox layoutX="225.0" layoutY="242.0" prefHeight="24.0" prefWidth="150.0" promptText="Atualização">
           <items>
               <FXCollections fx:factory="observableArrayList">
@@ -19,8 +19,9 @@
               </FXCollections>
           </items>
       </ComboBox>
-      <Button layoutX="227.0" layoutY="306.0" mnemonicParsing="false" text="Atualizar Candidato" />
+      <Button layoutX="227.0" layoutY="306.0" mnemonicParsing="false" prefWidth="146.0" text="Atualizar Candidato" />
+      <Button layoutX="227.0" layoutY="340.0" mnemonicParsing="false" prefWidth="146.0" text="Excluir Candidato" />
        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
-      <Label layoutX="222.0" layoutY="57.0" text="ATUALIZAR CANDIDATO" />
+      <Label layoutX="222.0" layoutY="57.0" text="GERENCIAR CANDIDATO" />
    </children>
 </AnchorPane>

@@ -12,7 +12,7 @@
    <children>
       <TabPane layoutX="241.0" layoutY="72.0" prefHeight="230.0" prefWidth="323.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Faixa etaria">
+          <Tab text="Faixa etária">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="202.0" prefWidth="366.0" />
             </content>
@@ -34,7 +34,7 @@
             </Tab>
         </tabs>
       </TabPane>
-      <TextField layoutX="47.0" layoutY="289.0" text="Digite uma Categoria" />
+      <TextField layoutX="47.0" layoutY="289.0" promptText="Digite uma categoria" />
       <Button layoutX="47.0" layoutY="334.0" mnemonicParsing="false" text="adicionar" />
       <Button layoutX="136.0" layoutY="334.0" mnemonicParsing="false" text="remover" />
       <ListView layoutX="22.0" layoutY="72.0" prefHeight="200.0" prefWidth="200.0" />

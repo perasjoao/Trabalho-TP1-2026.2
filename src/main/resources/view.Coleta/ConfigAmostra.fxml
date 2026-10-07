@@ -43,6 +43,9 @@
         <Label layoutX="230.0" layoutY="250.0" text="Faixa de Renda:" />
         <ComboBox fx:id="cbRenda" layoutX="230.0" layoutY="270.0" prefWidth="150.0" />
 
+        <Label layoutX="410.0" layoutY="250.0" text="Código do Participante:" />
+        <TextField fx:id="txtCodigoParticipante" layoutX="410.0" layoutY="270.0" prefHeight="25.0" prefWidth="140.0" promptText="Ex: P001" />
+
         <Button layoutX="230.0" layoutY="340.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Guardar Configuração" />
         <Button layoutX="50.0" layoutY="340.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
       <Button layoutX="480.0" layoutY="340.0" mnemonicParsing="false" onAction="#ProxPesquisa" text="Próximo" />
