@@ -5,19 +5,21 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.ColetaController.ColetaController">
+<AnchorPane prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.ColetaController.ColetaController">
    <children>
       <Text layoutX="169.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtro de Entrevistas" textAlignment="JUSTIFY" wrappingWidth="262.501953125">
          <font>
             <Font size="30.0" />
          </font>
       </Text>
-      <Label layoutX="183.0" layoutY="40.0" prefHeight="30.0" prefWidth="235.0" text="Caracteristicas Desejadas:" textAlignment="JUSTIFY">
+      <Label layoutX="183.0" layoutY="40.0" prefHeight="30.0" prefWidth="235.0" text="Características Desejadas:" textAlignment="JUSTIFY">
          <font>
             <Font size="18.0" />
          </font>
@@ -40,8 +42,19 @@
 
       <Label layoutX="25.0" layoutY="223.0" text="Código do Entrevistador" />
       <TextField fx:id="txtFiltroCodigoEntrevistador" layoutX="25.0" layoutY="248.0" promptText="Opcional" />
+      <!-- entrevistas encontradas pelo filtro -->
+      <TableView fx:id="tabelaEntrevistas" layoutX="25.0" layoutY="285.0" prefHeight="145.0" prefWidth="550.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="Entrevista" />
+          <TableColumn prefWidth="85.0" text="Pesquisa" />
+          <TableColumn prefWidth="85.0" text="Participante" />
+          <TableColumn prefWidth="90.0" text="Entrevistador" />
+          <TableColumn prefWidth="85.0" text="Faixa Etária" />
+          <TableColumn prefWidth="128.0" text="Região" />
+        </columns>
+      </TableView>
 
-      <Button layoutX="25.0" layoutY="353.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
-      <Button layoutX="466.0" layoutY="353.0" mnemonicParsing="false" onAction="#realizarPesquisa" text="Realizar Pesquisa" textFill="#f51010" />
+      <Button layoutX="25.0" layoutY="440.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
+      <Button layoutX="466.0" layoutY="440.0" mnemonicParsing="false" onAction="#realizarPesquisa" text="Realizar Pesquisa" textFill="#f51010" />
    </children>
 </AnchorPane>
