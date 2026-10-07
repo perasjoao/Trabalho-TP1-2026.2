@@ -22,7 +22,7 @@
       <ComboBox layoutX="22.0" layoutY="89.0" prefWidth="150.0" />
       <Label layoutX="22.0" layoutY="120.0" text="Em qual desses NÃO VOTARIA de forma alguma?" />
       <ComboBox layoutX="22.0" layoutY="146.0" prefWidth="150.0" />
-      <Label layoutX="22.0" layoutY="182.0" prefHeight="17.0" prefWidth="247.0" text="Como avaliaria o atual governo?" />
+      <Label layoutX="22.0" layoutY="182.0" prefHeight="17.0" prefWidth="247.0" text="Você conhece as propostas do seu candidato?" />
       <ComboBox layoutX="22.0" layoutY="207.0" prefWidth="150.0" />
       <Label layoutX="22.0" layoutY="238.0" prefHeight="17.0" prefWidth="247.0" text="Votaria NULO ou BRANCO?" />
       <ComboBox layoutX="22.0" layoutY="261.0" prefWidth="150.0" />
