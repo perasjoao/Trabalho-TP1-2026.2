@@ -3,6 +3,7 @@
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -14,21 +15,27 @@
 
 <AnchorPane prefHeight="583.0" prefWidth="834.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.ResearchController.ConsultasPesquisasController">
     <children>
-        <Button layoutX="113.0" layoutY="398.0" mnemonicParsing="false" text="Filtrar" />
+        <Button layoutX="113.0" layoutY="415.0" mnemonicParsing="false" text="Filtrar" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuResearch" text="Voltar" />
         <TableView layoutX="271.0" layoutY="126.0" prefHeight="209.0" prefWidth="551.0">
             <columns>
-                <TableColumn prefWidth="75.0" text="Código" />
-                <TableColumn prefWidth="75.0" text="Nome" />
-                <TableColumn prefWidth="75.0" text="Tipo" />
-                <TableColumn prefWidth="75.0" text="Região" />
-                <TableColumn prefWidth="75.0" text="Cargo" />
-                <TableColumn prefWidth="75.0" text="Situação" />
-                <TableColumn prefWidth="75.0" text="Período" />
+                <TableColumn prefWidth="50.0" text="Código" />
+                <TableColumn prefWidth="70.0" text="Nome" />
+                <TableColumn prefWidth="55.0" text="Tipo" />
+                <TableColumn prefWidth="55.0" text="Região" />
+                <TableColumn prefWidth="55.0" text="Cargo" />
+                <TableColumn prefWidth="60.0" text="Situação" />
+                <TableColumn prefWidth="60.0" text="Período" />
+                <!-- acompanhamento da pesquisa (previsto x realizado) -->
+                <TableColumn prefWidth="50.0" text="Previsto" />
+                <TableColumn prefWidth="60.0" text="Realizado" />
+                <TableColumn prefWidth="35.0" text="\%" />
             </columns>
         </TableView>
-        <ListView layoutX="36.0" layoutY="108.0" prefHeight="247.0" prefWidth="200.0" />
-        <Button layoutX="110.0" layoutY="438.0" mnemonicParsing="false" text="Limpar" />
+        <ListView layoutX="36.0" layoutY="108.0" prefHeight="300.0" prefWidth="200.0" />
+        <TextField layoutX="36.0" layoutY="355.0" prefHeight="25.0" prefWidth="200.0" promptText="Qtd. de entrevistados" />
+        <CheckBox layoutX="40.0" layoutY="385.0" mnemonicParsing="false" text="Abaixo da meta da amostra" />
+        <Button layoutX="110.0" layoutY="450.0" mnemonicParsing="false" text="Limpar" />
         <Label layoutX="37.0" layoutY="108.0" prefHeight="25.0" prefWidth="200.0" text="Filtros" />
         <ComboBox layoutX="36.0" layoutY="205.0" prefHeight="25.0" prefWidth="200.0" promptText="Região">
             <items>
@@ -66,7 +73,7 @@
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Planejada" />
-                    <String fx:value="Em andamento" />
+                    <String fx:value="Em coleta" />
                     <String fx:value="Encerrada" />
                     <String fx:value="Processada" />
                 </FXCollections>
