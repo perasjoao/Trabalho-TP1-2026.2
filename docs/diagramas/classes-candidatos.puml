@@ -1,0 +1,93 @@
+@startuml classes-candidatos
+!include estilo.iuml
+title Módulo de Candidatos e Partidos
+
+abstract class Pessoa {
+  - nome : String
+  + {abstract} getDescricao() : String
+}
+
+class Candidato {
+  - numero : int
+  - cargo : Cargo
+  - situacao : SituacaoCandidatura
+  - partido : Partido
+  + isCandidaturaAtiva() : boolean
+  + podeParticiparDePesquisa() : boolean
+  + getDescricao() : String
+}
+
+class Partido {
+  - nome : String
+  - sigla : String
+  - numero : int
+  - situacao : SituacaoPartido
+  - candidatos : List<Candidato>
+  + adicionarCandidato(c : Candidato) : void
+  + removerCandidato(c : Candidato) : void
+  + possuiCandidatos() : boolean
+  + isAtivo() : boolean
+}
+
+class IndicadoresCadastrais {
+  - totalCandidatos : int
+  - candidaturasAtivas : int
+  - totalPartidos : int
+  - partidosAtivos : int
+  - candidatosPorCargo : Map<Cargo, Integer>
+  - candidatosPorPartido : Map<String, Integer>
+  + getCandidaturasInativas() : int
+  + getMediaCandidatosPorPartido() : double
+}
+
+enum Cargo {
+  PRESIDENTE
+  GOVERNADOR
+  SENADOR
+  DEPUTADO_FEDERAL
+  DEPUTADO_ESTADUAL
+}
+
+enum SituacaoCandidatura {
+  PRE_CANDIDATO
+  CANDIDATO
+  INATIVA
+  VALIDADA
+}
+
+enum SituacaoPartido {
+  ATIVO
+  INATIVO
+}
+
+package "aplicacao" {
+  class CandidatoControlador {
+    - candidatos : List<Candidato>
+    + cadastrar(nome, numero, cargo, situacao) : Candidato
+    + editar(c, nome, numero, cargo) : void
+    + alterarSituacao(c, situacao) : void
+    + excluir(c : Candidato) : void
+    + associarAPartido(c, p) : void
+    + consultar(cargo, partido, situacao) : List<Candidato>
+    + gerarIndicadores(partidos) : IndicadoresCadastrais
+    - validarNumero(numero, cargo, atual) : void
+  }
+  class PartidoControlador {
+    - partidos : List<Partido>
+    + cadastrar(nome, sigla, numero, situacao) : Partido
+    + editar(p, nome, sigla, numero, situacao) : void
+    + excluir(p : Partido) : void
+    + buscar(nome, sigla, numero, situacao) : List<Partido>
+    - validarUnicidade(sigla, numero, atual) : void
+  }
+}
+
+Pessoa <|-- Candidato
+Partido "0..1" o-- "*" Candidato
+Candidato --> Cargo
+Candidato --> SituacaoCandidatura
+Partido --> SituacaoPartido
+CandidatoControlador o-- "*" Candidato
+CandidatoControlador ..> IndicadoresCadastrais : cria
+PartidoControlador o-- "*" Partido
+@enduml

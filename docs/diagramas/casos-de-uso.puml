@@ -1,0 +1,98 @@
+@startuml casos-de-uso
+!pragma layout smetana
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F8F9FB
+  BorderColor #4A5A70
+}
+title Diagrama de Casos de Uso - Sistema de Análise de Pesquisas Eleitorais
+
+actor "Pesquisador" as Pesq
+actor "Analista" as Anal
+actor "Administrador" as Adm
+
+' RN-ADM-5: o administrador tem acesso total, entao herda os casos de uso dos outros perfis
+Adm -|> Pesq
+Adm -|> Anal
+
+rectangle "Sistema de Análise de Pesquisas Eleitorais" {
+
+  usecase "Autenticar-se" as UC_Login
+
+  package "Administração" {
+    usecase "Gerenciar usuários" as UC_Usu
+    usecase "Ativar / desativar usuário" as UC_Ativ
+    usecase "Gerenciar permissões" as UC_Perm
+    usecase "Configurar parâmetros" as UC_Param
+    usecase "Gerar relatório de usuários" as UC_RelUsu
+  }
+
+  package "Pesquisas" {
+    usecase "Cadastrar pesquisa" as UC_CadPesq
+    usecase "Configurar pesquisa\n(perguntas, regiões, candidatos)" as UC_ConfPesq
+    usecase "Alterar situação da pesquisa" as UC_SitPesq
+    usecase "Consultar pesquisas" as UC_ConsPesq
+    usecase "Acompanhar andamento" as UC_Andam
+  }
+
+  package "Coleta e Amostra" {
+    usecase "Configurar amostra" as UC_Amostra
+    usecase "Registrar entrevista" as UC_Entrev
+    usecase "Registrar respostas" as UC_Resp
+    usecase "Consultar entrevistas" as UC_ConsEnt
+  }
+
+  package "Candidatos e Partidos" {
+    usecase "Gerenciar candidatos" as UC_Cand
+    usecase "Gerenciar partidos" as UC_Part
+    usecase "Associar candidato a partido" as UC_Assoc
+    usecase "Consultar candidatos" as UC_ConsCand
+    usecase "Gerar indicadores cadastrais" as UC_Indic
+  }
+
+  package "Análise Estatística e Relatórios" {
+    usecase "Processar pesquisa" as UC_Proc
+    usecase "Consultar resultados estatísticos" as UC_Res
+    usecase "Comparar pesquisas" as UC_Comp
+    usecase "Gerar relatório" as UC_Rel
+    usecase "Exportar relatório\n(PDF / CSV)" as UC_Exp
+  }
+}
+
+Pesq --> UC_Login
+Anal --> UC_Login
+
+Adm --> UC_Usu
+Adm --> UC_Ativ
+Adm --> UC_Perm
+Adm --> UC_Param
+Adm --> UC_RelUsu
+
+Pesq --> UC_CadPesq
+Pesq --> UC_ConfPesq
+Pesq --> UC_SitPesq
+Pesq --> UC_ConsPesq
+Pesq --> UC_Andam
+Pesq --> UC_Amostra
+Pesq --> UC_Entrev
+Pesq --> UC_ConsEnt
+Pesq --> UC_Cand
+Pesq --> UC_Part
+Pesq --> UC_Assoc
+Pesq --> UC_ConsCand
+Pesq --> UC_Indic
+
+Anal --> UC_ConsEnt
+Anal --> UC_ConsPesq
+Anal --> UC_Proc
+Anal --> UC_Res
+Anal --> UC_Comp
+Anal --> UC_Rel
+
+UC_Entrev ..> UC_Resp : <<include>>
+UC_Exp ..> UC_Rel : <<extend>>
+UC_Comp ..> UC_Res : <<include>>
+@enduml

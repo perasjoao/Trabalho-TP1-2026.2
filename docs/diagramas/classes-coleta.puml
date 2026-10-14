@@ -1,0 +1,79 @@
+@startuml classes-coleta
+!include estilo.iuml
+title Módulo de Coleta e Amostra
+
+abstract class Pessoa {
+  - nome : String
+  + {abstract} getDescricao() : String
+}
+
+class Entrevistador {
+  - codigo : String
+  + getDescricao() : String
+}
+
+class Participante {
+  - codigo : String
+  - faixaEtaria : String
+  - escolaridade : String
+  - genero : String
+  - regiao : String
+  - faixaRenda : String
+}
+
+class Entrevista {
+  - codigo : String
+  - data : LocalDate
+  - respostas : Map<Pergunta, Resposta>
+  - concluida : boolean
+  + registrarResposta(r : Resposta) : void
+  + concluir() : void
+  + getResposta(p : Pergunta) : Resposta
+}
+
+class Resposta {
+  - Resposta(pergunta, opcao, especial)
+  + {static} comOpcao(p : Pergunta, o : OpcaoResposta) : Resposta
+  + {static} especial(p : Pergunta, t : RespostaEspecial) : Resposta
+  + isValida() : boolean
+}
+
+enum RespostaEspecial {
+  NAO_SABE
+  NAO_RESPONDEU
+  NENHUMA_DAS_OPCOES
+}
+
+class Pesquisa
+class Pergunta
+class OpcaoResposta
+
+package "aplicacao" {
+  class ColetaControlador {
+    - entrevistadores : List<Entrevistador>
+    - participantes : List<Participante>
+    - entrevistas : List<Entrevista>
+    + cadastrarEntrevistador(codigo, nome) : Entrevistador
+    + cadastrarParticipante(codigo, faixa, escolaridade, genero, regiao, renda) : Participante
+    + iniciarEntrevista(codigo, pesquisa, participante, entrevistador, data) : Entrevista
+    + registrarResposta(e, pergunta, opcao) : void
+    + registrarRespostaEspecial(e, pergunta, tipo) : void
+    + concluirEntrevista(e : Entrevista) : void
+    + listarPorPesquisa(p : Pesquisa) : List<Entrevista>
+    + contarRealizadas(p : Pesquisa) : int
+    + filtrar(pesquisa, faixa, escolaridade, genero, regiao, renda, entrevistador) : List<Entrevista>
+  }
+}
+
+Pessoa <|-- Entrevistador
+Entrevista --> "1" Pesquisa
+Entrevista --> "1" Participante
+Entrevista --> "0..1" Entrevistador
+Entrevista *-- "*" Resposta
+Resposta --> "1" Pergunta
+Resposta --> "0..1" OpcaoResposta
+Resposta --> "0..1" RespostaEspecial
+ColetaControlador o-- "*" Entrevista
+ColetaControlador o-- "*" Participante
+ColetaControlador o-- "*" Entrevistador
+@enduml

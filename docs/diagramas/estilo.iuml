@@ -1,0 +1,14 @@
+' Estilo comum dos diagramas de classes
+!pragma layout smetana
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam class {
+  BackgroundColor #F8F9FB
+  BorderColor #4A5A70
+  ArrowColor #4A5A70
+}
+skinparam package {
+  BorderColor #8A97A8
+}
+hide empty members

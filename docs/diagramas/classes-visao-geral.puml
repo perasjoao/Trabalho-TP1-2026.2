@@ -1,0 +1,75 @@
+@startuml classes-visao-geral
+!include estilo.iuml
+title Diagrama de Classes de Domínio - Visão Geral
+hide members
+
+package "comum" {
+  abstract class Pessoa
+  enum Perfil
+  enum Cargo
+  enum TipoPesquisa
+  enum SituacaoPesquisa
+  enum SituacaoCandidatura
+  enum SituacaoPartido
+  enum RespostaEspecial
+}
+
+package "administracao" {
+  class Usuario
+  class Parametro
+  class Sessao <<Singleton>>
+}
+
+package "candidatos" {
+  class Candidato
+  class Partido
+}
+
+package "pesquisas" {
+  class Pesquisa
+  abstract class Pergunta
+  class OpcaoResposta
+}
+
+package "coleta" {
+  class Entrevistador
+  class Participante
+  class Entrevista
+  class Resposta
+}
+
+package "analise" {
+  class CalculadoraEstatistica
+  abstract class CriterioAgrupamento <<Strategy>>
+  class ResultadoAnalise
+  class ComparacaoPesquisas
+  class Relatorio
+  interface Exportador <<Strategy>>
+}
+
+Pessoa <|-- Usuario
+Pessoa <|-- Candidato
+Pessoa <|-- Entrevistador
+
+Usuario --> "1..*" Perfil
+Partido "0..1" o-- "*" Candidato
+Pesquisa *-- "*" Pergunta
+Pergunta *-- "*" OpcaoResposta
+Pesquisa o-- "*" Candidato
+OpcaoResposta --> "0..1" Candidato
+Entrevista --> "1" Pesquisa
+Entrevista --> "1" Participante
+Entrevista --> "0..1" Entrevistador
+Entrevista *-- "*" Resposta
+Resposta --> Pergunta
+Resposta --> "0..1" OpcaoResposta
+Resposta --> "0..1" RespostaEspecial
+
+CalculadoraEstatistica ..> Entrevista : lê
+CalculadoraEstatistica ..> CriterioAgrupamento : usa
+CalculadoraEstatistica ..> ResultadoAnalise : cria
+ResultadoAnalise --> Pesquisa
+ComparacaoPesquisas --> "2" ResultadoAnalise
+Relatorio --> ResultadoAnalise
+Exportador ..> Relatorio : exporta
+@enduml

@@ -1,0 +1,111 @@
+@startuml classes-pesquisas
+!include estilo.iuml
+title Módulo de Pesquisas
+
+class Pesquisa {
+  - codigo : String
+  - nome : String
+  - cargo : Cargo
+  - tipo : TipoPesquisa
+  - situacao : SituacaoPesquisa
+  - inicio : LocalDate
+  - fim : LocalDate
+  - abrangencia : String
+  - quantidadePrevista : int
+  - metodologia : String
+  - Pesquisa(b : Builder)
+  + {static} builder(codigo, nome, cargo, tipo) : Builder
+  + iniciarColeta() : void
+  + encerrarColeta() : void
+  + marcarProcessada() : void
+  + podeReceberEntrevistas() : boolean
+  + adicionarPergunta(p : Pergunta) : void
+  + associarCandidato(c : Candidato) : void
+  + associarRegiao(regiao : String) : void
+  + adicionarMeta(m : MetaAmostral) : void
+}
+
+class "Pesquisa.Builder" as Builder <<Builder>> {
+  + periodo(inicio, fim) : Builder
+  + abrangencia(a : String) : Builder
+  + quantidadePrevista(q : int) : Builder
+  + metodologia(m : String) : Builder
+  + build() : Pesquisa
+}
+
+abstract class Pergunta {
+  - texto : String
+  - obrigatoria : boolean
+  - opcoes : List<OpcaoResposta>
+  + adicionarOpcao(o : OpcaoResposta) : void
+  + possuiOpcao(o : OpcaoResposta) : boolean
+  + {abstract} getTipo() : String
+}
+
+class PerguntaEscolhaUnica {
+  + adicionarOpcao(texto : String) : void
+  + getTipo() : String
+}
+
+class PerguntaSimNao {
+  + adicionarOpcao(o : OpcaoResposta) : void
+  + getTipo() : String
+}
+
+class PerguntaCandidatos {
+  + adicionarCandidato(c : Candidato) : void
+  + adicionarOpcao(o : OpcaoResposta) : void
+  + getTipo() : String
+}
+
+class OpcaoResposta {
+  - texto : String
+  - candidato : Candidato
+  + isCandidato() : boolean
+}
+
+class MetaAmostral {
+  - caracteristica : String
+  - valor : String
+  - minimo : int
+  + atingidaPor(entrevistas : int) : boolean
+}
+
+class AndamentoPesquisa {
+  - prevista : int
+  - realizada : int
+  + getPercentualConclusao() : double
+}
+
+class Candidato
+
+package "aplicacao" {
+  class PesquisaControlador {
+    - pesquisas : List<Pesquisa>
+    + cadastrar(p : Pesquisa) : void
+    + excluir(p : Pesquisa) : void
+    + buscarPorCodigo(codigo) : Pesquisa
+    + adicionarPergunta(p, pergunta) : void
+    + associarRegiao(p, regiao) : void
+    + associarCandidato(p, c) : void
+    + iniciarColeta(p) : void
+    + encerrarColeta(p) : void
+    + consultar(cargo, tipo, situacao, regiao, inicio, fim, minimo) : List<Pesquisa>
+    + calcularAndamento(p, realizadas) : AndamentoPesquisa
+    + metasNaoAtingidas(p, porGrupo) : List<MetaAmostral>
+  }
+}
+
+Pesquisa +-- Builder
+Builder ..> Pesquisa : cria
+Pesquisa *-- "*" Pergunta
+Pesquisa o-- "*" Candidato
+Pesquisa *-- "*" MetaAmostral
+Pergunta <|-- PerguntaEscolhaUnica
+Pergunta <|-- PerguntaSimNao
+Pergunta <|-- PerguntaCandidatos
+Pergunta *-- "*" OpcaoResposta
+OpcaoResposta --> "0..1" Candidato
+PesquisaControlador o-- "*" Pesquisa
+PesquisaControlador ..> AndamentoPesquisa : cria
+@enduml

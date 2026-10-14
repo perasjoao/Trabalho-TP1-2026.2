@@ -1,0 +1,100 @@
+@startuml classes-administracao
+!include estilo.iuml
+title Módulo de Administração
+
+abstract class Pessoa {
+  - nome : String
+  + getNome() : String
+  + {abstract} getDescricao() : String
+}
+
+class Usuario {
+  - email : String
+  - senha : String
+  - perfis : Set<Perfil>
+  - ativo : boolean
+  + verificarSenha(senha : String) : boolean
+  + possuiPerfil(perfil : Perfil) : boolean
+  + podeAcessar(f : Funcionalidade) : boolean
+  + ativar() : void
+  + desativar() : void
+  + getDescricao() : String
+}
+
+enum Perfil {
+  ADMINISTRADOR
+  PESQUISADOR
+  ANALISTA
+}
+
+enum Funcionalidade {
+  GERENCIAR_USUARIOS
+  CONFIGURAR_PARAMETROS
+  GERENCIAR_PESQUISAS
+  REGISTRAR_COLETA
+  CONSULTAR_COLETA
+  PROCESSAR_ANALISE
+  GERAR_RELATORIOS
+  GERENCIAR_CANDIDATOS
+  - perfisPermitidos : Set<Perfil>
+  + permitidaPara(perfil : Perfil) : boolean
+}
+
+enum TipoParametro {
+  FAIXA_ETARIA
+  ESCOLARIDADE
+  REGIAO
+  FAIXA_RENDA
+}
+
+class Parametro {
+  - tipo : TipoParametro
+  - valores : List<String>
+  + adicionarValor(valor : String) : void
+  + removerValor(valor : String) : void
+  + contem(valor : String) : boolean
+}
+
+class Sessao <<Singleton>> {
+  - {static} instancia : Sessao
+  - usuarioLogado : Usuario
+  - Sessao()
+  + {static} getInstancia() : Sessao
+  + iniciar(u : Usuario) : void
+  + encerrar() : void
+  + estaLogado() : boolean
+}
+
+package "aplicacao" {
+  class UsuarioControlador {
+    - usuarios : List<Usuario>
+    + cadastrar(nome, email, senha, perfis) : Usuario
+    + editar(u, nome, email, perfis) : void
+    + excluir(u : Usuario) : void
+    + buscar(nome, perfil, ativo) : List<Usuario>
+    + ativar(u : Usuario) : void
+    + desativar(u : Usuario) : void
+    + autenticar(email, senha) : Usuario
+    + contarPorPerfil() : Map<Perfil, Integer>
+    - validarEmail(email, atual) : void
+    - validarSenha(senha) : void
+  }
+  class ParametroControlador {
+    - parametros : Map<TipoParametro, Parametro>
+    + adicionarCategoria(tipo, valor) : void
+    + removerCategoria(tipo, valor) : void
+    + listarCategorias(tipo) : List<String>
+    + categoriaValida(tipo, valor) : boolean
+  }
+}
+
+Pessoa <|-- Usuario
+Usuario --> "1..*" Perfil
+Usuario ..> Funcionalidade : consulta
+Funcionalidade --> "*" Perfil
+Parametro --> TipoParametro
+Sessao --> "0..1" Usuario
+UsuarioControlador o-- "*" Usuario
+UsuarioControlador ..> Sessao : inicia
+ParametroControlador *-- "4" Parametro
+@enduml

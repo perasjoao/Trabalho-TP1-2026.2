@@ -1,0 +1,155 @@
+@startuml classes-analise
+!include estilo.iuml
+title Módulo de Análise Estatística e Relatórios
+
+abstract class CriterioAgrupamento <<Strategy>> {
+  - nome : String
+  + {abstract} classificar(e : Entrevista, r : Resposta) : String
+}
+
+class AgrupamentoPorOpcao {
+  + classificar(e, r) : String
+}
+
+class AgrupamentoPorCaracteristica {
+  - caracteristica : CaracteristicaAmostra
+  + classificar(e, r) : String
+}
+
+class AgrupamentoConjunto {
+  - primeiro : CriterioAgrupamento
+  - segundo : CriterioAgrupamento
+  + classificar(e, r) : String
+}
+
+enum CaracteristicaAmostra {
+  REGIAO
+  FAIXA_ETARIA
+  ESCOLARIDADE
+  GENERO
+  FAIXA_RENDA
+  + {abstract} valorDe(p : Participante) : String
+}
+
+class CalculadoraEstatistica {
+  + {static} CASAS_DECIMAIS : int = 1
+  + calcular(pesquisa, pergunta, entrevistas, criterio) : ResultadoAnalise
+  + {static} arredondar(valor : double) : double
+}
+
+class ResultadoAnalise {
+  - criterio : String
+  - itens : List<ItemResultado>
+  - totalValidas : int
+  - especiais : Map<RespostaEspecial, Integer>
+  + getQuantidadeEspecial(t : RespostaEspecial) : int
+  + getTotalRespostas() : int
+  + getPercentual(rotulo : String) : double
+}
+
+class ItemResultado {
+  - rotulo : String
+  - quantidade : int
+  - percentual : double
+}
+
+class ComparacaoPesquisas {
+  - itens : List<ItemComparacao>
+  + {static} saoCompativeis(a : Pesquisa, b : Pesquisa) : boolean
+}
+
+class ItemComparacao {
+  - rotulo : String
+  - percentualA : double
+  - percentualB : double
+  + getDiferenca() : double
+}
+
+class FiltroRelatorio {
+  - pesquisa : Pesquisa
+  - inicio : LocalDate
+  - fim : LocalDate
+  - regiao : String
+  - candidato : String
+  - faixaEtaria : String
+  - escolaridade : String
+  - genero : String
+  - faixaRenda : String
+  + {static} para(p : Pesquisa) : Builder
+  + aceita(e : Entrevista) : boolean
+  + descrever() : String
+}
+
+class "FiltroRelatorio.Builder" as FBuilder <<Builder>> {
+  + periodo(inicio, fim) : Builder
+  + regiao(r) : Builder
+  + candidato(c) : Builder
+  + faixaEtaria(f) : Builder
+  + escolaridade(e) : Builder
+  + genero(g) : Builder
+  + faixaRenda(r) : Builder
+  + build() : FiltroRelatorio
+}
+
+class Relatorio {
+  - titulo : String
+  - geradoEm : LocalDateTime
+}
+
+interface Exportador <<Strategy>> {
+  + exportar(r : Relatorio) : String
+  + getExtensao() : String
+}
+
+class ExportadorCSV
+class ExportadorPDF
+
+enum FormatoExportacao {
+  PDF
+  CSV
+}
+
+class ExportadorFactory <<Factory>> {
+  + {static} criar(f : FormatoExportacao) : Exportador
+}
+
+package "aplicacao" {
+  class ProcessamentoControlador {
+    - resultados : Map<Pesquisa, List<ResultadoAnalise>>
+    + processar(p : Pesquisa, entrevistas) : List<ResultadoAnalise>
+    + getResultados(p : Pesquisa) : List<ResultadoAnalise>
+    + getResultadoPrincipal(p : Pesquisa) : ResultadoAnalise
+    + calcularPorCriterio(p, pergunta, entrevistas, criterio) : ResultadoAnalise
+  }
+  class ComparacaoControlador {
+    + comparar(a : Pesquisa, b : Pesquisa) : ComparacaoPesquisas
+  }
+  class RelatorioControlador {
+    + gerar(filtro, pergunta, entrevistas, criterio) : Relatorio
+    + exportar(r : Relatorio, f : FormatoExportacao) : String
+  }
+}
+
+CriterioAgrupamento <|-- AgrupamentoPorOpcao
+CriterioAgrupamento <|-- AgrupamentoPorCaracteristica
+CriterioAgrupamento <|-- AgrupamentoConjunto
+AgrupamentoConjunto o-- "2" CriterioAgrupamento
+AgrupamentoPorCaracteristica --> CaracteristicaAmostra
+CalculadoraEstatistica ..> CriterioAgrupamento : usa
+CalculadoraEstatistica ..> ResultadoAnalise : cria
+ResultadoAnalise *-- "*" ItemResultado
+ComparacaoPesquisas --> "2" ResultadoAnalise
+ComparacaoPesquisas *-- "*" ItemComparacao
+FiltroRelatorio +-- FBuilder
+Relatorio --> FiltroRelatorio
+Relatorio --> ResultadoAnalise
+Exportador <|.. ExportadorCSV
+Exportador <|.. ExportadorPDF
+ExportadorFactory ..> Exportador : cria
+ExportadorFactory ..> FormatoExportacao
+Exportador ..> Relatorio
+ProcessamentoControlador *-- CalculadoraEstatistica
+ComparacaoControlador --> ProcessamentoControlador
+RelatorioControlador --> ProcessamentoControlador
+RelatorioControlador ..> ExportadorFactory
+@enduml
