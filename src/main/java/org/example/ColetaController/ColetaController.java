@@ -42,4 +42,5 @@ public class ColetaController {
         tela.getScene().setRoot(root);
         tela.show();
     }
+
 }
