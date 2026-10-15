@@ -10,7 +10,7 @@ public class PesquisaController {
 
     void cadatraPesquisa(String nome, Usuario userlogado){}
 
-    void excluiPesquisa(){}
+    void excluiPesquisa(String nome,Usuario userlogado){}
 
     Pesquisa[] listaPesquisas(){}
 

@@ -1,15 +1,18 @@
 package org.example.serviceControllers;
 
+import org.example.models.Candidato;
+import org.example.models.Usuario;
+
 import java.util.Map;
 
 public class CandidatoController {
-    void cadastrarCandidato(){}
+    void cadastrarCandidato(Usuario userlogado){}
 
-    void alterarSituacao(){}
+    void alterarSituacao(Usuario userlogado){}
 
-    void associarPartido(){}
+    void associarPartido(Usuario userlogado){}
 
-    void listarCandidatos(){}
+    public Candidato[] listarCandidatos(Usuario userlogado){}
 
-    Map<String,Float> estatisticasCandidatos(){}
+    public Map<String,Float> estatisticasCandidatos(){}
 }
