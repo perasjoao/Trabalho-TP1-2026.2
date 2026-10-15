@@ -1,8 +1,10 @@
 package org.example.models;
 
-public class Candidato extends Usuario {
+public class Candidato{
     private Partido partido;
     private int numero;
+    String situacao;
+    String cargo;
 
     @Override
     public String getCargo(){

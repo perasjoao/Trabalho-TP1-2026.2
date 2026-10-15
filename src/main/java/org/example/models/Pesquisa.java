@@ -6,16 +6,14 @@ public class Pesquisa {
     String situacao;
     String[] perguntas;
     String regiao;
+    String[] parametros;
+    //colocar um Map<Pergunta, Resposta>
     int pesquisasFeitas;
     int pesquisasPrevistas;
 
-    public int percentualFeito(){
+    public float percentualFeito(){}
 
-    }
-
-    public boolean antingiuMeta(){
-
-    }
+    public boolean antingiuMeta(){}
 
     public void adicionaPergunta(String pergunta){}
 
