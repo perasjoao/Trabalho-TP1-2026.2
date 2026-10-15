@@ -1,4 +1,9 @@
 package org.example.models;
 
-public class Usuario {
+public abstract class Usuario {
+    String nome;
+    String senha;
+    String cargo;
+
+    public abstract String getCargo();
 }
