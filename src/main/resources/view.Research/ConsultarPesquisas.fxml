@@ -12,7 +12,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="583.0" prefWidth="834.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ResearchController.ConsultasPesquisasController">
+<AnchorPane prefHeight="583.0" prefWidth="834.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.ResearchController.ConsultasPesquisasController">
     <children>
         <Button layoutX="113.0" layoutY="398.0" mnemonicParsing="false" text="Filtrar" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuResearch" text="Voltar" />

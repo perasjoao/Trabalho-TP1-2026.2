@@ -1,4 +1,4 @@
-package org.example.ColetaController;
+package org.example.viewControllers.ColetaController;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,16 +15,22 @@ public class ColetaController {
     public void voltarParaMenu(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view.Coleta/MenuColeta.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
         tela.getScene().setRoot(root);
-        tela.show();
+        tela.setWidth(width);
+        tela.setHeight(height);
     }
 
     @FXML
     public void voltarMenuPrincipal(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view.Menu/Menu.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
         tela.getScene().setRoot(root);
-        tela.show();
+        tela.setWidth(width);
+        tela.setHeight(height);
     }
 
     @FXML
@@ -41,21 +47,30 @@ public class ColetaController {
     public void ProxPesquisa(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view.Coleta/RegistrarRespostas.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
         tela.getScene().setRoot(root);
-        tela.show();
+        tela.setWidth(width);
+        tela.setHeight(height);
     }
     @FXML
     public void ConfigAm(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view.Coleta/ConfigAmostra.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
         tela.getScene().setRoot(root);
-        tela.show();
+        tela.setWidth(width);
+        tela.setHeight(height);
     }
     @FXML
     public void abrirFiltroEntrevistas(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view.Coleta/FiltroEntrevistas.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
         tela.getScene().setRoot(root);
-        tela.show();
+        tela.setWidth(width);
+        tela.setHeight(height);
     }
 }

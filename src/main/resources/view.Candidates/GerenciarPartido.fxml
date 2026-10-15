@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
    <children>
       <Button layoutX="211.0" layoutY="188.0" mnemonicParsing="false" onAction="#AbrirAtualizarPartido" prefHeight="24.0" prefWidth="146.0" text="Alterar Partido" />
       <Button layoutX="210.0" layoutY="148.0" mnemonicParsing="false" onAction="#AbrirExcluirPartido" prefHeight="24.0" prefWidth="146.0" text="Excluir Partido" />

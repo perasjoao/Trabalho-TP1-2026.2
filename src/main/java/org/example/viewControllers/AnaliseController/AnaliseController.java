@@ -1,4 +1,4 @@
-package org.example.AnaliseController;
+package org.example.viewControllers.AnaliseController;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,8 +14,11 @@ public class AnaliseController {
     private void trocarTela(ActionEvent event, String caminhoFxml) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource(caminhoFxml));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
         tela.getScene().setRoot(root);
-        tela.show();
+        tela.setWidth(width);
+        tela.setHeight(height);
     }
 
     //botoes dentro do menu de analise

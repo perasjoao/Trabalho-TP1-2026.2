@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.AdministrationController.MenuAdminController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.AdministrationController.MenuAdminController">
    <children>
       <Label layoutX="235.0" layoutY="67.0" prefHeight="62.0" prefWidth="130.0" text="Menu de Administrador" />
       <Button layoutX="115.0" layoutY="187.0" mnemonicParsing="false" onAction="#abrirGerenciarUsuarios" text="Administrar usuario" />
