@@ -7,6 +7,7 @@ public class Pesquisa {
     String[] perguntas;
     String regiao;
     String[] parametros;
+    //colocar um Map<Pergunta, Resposta>
     int pesquisasFeitas;
     int pesquisasPrevistas;
 

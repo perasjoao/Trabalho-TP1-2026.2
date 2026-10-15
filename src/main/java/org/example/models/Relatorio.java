@@ -2,6 +2,7 @@ package org.example.models;
 import java.util.Map;
 public class Relatorio {
     int totalApurado;
+    Candidato candidato;
     Map<String,Float>[]estatisticas; //chave valor
 
     public int getTotalApurado() {
@@ -12,7 +13,5 @@ public class Relatorio {
         return this.estatisticas;
     }
 
-    public boolean exportaRelatorio(){}
 
-    public void filtrarRelatorio(){}
 }
