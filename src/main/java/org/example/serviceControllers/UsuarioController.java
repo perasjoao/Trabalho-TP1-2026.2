@@ -13,3 +13,5 @@ public class UsuarioController {
     public Usuario[] listarUsuarios(){}
 
     public Map<String,Float> estatisticasUsuarios(){}
+
+    public void adicionaParametroPesquisa(){}
