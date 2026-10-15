@@ -11,4 +11,8 @@ public class Relatorio {
     public Map<String, Float>[] getEstatisticas() {
         return this.estatisticas;
     }
+
+    public boolean exportaRelatorio(){}
+
+    public void filtrarRelatorio(){}
 }
