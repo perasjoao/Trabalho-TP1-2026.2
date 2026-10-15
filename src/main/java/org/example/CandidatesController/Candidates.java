@@ -87,6 +87,13 @@ public class Candidates {
         tela.show();
     }
 
+    public void AbrirAssociaCandidato(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view.Candidates/AssociaCandidato.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        tela.getScene().setRoot(root);
+        tela.show();
+    }
+
 
 
 

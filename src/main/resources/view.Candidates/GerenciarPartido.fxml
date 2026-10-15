@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.CandidatesController.Candidates">
    <children>
-      <Button layoutX="211.0" layoutY="188.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="146.0" onAction="#AbrirAtualizarPartido" text="Alterar Partido" />
-      <Button layoutX="210.0" layoutY="148.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="146.0" onAction="#AbrirExcluirPartido" text="Excuir Partido" />
-      <Button layoutX="211.0" layoutY="225.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="146.0" onAction="#AbrirBuscarPartido" text="Listar Partido" />
+      <Button layoutX="211.0" layoutY="188.0" mnemonicParsing="false" onAction="#AbrirAtualizarPartido" prefHeight="24.0" prefWidth="146.0" text="Alterar Partido" />
+      <Button layoutX="210.0" layoutY="148.0" mnemonicParsing="false" onAction="#AbrirExcluirPartido" prefHeight="24.0" prefWidth="146.0" text="Excluir Partido" />
+      <Button layoutX="211.0" layoutY="225.0" mnemonicParsing="false" onAction="#AbrirBuscarPartido" prefHeight="24.0" prefWidth="146.0" text="Listar Partido" />
       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
+      <Label layoutX="223.0" layoutY="79.0" text="GERENCIAR PARTIDOS" />
    </children>
 </AnchorPane>

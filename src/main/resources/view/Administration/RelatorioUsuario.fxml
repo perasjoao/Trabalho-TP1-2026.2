@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.AdministrationController.RelatorioUsuarioController">
    <children>
-      <Label layoutX="64.0" layoutY="59.0" prefHeight="37.0" prefWidth="136.0" text="Total de usuarios" />
+      <Label layoutX="64.0" layoutY="59.0" prefHeight="37.0" prefWidth="136.0" text="Total de usuários" />
       <Label layoutX="103.0" layoutY="97.0" text="30" />
       <Label layoutX="64.0" layoutY="128.0" prefHeight="38.0" prefWidth="94.0" text="Ativos" />
       <Label layoutX="103.0" layoutY="167.0" text="22" />
@@ -16,6 +16,11 @@
       <Label layoutX="106.0" layoutY="251.0" text="8" />
       <ComboBox layoutX="308.0" layoutY="102.0" prefWidth="150.0" promptText="Filtrar por perfil" />
       <Button layoutX="324.0" layoutY="153.0" mnemonicParsing="false" text="Exportar CSV / PDF" />
+      <!-- quantidade por perfil -->
+      <Label layoutX="308.0" layoutY="205.0" text="Usuários por perfil" />
+      <Label layoutX="308.0" layoutY="230.0" text="Administradores: 5" />
+      <Label layoutX="308.0" layoutY="252.0" text="Pesquisadores: 15" />
+      <Label layoutX="308.0" layoutY="274.0" text="Analistas: 10" />
       <Button layoutX="538.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
    </children>
 </AnchorPane>
