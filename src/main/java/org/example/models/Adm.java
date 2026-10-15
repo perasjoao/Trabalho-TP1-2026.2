@@ -10,9 +10,4 @@ public class Adm extends Usuario{
         return "Administrador";
     }
 
-    void cadastraUsuario(){}
-
-    void excluiUsuario(){}
-
-    void listaUruario(){}
 }

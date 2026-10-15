@@ -7,10 +7,10 @@ public class Entrevista {
     String resposta;
     Pesquisa pesquisa;
 
-    void setResposta(){
-
+    void setResposta(String resposta){
+        this.resposta=resposta;
     }
     String getResposta(){
-
+        return this.resposta;
     }
 }
