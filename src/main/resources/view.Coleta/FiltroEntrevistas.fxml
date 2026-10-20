@@ -22,18 +22,25 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <RadioButton layoutX="18.0" layoutY="81.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="88.0" text="Faixa Etária" />
-      <RadioButton layoutX="18.0" layoutY="121.0" mnemonicParsing="false" text="Escolaridade" />
-      <RadioButton layoutX="203.0" layoutY="171.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="75.0" text="Gênero" />
-      <Slider layoutX="123.0" layoutY="82.0" />
-      <ComboBox layoutX="123.0" layoutY="117.0" prefHeight="17.0" prefWidth="108.0" />
-      <ComboBox layoutX="290.0" layoutY="167.0" prefHeight="17.0" prefWidth="108.0" />
-      <RadioButton layoutX="344.0" layoutY="81.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="88.0" text="Região" />
-      <RadioButton layoutX="344.0" layoutY="121.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="108.0" text="Faixa de Renda" />
-      <ComboBox layoutX="452.0" layoutY="77.0" prefHeight="17.0" prefWidth="108.0" />
-      <ComboBox layoutX="465.0" layoutY="117.0" prefHeight="17.0" prefWidth="108.0" />
+
+      <RadioButton fx:id="rbFiltroFaixaEtaria" layoutX="18.0" layoutY="81.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="88.0" text="Faixa Etária" />
+      <Slider fx:id="sliderFiltroFaixaEtaria" layoutX="123.0" layoutY="82.0" />
+
+      <RadioButton fx:id="rbFiltroEscolaridade" layoutX="18.0" layoutY="121.0" mnemonicParsing="false" text="Escolaridade" />
+      <ComboBox fx:id="cbFiltroEscolaridade" layoutX="123.0" layoutY="117.0" prefHeight="17.0" prefWidth="108.0" />
+
+      <RadioButton fx:id="rbFiltroGenero" layoutX="203.0" layoutY="171.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="75.0" text="Gênero" />
+      <ComboBox fx:id="cbFiltroGenero" layoutX="290.0" layoutY="167.0" prefHeight="17.0" prefWidth="108.0" />
+
+      <RadioButton fx:id="rbFiltroRegiao" layoutX="344.0" layoutY="81.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="88.0" text="Região" />
+      <ComboBox fx:id="cbFiltroRegiao" layoutX="452.0" layoutY="77.0" prefHeight="17.0" prefWidth="108.0" />
+
+      <RadioButton fx:id="rbFiltroFaixaRenda" layoutX="344.0" layoutY="121.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="108.0" text="Faixa de Renda" />
+      <ComboBox fx:id="cbFiltroFaixaRenda" layoutX="465.0" layoutY="117.0" prefHeight="17.0" prefWidth="108.0" />
+
       <Label layoutX="25.0" layoutY="223.0" text="Código do Entrevistador" />
-      <TextField layoutX="25.0" layoutY="248.0" promptText="Opcional" />
+      <TextField fx:id="txtFiltroCodigoEntrevistador" layoutX="25.0" layoutY="248.0" promptText="Opcional" />
+
       <Button layoutX="25.0" layoutY="353.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
       <Button layoutX="466.0" layoutY="353.0" mnemonicParsing="false" onAction="#realizarPesquisa" text="Realizar Pesquisa" textFill="#f51010" />
    </children>
