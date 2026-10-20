@@ -13,6 +13,7 @@ public class Candidato {
     }
 
     public void setNome(String nome) {
+        //vira excecao personalizada na etapa 3
         if(nome == null || nome.isBlank()) throw new IllegalArgumentException("O nome do candidato é obrigatório.");
         this.nome = nome.trim();
     }

@@ -29,6 +29,7 @@ public class Candidatura extends RegistroEleitoral {
         return cargo;
     }
 
+    //todas as excecoes devem ser substituidas na etapa 3
     //o cargo faz parte do cadastro
     public void setCargo(Cargo cargo) {
         if (cargo == null) {
@@ -64,6 +65,7 @@ public class Candidatura extends RegistroEleitoral {
         return situacao != SituacaoCandidatura.INATIVA;
     }
 
+    //antecipa parte da etapa 3 para uso mais pratico na etapa 2 pra parte de pesquisa
     //so candidaturas confirmadas podem entrar em pesquisas
     public boolean podeParticiparDePesquisa() {
         return situacao == SituacaoCandidatura.CANDIDATO || situacao == SituacaoCandidatura.VALIDADA;

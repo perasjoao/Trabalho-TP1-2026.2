@@ -23,6 +23,7 @@ public class Partido extends RegistroEleitoral {
         return nome;
     }
 
+    //todos as excecoes mudam para outras personalizadas na etapa 3
     public void setNome(String nome) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("O nome do partido é obrigatório.");
@@ -56,6 +57,7 @@ public class Partido extends RegistroEleitoral {
         return Collections.unmodifiableList(candidaturas);
     }
 
+    //(adiantando a etapa 3)
     //se a candidatura ja tinha partido, sai dele antes de entrar neste
     public void adicionarCandidatura(Candidatura candidatura) {
         if (candidatura.getPartido() == this) {
