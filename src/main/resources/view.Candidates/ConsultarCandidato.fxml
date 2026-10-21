@@ -7,10 +7,12 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
     <children>
-        <TextField layoutX="202.0" layoutY="107.0" promptText="Nome" />
-        <TextField layoutX="202.0" layoutY="154.0" promptText="Numero" />
-        <TextField layoutX="202.0" layoutY="200.0" promptText="Cargo" />
-        <ComboBox layoutX="213.0" layoutY="240.0" prefWidth="150.0" promptText="Situação">
+        <TextField layoutX="30.0" layoutY="90.0" prefWidth="160.0" promptText="Nome" />
+        <TextField layoutX="30.0" layoutY="125.0" prefWidth="160.0" promptText="Número" />
+        <TextField layoutX="30.0" layoutY="160.0" prefWidth="160.0" promptText="Cargo" />
+        <ComboBox layoutX="30.0" layoutY="195.0" prefWidth="160.0" promptText="Partido" />
+        <ComboBox layoutX="30.0" layoutY="230.0" prefWidth="160.0" promptText="Pesquisa" />
+        <ComboBox layoutX="30.0" layoutY="265.0" prefWidth="160.0" promptText="Situação">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="pré-candidato" />
@@ -20,8 +22,17 @@
                 </FXCollections>
             </items>
         </ComboBox>
-      <Button layoutX="212.0" layoutY="290.0" mnemonicParsing="false" text="Pesquisar Candidato" />
+      <Button layoutX="30.0" layoutY="310.0" mnemonicParsing="false" prefWidth="160.0" text="Pesquisar Candidato" />
+      <TableView layoutX="210.0" layoutY="90.0" prefHeight="290.0" prefWidth="370.0">
+        <columns>
+          <TableColumn prefWidth="90.0" text="Nome" />
+          <TableColumn prefWidth="55.0" text="Número" />
+          <TableColumn prefWidth="75.0" text="Cargo" />
+          <TableColumn prefWidth="65.0" text="Partido" />
+          <TableColumn prefWidth="83.0" text="Situação" />
+        </columns>
+      </TableView>
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
-      <Label layoutX="202.0" layoutY="27.0" prefHeight="47.0" prefWidth="150.0" text="CONSULTA DE CANDIDATOS" />
+      <Label layoutX="202.0" layoutY="27.0" prefHeight="47.0" prefWidth="200.0" text="CONSULTA DE CANDIDATOS" />
     </children>
 </AnchorPane>

@@ -30,6 +30,15 @@
                   <DatePicker prefWidth="130.0" promptText="Data final" />
                </children>
             </HBox>
+            <!-- filtros por caracteristicas da amostra -->
+            <HBox alignment="CENTER" spacing="10.0">
+               <children>
+                  <ComboBox prefWidth="130.0" promptText="Faixa Etária" />
+                  <ComboBox prefWidth="130.0" promptText="Escolaridade" />
+                  <ComboBox prefWidth="130.0" promptText="Gênero" />
+                  <ComboBox prefWidth="130.0" promptText="Faixa de Renda" />
+               </children>
+            </HBox>
             <Button mnemonicParsing="false" text="Gerar Relatório" />
             <TableView maxWidth="500.0" prefHeight="200.0" prefWidth="200.0">
               <columns>

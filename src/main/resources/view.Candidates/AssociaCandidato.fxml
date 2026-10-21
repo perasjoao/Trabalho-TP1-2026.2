@@ -9,6 +9,6 @@
       <TextField layoutX="215.0" layoutY="134.0" promptText="Candidato" />
       <Button layoutX="264.0" layoutY="220.0" mnemonicParsing="false" text="Associar" />
       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
-      <Label layoutX="221.0" layoutY="35.0" prefHeight="67.0" prefWidth="138.0" text="ASSOCIAR CANDITADO" />
+      <Label layoutX="221.0" layoutY="35.0" prefHeight="67.0" prefWidth="138.0" text="ASSOCIAR CANDIDATO" />
    </children>
 </AnchorPane>
