@@ -26,7 +26,7 @@ public class RelatorioController {
             pasta.mkdirs();
         }
     }
-    public Relatorio gerarRelatorio(Pesquisa pesquisa, String titulo, List<Entrevista> entrevistas) throws RelatorioException, PesquisaInvalida {
+    public Relatorio gerarRelatorio(Pesquisa pesquisa, String titulo, List<Entrevista> entrevistas) throws RelatorioException, PesquisaInvalida, IOException {
 
         if (pesquisa == null) {
             throw new PesquisaInvalida("A pesquisa precisa ser informada");
@@ -64,26 +64,32 @@ public class RelatorioController {
             //pega as repostas e ve se é valido
             Map<String, Integer> mapaOpcoes = contagemPorPergunta.get(textoPergunta);
             int totalValidos = 0;
+            int totalVotos=0;
             for (String opcao : mapaOpcoes.keySet()) {
                 int quantidadeVotos = mapaOpcoes.get(opcao);
-                if (!ValidaVoto(opcao)) {
+                totalVotos+=quantidadeVotos;
+                if (ValidaVoto(opcao)) {
                     totalValidos += quantidadeVotos;
                 }
             }
             Map<String, Float> percentuais = new LinkedHashMap<>(); //pra manter ordenado
             for (String opcao : mapaOpcoes.keySet()) {
                 int quantidadeVotos = mapaOpcoes.get(opcao);
-                if (!ValidaVoto(opcao)) { // ve se eh valido e calcula
-                    float pct = 0.0f;
+                float pct = 0.0f;
+                if (ValidaVoto(opcao)) { // ve se eh valido e calcula
                     if (totalValidos > 0) {
                         pct = ((float) quantidadeVotos / totalValidos) * 100.0f;
                     }
-                    //arredonda
-                    float pctArredondada = Math.round(pct * 100.0f) / 100.0f;
+                }else{
+                    if (totalVotos > 0) {
+                        pct = ((float) quantidadeVotos / totalVotos) * 100.0f;
+                    }
+                }
+                float pctArredondada = Math.round(pct * 100.0f) / 100.0f;
+                if (ValidaVoto(opcao)) {
                     percentuais.put(opcao, pctArredondada);
                 } else {
-                    // Se for nulo ou branco pu indeciso guarda conta nas abstençoes
-                    percentuais.put(opcao + " (Abstenção/Indeciso)", (float) quantidadeVotos);
+                    percentuais.put(opcao + " (Abstenção/Indeciso)", pctArredondada);
                 }
             }
             //adiciona o resultado da pergunta na lista
@@ -92,6 +98,7 @@ public class RelatorioController {
         }
         Relatorio relatorio = new Relatorio(pesquisa, titulo, listaEstatisticas.toArray(new Estatisticas[0]));
         this.salvarRelatorio(relatorio);
+        this.exportaRelatorio(relatorio, "relatorio_"+pesquisa.getCodigo());
         return relatorio;
     }
     public ComparaPesquisa compararPesquisas(Relatorio r1, Relatorio r2) throws RelatorioException {
@@ -170,14 +177,14 @@ public class RelatorioController {
     }
 
     private boolean ValidaVoto(String opcao) {
-        if (opcao == null) return true;
+        if (opcao == null) return false;
         String normalizada = opcao.trim().toLowerCase();
-        return normalizada.equals("não sabe") ||
+        return !(normalizada.equals("não sabe") ||
                 normalizada.equals("nao sabe") ||
                 normalizada.equals("não respondeu") ||
                 normalizada.equals("nao respondeu") ||
                 normalizada.equals("nenhuma das opções") ||
                 normalizada.equals("branco") ||
-                normalizada.equals("nulo");
+                normalizada.equals("nulo"));
     }
 }
