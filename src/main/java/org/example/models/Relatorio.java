@@ -1,16 +1,18 @@
 package org.example.models;
 
+import org.example.models.researchModels.Pesquisa;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class Relatorio {
    private List<Estatisticas> estatisticas;
-   private Entrevista entrevista;
+   private Pesquisa pesquisa;
    private String titulo;
 
-   public Relatorio(Entrevista pesquisa,String titulo, Estatisticas[] est){
-       this.entrevista=pesquisa;
+   public Relatorio(Pesquisa pesquisa, String titulo, Estatisticas[] est){
+       this.pesquisa=pesquisa;
        this.titulo=titulo;
        this.estatisticas=Arrays.stream(est).toList();
    }
@@ -19,8 +21,8 @@ public class Relatorio {
         return estatisticas;
     }
 
-    public Entrevista getEntrevista() {
-        return entrevista;
+    public Pesquisa getPesquisa() {
+        return pesquisa;
     }
 
     public String getTitulo() {

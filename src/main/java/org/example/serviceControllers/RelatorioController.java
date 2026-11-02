@@ -4,12 +4,13 @@ import org.example.models.ComparaPesquisa;
 import org.example.models.Entrevista;
 import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
+import org.example.models.researchModels.Pesquisa;
 
 import java.util.List;
 import java.util.Map;
 
 public class RelatorioController {
-    public Relatorio gerarRelatorio(Entrevista pesquisa, String titulo, Estatisticas[] est) {
+    public Relatorio gerarRelatorio(Pesquisa pesquisa, String titulo, Estatisticas[] est) {
         return new Relatorio(pesquisa,titulo,est);
     }
 
