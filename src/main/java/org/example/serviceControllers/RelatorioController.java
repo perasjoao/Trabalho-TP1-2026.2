@@ -91,19 +91,48 @@ public class RelatorioController {
             listaEstatisticas.add(estatisticaDaPergunta);
         }
         Relatorio relatorio = new Relatorio(pesquisa, titulo, listaEstatisticas.toArray(new Estatisticas[0]));
-        salvarRelatorio(relatorio);
+        this.salvarRelatorio(relatorio);
         return relatorio;
     }
-    public ComparaPesquisa compararPesquisas(Relatorio r1, Relatorio r2, Estatisticas[] est) throws RelatorioException {
+    public ComparaPesquisa compararPesquisas(Relatorio r1, Relatorio r2) throws RelatorioException {
         if (r1 == null || r2 == null) {
-            throw new RelatorioException("Ambos os relatórios devem ser fornecidos para comparação.");
+            throw new RelatorioException("Precisa de dois relatorios para fazer a comparação");
         }
-        if (!r1.getPesquisa().getCargo().equalsIgnoreCase(r2.getPesquisa().getCargo())) {
-            throw new RelatorioException("Pesquisas incompatíveis para comparação: cargos distintos ("
-                    + r1.getPesquisa().getCargo() + " != " + r2.getPesquisa().getCargo() + ").");
+        String cargo1 = r1.getPesquisa().getCargo();
+        String cargo2 = r2.getPesquisa().getCargo();
+        if (!cargo1.equalsIgnoreCase(cargo2)) {
+            throw new RelatorioException("Pesquisas incompatíveis");
         }
-
-        return new ComparaPesquisa(r1, r2, est != null ? est : new Estatisticas[0]);
+        List<Estatisticas> listaComparacoes = new ArrayList<>();
+        if (r1.getEstatisticas() == null || r2.getEstatisticas() == null) {
+            return new ComparaPesquisa(r1, r2, listaComparacoes);
+        }
+        //estatísticas do primeiro relatório
+        for (Estatisticas est1 : r1.getEstatisticas()) {
+            String parametroR1 = est1.getParametro();
+            for (Estatisticas est2 : r2.getEstatisticas()) {
+                String parametroR2 = est2.getParametro();
+                if (parametroR1.equalsIgnoreCase(parametroR2)) {
+                    Map<String, Float> mapaOpcoesR1 = est1.getEstatistica();
+                    Map<String, Float> mapaOpcoesR2 = est2.getEstatistica();
+                    Map<String, Float> variacoes = new LinkedHashMap<>();
+                    for (String opcao : mapaOpcoesR1.keySet()) { //diferenca de %
+                        float pctR1 = mapaOpcoesR1.get(opcao);
+                        float pctR2 = 0.0f;
+                        if (mapaOpcoesR2.containsKey(opcao)) {
+                            pctR2 = mapaOpcoesR2.get(opcao);
+                        }
+                        float diferenca = pctR2 - pctR1;
+                        float diferencaArredondada = Math.round(diferenca * 100.0f) / 100.0f;
+                        variacoes.put(opcao, diferencaArredondada);
+                    }
+                    //coloca as estatisticas comparadas
+                    Estatisticas estComparativa = new Estatisticas("Comparativo: " + parametroR1, variacoes);
+                    listaComparacoes.add(estComparativa);
+                }
+            }
+        }
+        return new ComparaPesquisa(r1, r2, listaComparacoes);
     }
 
     public void salvarRelatorio(Relatorio relatorio) {
