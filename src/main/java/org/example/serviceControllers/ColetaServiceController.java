@@ -10,8 +10,6 @@ import java.util.List;
 public class ColetaServiceController {
 
     private final List<Entrevista> entrevistas = new ArrayList<>();
-
-    // Guarda a configuração atual do participante/entrevistador
     private Entrevistador entrevistadorAtual;
     private Participante participanteAtual;
 
