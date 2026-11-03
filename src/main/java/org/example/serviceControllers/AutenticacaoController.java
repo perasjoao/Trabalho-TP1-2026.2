@@ -1,6 +1,8 @@
 package org.example.serviceControllers;
 
 import org.example.models.Usuario;
+import org.example.exceptions.UsuarioInativoException;
+import org.example.exceptions.CredenciaisInvalidasException;
 
 public class AutenticacaoController {
     private UsuarioController usuarioController;
@@ -10,13 +12,19 @@ public class AutenticacaoController {
         this.usuarioController = usuarioController;
     }
 
-    public Usuario autenticar(String email, String senha) {
+    public Usuario autenticar(String email, String senha) throws CredenciaisInvalidasException, UsuarioInativoException {
         Usuario u = usuarioController.buscarPorEmail(email);
-        if (u != null && u.getSenha().equals(senha) && u.isStatus()) {
-            this.usuarioLogado = u;
-            return u;
+
+        if (u == null || !u.getSenha().equals(senha)) {
+            throw new CredenciaisInvalidasException("E-mail ou senha incorretos.");
         }
-        return null;
+
+        if (!u.isStatus()) {
+            throw new UsuarioInativoException("Acesso negado. Este usuário está desativado.");
+        }
+
+        this.usuarioLogado = u;
+        return u;
     }
 
     public void logout() {

@@ -1,46 +1,62 @@
 package org.example.serviceControllers;
 
-import org.example.models.Perfil;
 import org.example.models.Usuario;
-import java.util.ArrayList;
+import org.example.exceptions.EmailJaCadastradoException;
+import org.example.exceptions.SenhaInvalidaException;
+import org.example.utils.GerenciadorArquivo;
+
 import java.util.List;
 
 public class UsuarioController {
     private List<Usuario> usuarios;
+    private GerenciadorArquivo<Usuario> gerenciador;
+    private final String ARQUIVO_USUARIOS = "usuarios.dat";
 
     public UsuarioController() {
-        this.usuarios = new ArrayList<>();
-        this.usuarios.add(new Usuario("Administrador Geral", "admin@email.com", "admin123", Perfil.ADMINISTRADOR, true));
+        this.gerenciador = new GerenciadorArquivo<>();
+        this.usuarios = gerenciador.ler(ARQUIVO_USUARIOS);
     }
 
-    public boolean cadastrarUsuario(Usuario usuario) {
-        if (!validarEmail(usuario.getEmail()) || !validarSenha(usuario.getSenha())) {
-            return false;
-        }
+    public void cadastrarUsuario(Usuario usuario) throws EmailJaCadastradoException, SenhaInvalidaException {
         if (buscarPorEmail(usuario.getEmail()) != null) {
-            return false;
+            throw new EmailJaCadastradoException("O e-mail " + usuario.getEmail() + " já está cadastrado.");
         }
-        return usuarios.add(usuario);
+
+        if (usuario.getSenha() == null || usuario.getSenha().length() < 8) {
+            throw new SenhaInvalidaException("A senha informada não atende ao requisito mínimo de 8 caracteres.");
+        }
+
+        usuarios.add(usuario);
+
+        gerenciador.salvar(ARQUIVO_USUARIOS, usuarios);
     }
 
-    public boolean editarUsuario(String emailOriginal, Usuario novosDados) {
+    public void editarUsuario(String emailOriginal, Usuario novosDados) throws SenhaInvalidaException {
         Usuario usuario = buscarPorEmail(emailOriginal);
-        if (usuario == null) {
-            return false;
+        if (usuario != null) {
+            usuario.setNome(novosDados.getNome());
+            usuario.setPerfil(novosDados.getPerfil());
+            usuario.setStatus(novosDados.isStatus());
+
+            if (novosDados.getSenha() != null && !novosDados.getSenha().trim().isEmpty()) {
+                if (novosDados.getSenha().length() < 8) {
+                    throw new SenhaInvalidaException("A nova senha deve ter no mínimo 8 caracteres.");
+                }
+                usuario.setSenha(novosDados.getSenha());
+            }
+
+            gerenciador.salvar(ARQUIVO_USUARIOS, usuarios);
         }
-        usuario.setNome(novosDados.getNome());
-        usuario.setPerfil(novosDados.getPerfil());
-        usuario.setStatus(novosDados.isStatus());
-        if (novosDados.getSenha() != null && !novosDados.getSenha().trim().isEmpty() && validarSenha(novosDados.getSenha())) {
-            usuario.setSenha(novosDados.getSenha());
-        }
-        return true;
     }
 
     public boolean excluirUsuario(String email) {
         Usuario usuario = buscarPorEmail(email);
         if (usuario != null) {
-            return usuarios.remove(usuario);
+            boolean removido = usuarios.remove(usuario);
+            if (removido) {
+                gerenciador.salvar(ARQUIVO_USUARIOS, usuarios);
+            }
+            return removido;
         }
         return false;
     }
@@ -56,13 +72,5 @@ public class UsuarioController {
 
     public List<Usuario> listarUsuarios() {
         return usuarios;
-    }
-
-    public boolean validarEmail(String email) {
-        return email != null && email.contains("@") && email.contains(".");
-    }
-
-    public boolean validarSenha(String senha) {
-        return senha != null && senha.length() >= 8;
     }
 }
