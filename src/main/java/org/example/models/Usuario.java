@@ -1,6 +1,10 @@
 package org.example.models;
 
-public class Usuario {
+import java.io.Serializable;
+
+public class Usuario implements Serializable{
+    private static final long serialVersionUID = 1L;
+    
     private String nome;
     private String email;
     private String senha;
