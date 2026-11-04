@@ -1,32 +1,51 @@
 package org.example.serviceControllers.candidatos;
 
+import org.example.exceptions.DadoInvalidoException;
+import org.example.exceptions.PartidoComCandidaturasException;
+import org.example.exceptions.PartidoDuplicadoException;
 import org.example.models.candidatos.Partido;
 import org.example.models.candidatos.SituacaoPartido;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//operacoes basicas de partidos, com os dados em memoria
-//sigla e numero unicos + bloqueio de exclusao entram na etapa 3
+//operacoes de partidos com as regras de negocio
+//cada operacao valida tudo antes de alterar a lista, para nada ficar pela metade
+//os dados ficam no repositorio unico e sao gravados em arquivo a cada alteracao
 public class PartidoController {
 
-    private final List<Partido> partidos = new ArrayList<>();
+    private final RepositorioCandidatos repositorio = RepositorioCandidatos.getInstancia();
+    private final List<Partido> partidos = repositorio.getPartidos();
 
-    public Partido cadastrar(String nome, String sigla, int numero, SituacaoPartido situacao) {
-        Partido partido = new Partido(nome, sigla, numero, situacao);
+    public Partido cadastrar(String nome, String sigla, int numero, SituacaoPartido situacao)
+            throws DadoInvalidoException, PartidoDuplicadoException {
+        Partido partido = new Partido(nome, sigla, numero, situacao); //valida os dados
+        validarUnicidade(partido.getSigla(), partido.getNumero(), null);
         partidos.add(partido);
+        repositorio.salvar();
         return partido;
     }
 
-    public void editar(Partido partido, String nome, String sigla, int numero, SituacaoPartido situacao) {
+    public void editar(Partido partido, String nome, String sigla, int numero, SituacaoPartido situacao)
+            throws DadoInvalidoException, PartidoDuplicadoException {
+        //valida os dados novos num objeto temporario antes de mexer no partido real
+        Partido novo = new Partido(nome, sigla, numero, situacao);
+        validarUnicidade(novo.getSigla(), novo.getNumero(), partido);
         partido.setNome(nome);
         partido.setSigla(sigla);
         partido.setNumero(numero);
         partido.setSituacao(situacao);
+        repositorio.salvar();
     }
 
-    public void excluir(Partido partido) {
+    //partido com candidaturas nao pode ser excluido
+    public void excluir(Partido partido) throws PartidoComCandidaturasException {
+        if (partido.possuiCandidaturas()) {
+            throw new PartidoComCandidaturasException("O partido " + partido.getSigla()
+                    + " possui candidaturas associadas e não pode ser excluído.");
+        }
         partidos.remove(partido);
+        repositorio.salvar();
     }
 
     public List<Partido> listar() {
@@ -41,5 +60,21 @@ public class PartidoController {
             }
         }
         return null;
+    }
+
+    //nao podem existir dois partidos com a mesma sigla ou o mesmo numero
+    //(o partido que esta sendo editado nao conta como repetido dele mesmo)
+    private void validarUnicidade(String sigla, int numero, Partido atual) throws PartidoDuplicadoException {
+        for (Partido p : partidos) {
+            if (p == atual) {
+                continue;
+            }
+            if (p.getSigla().equalsIgnoreCase(sigla)) {
+                throw new PartidoDuplicadoException("Já existe um partido com a sigla " + sigla + ".");
+            }
+            if (p.getNumero() == numero) {
+                throw new PartidoDuplicadoException("Já existe um partido com o número " + numero + ".");
+            }
+        }
     }
 }

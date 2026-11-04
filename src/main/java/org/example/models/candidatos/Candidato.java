@@ -1,10 +1,15 @@
 package org.example.models.candidatos;
 
-public class Candidato {
+import org.example.exceptions.DadoInvalidoException;
+
+import java.io.Serializable;
+
+public class Candidato implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private String nome;
 
-    public Candidato(String nome){
+    public Candidato(String nome) throws DadoInvalidoException {
         setNome(nome);
     }
 
@@ -12,9 +17,9 @@ public class Candidato {
         return nome;
     }
 
-    public void setNome(String nome) {
-        //vira excecao personalizada na etapa 3
-        if(nome == null || nome.isBlank()) throw new IllegalArgumentException("O nome do candidato é obrigatório.");
+    //o nome e obrigatorio
+    public void setNome(String nome) throws DadoInvalidoException {
+        if(nome == null || nome.isBlank()) throw new DadoInvalidoException("O nome do candidato é obrigatório.");
         this.nome = nome.trim();
     }
 
