@@ -4,6 +4,7 @@ import org.example.exceptions.CandidaturaDuplicadaException;
 import org.example.exceptions.DadoInvalidoException;
 import org.example.models.candidatos.Candidato;
 import org.example.models.candidatos.Candidatura;
+import org.example.models.candidatos.IndicadoresCadastrais;
 import org.example.models.candidatos.Partido;
 import org.example.models.candidatos.SituacaoCandidatura;
 import org.example.models.comum.Cargo;
@@ -67,6 +68,11 @@ public class CandidatoController {
 
     public List<Candidatura> listar() {
         return new ArrayList<>(candidaturas);
+    }
+
+    //indicadores cadastrais calculados com os dados atuais do repositorio
+    public IndicadoresCadastrais gerarIndicadores() {
+        return new IndicadoresCadastrais(candidaturas, repositorio.getPartidos());
     }
 
     //criterios nulos sao ignorados, os preenchidos se combinam
