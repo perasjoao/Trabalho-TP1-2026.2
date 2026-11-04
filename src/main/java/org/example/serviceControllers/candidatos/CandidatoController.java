@@ -13,9 +13,11 @@ import java.util.List;
 
 //operacoes de candidatos e candidaturas com as regras de negocio
 //cada operacao valida tudo antes de alterar as listas, para nada ficar pela metade
+//os dados ficam no repositorio unico e sao gravados em arquivo a cada alteracao
 public class CandidatoController {
-    private final List<Candidato> candidatos = new ArrayList<>();
-    private final List<Candidatura> candidaturas = new ArrayList<>();
+    private final RepositorioCandidatos repositorio = RepositorioCandidatos.getInstancia();
+    private final List<Candidato> candidatos = repositorio.getCandidatos();
+    private final List<Candidatura> candidaturas = repositorio.getCandidaturas();
 
     public Candidatura cadastrar(String nome, int numero, Cargo cargo, SituacaoCandidatura situacao)
             throws DadoInvalidoException, CandidaturaDuplicadaException {
@@ -25,6 +27,7 @@ public class CandidatoController {
         validarNumero(numero, cargo, null); //RN-CAN-2
         candidatos.add(candidato);
         candidaturas.add(candidatura);
+        repositorio.salvar();
         return candidatura;
     }
 
@@ -36,10 +39,12 @@ public class CandidatoController {
         candidatura.getCandidato().setNome(nome);
         candidatura.setNumero(numero);
         candidatura.setCargo(cargo);
+        repositorio.salvar();
     }
 
     public void alterarSituacao(Candidatura candidatura, SituacaoCandidatura situacao) throws DadoInvalidoException {
         candidatura.setSituacao(situacao);
+        repositorio.salvar();
     }
 
     //o partido tira a candidatura do partido anterior, se houver
@@ -48,6 +53,7 @@ public class CandidatoController {
             throw new DadoInvalidoException("Selecione um partido para a associação.");
         }
         partido.adicionarCandidatura(candidatura);
+        repositorio.salvar();
     }
 
     //a exclusao da candidatura nao exclui o partido, so desfaz a associacao
@@ -56,6 +62,7 @@ public class CandidatoController {
             candidatura.getPartido().removerCandidatura(candidatura);
         }
         candidaturas.remove(candidatura);
+        repositorio.salvar();
     }
 
     public List<Candidatura> listar() {

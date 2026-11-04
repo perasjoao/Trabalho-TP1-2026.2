@@ -8,6 +8,7 @@ import java.util.List;
 
 //herda o numero de RegistroEleitoral
 public class Partido extends RegistroEleitoral {
+    private static final long serialVersionUID = 1L;
 
     private String nome;
     private String sigla;

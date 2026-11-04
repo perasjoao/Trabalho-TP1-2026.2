@@ -2,7 +2,12 @@ package org.example.models.candidatos;
 
 import org.example.exceptions.DadoInvalidoException;
 
-public abstract class RegistroEleitoral {
+import java.io.Serializable;
+
+//Serializable permite gravar o objeto em arquivo
+//Candidatura e Partido herdam isso
+public abstract class RegistroEleitoral implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int numero;
 
     protected RegistroEleitoral(int numero) throws DadoInvalidoException {

@@ -6,6 +6,7 @@ import org.example.models.comum.Cargo;
 //candidatura de um candidato a um cargo
 //herda o numero de RegistroEleitoral e pertence a no maximo um partido
 public class Candidatura extends RegistroEleitoral {
+    private static final long serialVersionUID = 1L;
 
     private final Candidato candidato;
     private Cargo cargo;

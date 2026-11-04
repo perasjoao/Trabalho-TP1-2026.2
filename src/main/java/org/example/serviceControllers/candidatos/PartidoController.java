@@ -11,15 +11,18 @@ import java.util.List;
 
 //operacoes de partidos com as regras de negocio
 //cada operacao valida tudo antes de alterar a lista, para nada ficar pela metade
+//os dados ficam no repositorio unico e sao gravados em arquivo a cada alteracao
 public class PartidoController {
 
-    private final List<Partido> partidos = new ArrayList<>();
+    private final RepositorioCandidatos repositorio = RepositorioCandidatos.getInstancia();
+    private final List<Partido> partidos = repositorio.getPartidos();
 
     public Partido cadastrar(String nome, String sigla, int numero, SituacaoPartido situacao)
             throws DadoInvalidoException, PartidoDuplicadoException {
         Partido partido = new Partido(nome, sigla, numero, situacao); //valida os dados
         validarUnicidade(partido.getSigla(), partido.getNumero(), null);
         partidos.add(partido);
+        repositorio.salvar();
         return partido;
     }
 
@@ -32,6 +35,7 @@ public class PartidoController {
         partido.setSigla(sigla);
         partido.setNumero(numero);
         partido.setSituacao(situacao);
+        repositorio.salvar();
     }
 
     //partido com candidaturas nao pode ser excluido
@@ -41,6 +45,7 @@ public class PartidoController {
                     + " possui candidaturas associadas e não pode ser excluído.");
         }
         partidos.remove(partido);
+        repositorio.salvar();
     }
 
     public List<Partido> listar() {
