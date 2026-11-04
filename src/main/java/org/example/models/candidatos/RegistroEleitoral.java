@@ -1,9 +1,11 @@
 package org.example.models.candidatos;
 
+import org.example.exceptions.DadoInvalidoException;
+
 public abstract class RegistroEleitoral {
     private int numero;
 
-    protected RegistroEleitoral(int numero) {
+    protected RegistroEleitoral(int numero) throws DadoInvalidoException {
         setNumero(numero);
     }
 
@@ -11,10 +13,9 @@ public abstract class RegistroEleitoral {
         return numero;
     }
 
-    //antecipa a etapa 3, valida o objeto para nunca ficar invalido
-    public void setNumero(int numero) {
-        //o IllegalArgumentException vai ser trocado na entrega 3
-        if (numero <= 0) throw new IllegalArgumentException("O número deve ser positivo.");
+    //valida o objeto para nunca ficar invalido: numero precisa ser positivo
+    public void setNumero(int numero) throws DadoInvalidoException {
+        if (numero <= 0) throw new DadoInvalidoException("O número deve ser positivo.");
         this.numero = numero;
     }
 

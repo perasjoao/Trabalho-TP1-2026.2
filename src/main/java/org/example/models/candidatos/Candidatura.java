@@ -1,5 +1,6 @@
 package org.example.models.candidatos;
 
+import org.example.exceptions.DadoInvalidoException;
 import org.example.models.comum.Cargo;
 
 //candidatura de um candidato a um cargo
@@ -11,10 +12,11 @@ public class Candidatura extends RegistroEleitoral {
     private SituacaoCandidatura situacao;
     private Partido partido;
 
-    public Candidatura(Candidato candidato, int numero, Cargo cargo, SituacaoCandidatura situacao) {
+    public Candidatura(Candidato candidato, int numero, Cargo cargo, SituacaoCandidatura situacao)
+            throws DadoInvalidoException {
         super(numero);
         if (candidato == null) {
-            throw new IllegalArgumentException("A candidatura precisa de um candidato.");
+            throw new DadoInvalidoException("A candidatura precisa de um candidato.");
         }
         this.candidato = candidato;
         setCargo(cargo);
@@ -29,11 +31,10 @@ public class Candidatura extends RegistroEleitoral {
         return cargo;
     }
 
-    //todas as excecoes devem ser substituidas na etapa 3
-    //o cargo faz parte do cadastro
-    public void setCargo(Cargo cargo) {
+    //RN-CAN-4: o cargo faz parte do cadastro
+    public void setCargo(Cargo cargo) throws DadoInvalidoException {
         if (cargo == null) {
-            throw new IllegalArgumentException("O cargo da candidatura é obrigatório.");
+            throw new DadoInvalidoException("O cargo da candidatura é obrigatório.");
         }
         this.cargo = cargo;
     }
@@ -43,9 +44,9 @@ public class Candidatura extends RegistroEleitoral {
     }
 
     //gerenciar situacao da candidatura
-    public void setSituacao(SituacaoCandidatura situacao) {
+    public void setSituacao(SituacaoCandidatura situacao) throws DadoInvalidoException {
         if (situacao == null) {
-            throw new IllegalArgumentException("A situação da candidatura é obrigatória.");
+            throw new DadoInvalidoException("A situação da candidatura é obrigatória.");
         }
         this.situacao = situacao;
     }
@@ -65,8 +66,8 @@ public class Candidatura extends RegistroEleitoral {
         return situacao != SituacaoCandidatura.INATIVA;
     }
 
-    //antecipa parte da etapa 3 para uso mais pratico na etapa 2 pra parte de pesquisa
     //so candidaturas confirmadas podem entrar em pesquisas
+    //usado pelo modulo de Pesquisas ao associar candidatos
     public boolean podeParticiparDePesquisa() {
         return situacao == SituacaoCandidatura.CANDIDATO || situacao == SituacaoCandidatura.VALIDADA;
     }

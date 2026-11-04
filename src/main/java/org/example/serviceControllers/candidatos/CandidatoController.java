@@ -1,5 +1,6 @@
 package org.example.serviceControllers.candidatos;
 
+import org.example.exceptions.DadoInvalidoException;
 import org.example.models.candidatos.Candidato;
 import org.example.models.candidatos.Candidatura;
 import org.example.models.candidatos.Partido;
@@ -10,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 //operacoes basicas de candidatos e candidaturas, com os dados em memoria
-//numero unico por cargo entra na etapa 3
 public class CandidatoController {
     private final List<Candidato> candidatos = new ArrayList<>();
     private final List<Candidatura> candidaturas = new ArrayList<>();
 
-    public Candidatura cadastrar(String nome, int numero, Cargo cargo, SituacaoCandidatura situacao) {
+    public Candidatura cadastrar(String nome, int numero, Cargo cargo, SituacaoCandidatura situacao)
+            throws DadoInvalidoException {
         Candidato candidato = new Candidato(nome);
         candidatos.add(candidato);
         Candidatura candidatura = new Candidatura(candidato, numero, cargo, situacao);
@@ -23,13 +24,13 @@ public class CandidatoController {
         return candidatura;
     }
 
-    public void editar(Candidatura candidatura, String nome, int numero, Cargo cargo) {
+    public void editar(Candidatura candidatura, String nome, int numero, Cargo cargo) throws DadoInvalidoException {
         candidatura.getCandidato().setNome(nome);
         candidatura.setNumero(numero);
         candidatura.setCargo(cargo);
     }
 
-    public void alterarSituacao(Candidatura candidatura, SituacaoCandidatura situacao) {
+    public void alterarSituacao(Candidatura candidatura, SituacaoCandidatura situacao) throws DadoInvalidoException {
         candidatura.setSituacao(situacao);
     }
 
@@ -48,7 +49,7 @@ public class CandidatoController {
         return new ArrayList<>(candidaturas);
     }
 
-    // criterios nulos sao ignorados, os preenchidos se combinam
+    //criterios nulos sao ignorados, os preenchidos se combinam
     public List<Candidatura> consultar(Cargo cargo, Partido partido, SituacaoCandidatura situacao) {
         List<Candidatura> encontradas = new ArrayList<>();
         for (Candidatura c : candidaturas) {
