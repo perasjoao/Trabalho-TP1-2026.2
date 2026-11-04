@@ -1,5 +1,6 @@
 package org.example.serviceControllers.candidatos;
 
+import org.example.exceptions.CandidaturaDuplicadaException;
 import org.example.exceptions.DadoInvalidoException;
 import org.example.models.candidatos.Candidato;
 import org.example.models.candidatos.Candidatura;
@@ -10,21 +11,28 @@ import org.example.models.comum.Cargo;
 import java.util.ArrayList;
 import java.util.List;
 
-//operacoes basicas de candidatos e candidaturas, com os dados em memoria
+//operacoes de candidatos e candidaturas com as regras de negocio
+//cada operacao valida tudo antes de alterar as listas, para nada ficar pela metade
 public class CandidatoController {
     private final List<Candidato> candidatos = new ArrayList<>();
     private final List<Candidatura> candidaturas = new ArrayList<>();
 
     public Candidatura cadastrar(String nome, int numero, Cargo cargo, SituacaoCandidatura situacao)
-            throws DadoInvalidoException {
+            throws DadoInvalidoException, CandidaturaDuplicadaException {
+        //cria os dois objetos primeiro (valida os dados) e so guarda se tudo for aceito
         Candidato candidato = new Candidato(nome);
-        candidatos.add(candidato);
         Candidatura candidatura = new Candidatura(candidato, numero, cargo, situacao);
+        validarNumero(numero, cargo, null); //RN-CAN-2
+        candidatos.add(candidato);
         candidaturas.add(candidatura);
         return candidatura;
     }
 
-    public void editar(Candidatura candidatura, String nome, int numero, Cargo cargo) throws DadoInvalidoException {
+    public void editar(Candidatura candidatura, String nome, int numero, Cargo cargo)
+            throws DadoInvalidoException, CandidaturaDuplicadaException {
+        //valida os dados novos em objetos temporarios antes de mexer na candidatura real
+        new Candidatura(new Candidato(nome), numero, cargo, candidatura.getSituacao());
+        validarNumero(numero, cargo, candidatura);
         candidatura.getCandidato().setNome(nome);
         candidatura.setNumero(numero);
         candidatura.setCargo(cargo);
@@ -34,10 +42,15 @@ public class CandidatoController {
         candidatura.setSituacao(situacao);
     }
 
-    public void associarAPartido(Candidatura candidatura, Partido partido) {
+    //o partido tira a candidatura do partido anterior, se houver
+    public void associarAPartido(Candidatura candidatura, Partido partido) throws DadoInvalidoException {
+        if (partido == null) {
+            throw new DadoInvalidoException("Selecione um partido para a associação.");
+        }
         partido.adicionarCandidatura(candidatura);
     }
 
+    //a exclusao da candidatura nao exclui o partido, so desfaz a associacao
     public void excluir(Candidatura candidatura) {
         if (candidatura.getPartido() != null) {
             candidatura.getPartido().removerCandidatura(candidatura);
@@ -61,5 +74,16 @@ public class CandidatoController {
             }
         }
         return encontradas;
+    }
+
+    //o numero nao pode se repetir dentro do mesmo cargo
+    //(a candidatura que esta sendo editada nao conta como repetida dela mesma)
+    private void validarNumero(int numero, Cargo cargo, Candidatura atual) throws CandidaturaDuplicadaException {
+        for (Candidatura c : candidaturas) {
+            if (c != atual && c.getCargo() == cargo && c.getNumero() == numero) {
+                throw new CandidaturaDuplicadaException("Já existe uma candidatura a " + cargo
+                        + " com o número " + numero + ".");
+            }
+        }
     }
 }
