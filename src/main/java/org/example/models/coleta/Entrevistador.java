@@ -1,6 +1,10 @@
 package org.example.models.coleta;
 
-public class Entrevistador {
+import java.io.Serializable;
+
+public class Entrevistador implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String codigo;
     private String nome;
 
