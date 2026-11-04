@@ -1,12 +1,14 @@
 package org.example.models;
 
+import java.io.Serializable;
 import org.example.models.coleta.Entrevistador;
 import org.example.models.coleta.Participante;
 import org.example.models.coleta.Resposta;
-
 import java.util.List;
 
-public class Entrevista {
+public class Entrevista implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String idEntrevista;
     private String codigoPesquisa;
     private Entrevistador entrevistador;
@@ -24,18 +26,43 @@ public class Entrevista {
         this.respostas = respostas;
     }
 
-    public String getIdEntrevista() { return idEntrevista; }
-    public void setIdEntrevista(String idEntrevista) { this.idEntrevista = idEntrevista; }
+    public String getIdEntrevista() {
+        return idEntrevista;
+    }
 
-    public String getCodigoPesquisa() { return codigoPesquisa; }
-    public void setCodigoPesquisa(String codigoPesquisa) { this.codigoPesquisa = codigoPesquisa; }
+    public void setIdEntrevista(String idEntrevista) {
+        this.idEntrevista = idEntrevista;
+    }
 
-    public Entrevistador getEntrevistador() { return entrevistador; }
-    public void setEntrevistador(Entrevistador entrevistador) { this.entrevistador = entrevistador; }
+    public String getCodigoPesquisa() {
+        return codigoPesquisa;
+    }
 
-    public Participante getParticipante() { return participante; }
-    public void setParticipante(Participante participante) { this.participante = participante; }
+    public void setCodigoPesquisa(String codigoPesquisa) {
+        this.codigoPesquisa = codigoPesquisa;
+    }
 
-    public List<Resposta> getRespostas() { return respostas; }
-    public void setRespostas(List<Resposta> respostas) { this.respostas = respostas; }
+    public Entrevistador getEntrevistador() {
+        return entrevistador;
+    }
+
+    public void setEntrevistador(Entrevistador entrevistador) {
+        this.entrevistador = entrevistador;
+    }
+
+    public Participante getParticipante() {
+        return participante;
+    }
+
+    public void setParticipante(Participante participante) {
+        this.participante = participante;
+    }
+
+    public List<Resposta> getRespostas() {
+        return respostas;
+    }
+
+    public void setRespostas(List<Resposta> respostas) {
+        this.respostas = respostas;
+    }
 }
