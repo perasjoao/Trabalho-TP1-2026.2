@@ -1,6 +1,6 @@
 package org.example.serviceControllers;
 
-import org.example.exceptions.PesquisaInvalida;
+import org.example.exceptions.PesquisaInvalidaException;
 import org.example.exceptions.RelatorioException;
 import org.example.models.ComparaPesquisa;
 import org.example.models.Entrevista;
@@ -26,10 +26,10 @@ public class RelatorioController {
             pasta.mkdirs();
         }
     }
-    public Relatorio gerarRelatorio(Pesquisa pesquisa, String titulo, List<Entrevista> entrevistas) throws RelatorioException, PesquisaInvalida, IOException {
+    public Relatorio gerarRelatorio(Pesquisa pesquisa, String titulo, List<Entrevista> entrevistas) throws RelatorioException, PesquisaInvalidaException, IOException {
 
         if (pesquisa == null) {
-            throw new PesquisaInvalida("A pesquisa precisa ser informada");
+            throw new PesquisaInvalidaException("A pesquisa precisa ser informada");
         }
         if (entrevistas == null || entrevistas.isEmpty()) {
             throw new RelatorioException("A entrevista precisa ser informada");
