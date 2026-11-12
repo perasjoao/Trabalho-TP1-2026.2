@@ -2,6 +2,7 @@ package org.example.serviceControllers;
 
 import org.example.exceptions.PersistenciaException;
 import org.example.exceptions.PesquisaInvalidaException;
+import org.example.models.comum.Cargo;
 import org.example.models.researchModels.Pesquisa;
 import org.example.models.researchModels.PesquisaRepository;
 
@@ -15,10 +16,9 @@ public class PesquisaController {
     private List<Pesquisa> pesquisas;
     private final PesquisaRepository repository;
 
-    // Listas de domínios restritos
+    // Listas de domínios restritos alinhadas aos requisitos
     private static final List<String> TIPOS_VALIDOS = Arrays.asList("Intenção de voto", "Conhecimento", "Rejeição", "Segundo turno simulado");
-    private static final List<String> CARGOS_VALIDOS = Arrays.asList("Deputado Estadual", "Deputado Federal", "Governador", "Presidente", "Senador");
-    private static final List<String> SITUACOES_VALIDAS = Arrays.asList("Planejada", "Em andamento", "Finalizada", "Processada");
+    private static final List<String> SITUACOES_VALIDAS = Arrays.asList("Planejada", "Em coleta", "Encerrada", "Processada");
 
     public PesquisaController() {
         this.repository = new PesquisaRepository();
@@ -54,6 +54,7 @@ public class PesquisaController {
 
         Pesquisa pesquisaExistente = buscarPorCodigo(codigo);
         validarCamposEditaveis(pesquisaAtualizada);
+
         pesquisaExistente.setNome(pesquisaAtualizada.getNome());
         pesquisaExistente.setCargo(pesquisaAtualizada.getCargo());
         pesquisaExistente.setTipo(pesquisaAtualizada.getTipo());
@@ -68,12 +69,12 @@ public class PesquisaController {
     }
 
     // --- BUSCA COM FILTROS COMBINADOS (AMPLA) ---
-    public List<Pesquisa> buscarComFiltros(String termo, String cargo, String tipo, String situacao, String abrangencia, LocalDate dataInicio, LocalDate dataFim) {
+    public List<Pesquisa> buscarComFiltros(String termo, Cargo cargo, String tipo, String situacao, String abrangencia, LocalDate dataInicio, LocalDate dataFim) {
         return pesquisas.stream()
                 .filter(p -> (termo == null || termo.trim().isEmpty() ||
                         p.getNome().toLowerCase().contains(termo.toLowerCase()) ||
                         p.getCodigo().equalsIgnoreCase(termo)))
-                .filter(p -> (cargo == null || cargo.trim().isEmpty() || p.getCargo().equalsIgnoreCase(cargo)))
+                .filter(p -> (cargo == null || p.getCargo() == cargo))
                 .filter(p -> (tipo == null || tipo.trim().isEmpty() || p.getTipo().equalsIgnoreCase(tipo)))
                 .filter(p -> (situacao == null || situacao.trim().isEmpty() || p.getSituacao().equalsIgnoreCase(situacao)))
                 .filter(p -> (abrangencia == null || abrangencia.trim().isEmpty() || p.getAbrangencia().toLowerCase().contains(abrangencia.toLowerCase())))
@@ -125,8 +126,8 @@ public class PesquisaController {
         if (pesquisa.getNome() == null || pesquisa.getNome().trim().isEmpty()) {
             throw new PesquisaInvalidaException("O nome da pesquisa é obrigatório.");
         }
-        if (pesquisa.getCargo() == null || !contemIgnorandoCase(CARGOS_VALIDOS, pesquisa.getCargo())) {
-            throw new PesquisaInvalidaException("Cargo inválido. Opções aceitas: " + CARGOS_VALIDOS);
+        if (pesquisa.getCargo() == null) {
+            throw new PesquisaInvalidaException("O cargo da pesquisa é obrigatório.");
         }
         if (pesquisa.getTipo() == null || !contemIgnorandoCase(TIPOS_VALIDOS, pesquisa.getTipo())) {
             throw new PesquisaInvalidaException("Tipo de pesquisa inválido. Opções aceitas: " + TIPOS_VALIDOS);
