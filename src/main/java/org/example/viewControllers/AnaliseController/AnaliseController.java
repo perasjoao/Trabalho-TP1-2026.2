@@ -123,7 +123,28 @@ public class AnaliseController implements Initializable { //implenta a interface
         trocarTela(event, "/view.Menu/Menu.fxml");
     }
 
-    
+    @FXML
+    public void selecionaPesquisa(ActionEvent event) {
+        Pesquisa selecionada = caixaPesquisa.getValue();
+        if (selecionada == null) return;
+        //pega as informacoes da pesquisa selecionada
+        Set<String> opcoesEncontradas = new LinkedHashSet<>();
+        opcoesEncontradas.add("Todos");
+
+        List<Entrevista> todas = coletaController.listarEntrevistas();
+        for (Entrevista e : todas) {
+            if (e.getCodigoPesquisa() != null && e.getCodigoPesquisa().equalsIgnoreCase(selecionada.getCodigo())) {
+                if (e.getRespostas() != null) {
+                    for (Resposta r : e.getRespostas()) {
+                        if (r.getOpcaoEscolhida() != null) {
+                            opcoesEncontradas.add(r.getOpcaoEscolhida());
+                        }
+                    }
+                }
+            }
+        }
+        caixaCandidato.setItems(FXCollections.observableArrayList(opcoesEncontradas));
+    }
 
 }
 class LinhaTabelaRelatorio {
