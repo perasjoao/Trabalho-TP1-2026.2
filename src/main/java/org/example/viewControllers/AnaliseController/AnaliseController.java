@@ -49,14 +49,14 @@ public class AnaliseController implements Initializable { //implenta a interface
     @FXML private TableView<LinhaTabelaRelatorio> idTabelaRelatorio;
     @FXML private TableColumn<LinhaTabelaRelatorio, String> colunaOpcao;
     @FXML private TableColumn<LinhaTabelaRelatorio, String> colunaQuantidade;
-    @FXML private TableColumn<LinhaTabelaRelatorio, String> colunaPercentual;
+    @FXML private TableColumn<LinhaTabelaRelatorio, String> colunaEst;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) { //executa assim que a pagina carrega
         if (caixaPesquisa != null) { //para n dar erro se n carregar a caixa de selecao
-            //configurarTabela();
-            //carregarPesquisas();
-            //carregarFiltrosDemograficos();
+            configurarTabela();
+            carregarPesquisas();
+            carregarParametros();
         }
     }
 
@@ -72,7 +72,7 @@ public class AnaliseController implements Initializable { //implenta a interface
     private void configurarTabela() {
         colunaOpcao.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().opcao));
         colunaQuantidade.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().quantidade));
-        colunaPercentual.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().percentual));
+        colunaEst.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().percentual));
     }
 
     private void carregarParametros() {

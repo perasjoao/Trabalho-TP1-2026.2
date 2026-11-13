@@ -23,7 +23,7 @@
             </Label>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                <children>
-                  <ComboBox prefWidth="130.0" fx:id="caixaPesquisa" promptText="Pesquisa" />
+                  <ComboBox prefWidth="130.0" onAction="#selecionaPesquisa"  fx:id="caixaPesquisa" promptText="Pesquisa" />
                   <ComboBox prefWidth="130.0" fx:id="caixaRegiao" promptText="Região" />
                   <ComboBox prefWidth="130.0" fx:id="caixaCandidato" promptText="Candidato" />
                   <DatePicker prefWidth="130.0" fx:id="idDataInicio" promptText="Data inicial" />
@@ -36,10 +36,10 @@
                   <ComboBox prefWidth="130.0" fx:id="caixaFaixaEtaria" promptText="Faixa Etária" />
                   <ComboBox prefWidth="130.0" fx:id="caixaEscolaridade" promptText="Escolaridade" />
                   <ComboBox prefWidth="130.0" fx:id="caixaGenero" promptText="Gênero" />
-                  <ComboBox prefWidth="130.0" fx:id="caixaFaixaDeRenda" promptText="Faixa de Renda" />
+                  <ComboBox prefWidth="130.0" fx:id="caixaFaixaRenda" promptText="Faixa de Renda" />
                </children>
             </HBox>
-            <Button mnemonicParsing="false" text="Gerar Relatório" />
+            <Button mnemonicParsing="false" onAction="#acaoGerarRelatorio" text="Gerar Relatório" />
             <TableView maxWidth="500.0" prefHeight="200.0" prefWidth="200.0" fx:id="idTabelaRelatorio">
               <columns>
                 <TableColumn fx:id="colunaOpcao" prefWidth="75.0" text="Opção" />
@@ -52,7 +52,7 @@
             </TableView>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="15.0">
                <children>
-                  <Button mnemonicParsing="false" text="Exportar CSV" />
+                  <Button mnemonicParsing="false" onAction="#acaoExportarCsv" text="Exportar CSV" />
                </children>
             </HBox>
             <Button mnemonicParsing="false" onAction="#abrirMenuAnalise" text="Voltar" />
