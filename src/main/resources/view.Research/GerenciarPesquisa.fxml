@@ -78,7 +78,7 @@
         <Label layoutX="37.0" layoutY="279.0" prefHeight="25.0" prefWidth="200.0" text="Filtrar por período (início-fim)" />
         <Label layoutX="334.0" layoutY="27.0" prefHeight="64.0" prefWidth="178.0" text="GERENCIAR SUAS PESQUISAS" />
       <Button layoutX="290.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirCadastrarPesquisa" text="Criar pesquisa" />
-      <Button layoutX="400.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirCadastrarPesquisa" text="Editar pesquisa" />
+      <Button layoutX="400.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirEditarPesquisa" text="Editar pesquisa" />
       <Button layoutX="515.0" layoutY="360.0" mnemonicParsing="false" text="Excluir pesquisa" />
       <Button layoutX="635.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirConfigurarPesquisa" text="Configurar pesquisa" />
       <TextField layoutX="36.0" layoutY="133.0" prefHeight="25.0" prefWidth="200.0" promptText="Código" />

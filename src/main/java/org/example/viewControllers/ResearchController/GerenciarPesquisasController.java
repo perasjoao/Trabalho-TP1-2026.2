@@ -9,35 +9,38 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class GerenciarPesquisasController {
+
     public void abrirMenuResearch(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view.Research/MenuResearch.fxml"));
-        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        double width = tela.getWidth();
-        double height = tela.getHeight();
-        tela.getScene().setRoot(root);
-        tela.setWidth(width);
-        tela.setHeight(height);
+        trocarTela(event, "/view.Research/MenuResearch.fxml", true);
     }
 
-    public void abrirGerenciarPesquisas(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view.Research/GerenciarPesquisa.fxml"));
-        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.getScene().setRoot(root);
-        tela.show();
-    }
 
-    // formulario usado tanto para criar quanto para editar uma pesquisa
     public void abrirCadastrarPesquisa(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view.Research/CadastrarPesquisa.fxml"));
-        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.getScene().setRoot(root);
-        tela.show();
+        trocarTela(event, "/view.Research/CadastrarPesquisa.fxml", false);
+    }
+
+
+    public void abrirEditarPesquisa(ActionEvent event) throws IOException {
+        trocarTela(event, "/view.Research/CadastrarPesquisa.fxml", false);
     }
 
     public void abrirConfigurarPesquisa(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view.Research/ConfigurarPesquisa.fxml"));
+        trocarTela(event, "/view.Research/ConfigurarPesquisa.fxml", false);
+    }
+
+
+    private void trocarTela(ActionEvent event, String caminhoFxml, boolean manterTamanho) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource(caminhoFxml));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        tela.getScene().setRoot(root);
-        tela.show();
+        if (manterTamanho) {
+            double width = tela.getWidth();
+            double height = tela.getHeight();
+            tela.getScene().setRoot(root);
+            tela.setWidth(width);
+            tela.setHeight(height);
+        } else {
+            tela.getScene().setRoot(root);
+            tela.show();
+        }
     }
 }
