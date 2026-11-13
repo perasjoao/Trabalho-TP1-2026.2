@@ -97,16 +97,8 @@ public class Pesquisa {
     public List<Pergunta> getPerguntas() { return perguntas; }
     public void setPerguntas(List<Pergunta> perguntas) { this.perguntas = perguntas; }
 
-    public List<Regiao> getRegioesAssociadas() { return regioesAssociadas; }
-    public void setRegioesAssociadas(List<Regiao> regioesAssociadas) { this.regioesAssociadas = regioesAssociadas; }
-
-    public List<Candidatura> getCandidaturasAssociadas() { return candidaturasAssociadas; }
-    public void setCandidaturasAssociadas(List<Candidatura> candidaturasAssociadas) {
-        this.candidaturasAssociadas = candidaturasAssociadas;
-    }
-
-    public List<Integer> getNumerosCandidaturasSalvas() { return numerosCandidaturasSalvas; }
-    public void setNumerosCandidaturasSalvas(List<Integer> numerosCandidaturasSalvas) {
-        this.numerosCandidaturasSalvas = numerosCandidaturasSalvas;
+    @Override
+    public String toString() {
+        return this.codigo + " - " + this.nome;
     }
 }

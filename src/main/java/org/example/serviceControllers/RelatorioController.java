@@ -37,24 +37,24 @@ public class RelatorioController {
         List<Entrevista> entrevistasFiltradas = new ArrayList<>();
         for (Entrevista e : entrevistas) {
             // Filtro por Região
-           // if (regiao != null && !regiao.trim().isEmpty()) {
-                //if (e.getRegiao() == null || !e.getRegiao().equalsIgnoreCase(regiao.trim())) {
-                    //continue; // Pula se não for da região
-                //}
+            // if (regiao != null && !regiao.trim().isEmpty()) {
+            //if (e.getRegiao() == null || !e.getRegiao().equalsIgnoreCase(regiao.trim())) {
+            //continue; // Pula se não for da região
+            //}
             //}
 
             // Filtro por Data Inicial
-           // if (dataInicio != null && e.getData() != null) {
-                //if (e.getData().isBefore(dataInicio)) {
-                    //continue; // Pula se anterior à data inicial
-                //}
+            // if (dataInicio != null && e.getData() != null) {
+            //if (e.getData().isBefore(dataInicio)) {
+            //continue; // Pula se anterior à data inicial
+            //}
             //}
 
             // Filtro por Data Final
             //if (dataFim != null && e.getData() != null) {
-                //if (e.getData().isAfter(dataFim)) {
-                    //continue; // Pula se posterior à data final
-                //}
+            //if (e.getData().isAfter(dataFim)) {
+            //continue; // Pula se posterior à data final
+            //}
             //}
 
             //filtrar por candidato
