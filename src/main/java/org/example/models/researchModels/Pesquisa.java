@@ -65,4 +65,9 @@ public class Pesquisa {
 
     public List<Pergunta> getPerguntas() { return perguntas; }
     public void setPerguntas(List<Pergunta> perguntas) { this.perguntas = perguntas; }
+
+    @Override
+    public String toString() {
+        return this.codigo + " - " + this.nome;
+    }
 }
