@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import org.example.exceptions.CaixaPesquisaVazia;
 import org.example.exceptions.PesquisaInvalidaException;
 import org.example.exceptions.RelatorioException;
+import org.example.exceptions.RelatorioVazioException;
 import org.example.models.Entrevista;
 import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
@@ -252,6 +253,21 @@ public class AnaliseController implements Initializable { //implenta a interface
         }
     }
 
+    @FXML
+    public void acaoExportarCsv(ActionEvent event) {
+        try {
+            if (this.relatorioAtual == null) {
+                throw new RelatorioVazioException("Gere um relatório primeiro antes de exportar para CSV.");
+            }
+            String nomeArquivo = "relatorio_" + relatorioAtual.getPesquisa().getCodigo() + ".csv";
+            relatorioController.exportaRelatorio(this.relatorioAtual, nomeArquivo);
+            trataAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Relatório exportado para dados/relatorios/" + nomeArquivo);
+        } catch (RelatorioVazioException e) {
+            trataAlerta(Alert.AlertType.WARNING, "Aviso", e.getMessage());
+        } catch (IOException e) {
+            trataAlerta(Alert.AlertType.ERROR, "Erro ao Exportar", "Não foi possível salvar o CSV: " + e.getMessage());
+        }
+    }
 }
 class LinhaTabelaRelatorio {
     final String opcao;

@@ -52,7 +52,6 @@
             </TableView>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="15.0">
                <children>
-                  <Button mnemonicParsing="false" text="Exportar PDF" />
                   <Button mnemonicParsing="false" text="Exportar CSV" />
                </children>
             </HBox>
