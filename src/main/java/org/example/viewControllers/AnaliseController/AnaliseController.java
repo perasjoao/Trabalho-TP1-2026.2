@@ -2,6 +2,7 @@ package org.example.viewControllers.AnaliseController;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,8 +11,11 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.example.exceptions.CaixaPesquisaVazia;
 import org.example.exceptions.PesquisaInvalidaException;
+import org.example.exceptions.RelatorioException;
 import org.example.models.Entrevista;
+import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
 import org.example.models.coleta.Resposta;
 import org.example.models.researchModels.Pesquisa;
@@ -21,10 +25,8 @@ import org.example.serviceControllers.RelatorioController;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 public class AnaliseController implements Initializable { //implenta a interface que executa o codigo assim q a pagina carrega
     private final RelatorioController relatorioController = new RelatorioController();
@@ -72,7 +74,7 @@ public class AnaliseController implements Initializable { //implenta a interface
         colunaPercentual.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().percentual));
     }
 
-    private void carregarFiltrosDemograficos() {
+    private void carregarParametros() {
         //chamar meotodo que lista todos os parametros, esses sao so para testes
         caixaGenero.setItems(FXCollections.observableArrayList("Todos", "Masculino", "Feminino", "Outro"));
         caixaEscolaridade.setItems(FXCollections.observableArrayList("Todos", "Fundamental", "Médio", "Superior"));
@@ -128,7 +130,7 @@ public class AnaliseController implements Initializable { //implenta a interface
         Pesquisa selecionada = caixaPesquisa.getValue();
         if (selecionada == null) return;
         //pega as informacoes da pesquisa selecionada
-        Set<String> opcoesEncontradas = new LinkedHashSet<>();
+        Set<String> opcoesEncontradas = new LinkedHashSet<>(); //para n ter duplicata
         opcoesEncontradas.add("Todos");
 
         List<Entrevista> todas = coletaController.listarEntrevistas();
@@ -144,6 +146,110 @@ public class AnaliseController implements Initializable { //implenta a interface
             }
         }
         caixaCandidato.setItems(FXCollections.observableArrayList(opcoesEncontradas));
+    }
+
+    private String limparFiltro(String valor) {
+        if (valor == null || valor.trim().isEmpty() || valor.equalsIgnoreCase("Todos")) {
+            return null;
+        }
+        return valor.trim();
+    }
+
+    private void preencherTabela(Relatorio relatorio) {
+        ObservableList<LinhaTabelaRelatorio> linhas = FXCollections.observableArrayList();
+
+        if (relatorio.getEstatisticas() != null) {
+            for (Estatisticas est : relatorio.getEstatisticas()) {
+                String grupoEPergunta = est.getParametro(); //
+
+                if (est.getEstatistica() != null) {
+                    for (String chave : est.getEstatistica().keySet()) {
+                        Float pct = est.getEstatistica().get(chave);
+                        // separa a string em nome e quantidade para as colunas da tabela
+                        String nomeOpcao = chave;
+                        String qtdTexto = "-";
+                        if (chave.contains(" (")) {
+                            String[] partes = chave.split(" \\(");
+                            nomeOpcao = partes[0];
+                            qtdTexto = partes[1].replace(")", "");
+                        }
+                        linhas.add(new LinhaTabelaRelatorio(
+                                grupoEPergunta + " -> " + nomeOpcao,
+                                qtdTexto,
+                                pct + "%"
+                        ));
+                    }
+                }
+            }
+        }
+        idTabelaRelatorio.setItems(linhas);
+    }
+
+    private void trataAlerta(Alert.AlertType tipo, String titulo, String mensagem) { //cria um alerta na tela
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
+
+
+    @FXML
+    public void acaoGerarRelatorio(ActionEvent event) {
+        try {
+            Pesquisa pesquisa = caixaPesquisa.getValue();
+            if (pesquisa == null) {
+                throw new CaixaPesquisaVazia("Selecione uma pesquisa antes de gerar o relatório.");
+            }
+            //pega as entrevistas da pesquisa
+            List<Entrevista> entrevistasDaPesquisa = new ArrayList<>();
+            for (Entrevista e : coletaController.listarEntrevistas()) {
+                if (e.getCodigoPesquisa() != null && e.getCodigoPesquisa().equalsIgnoreCase(pesquisa.getCodigo())) {
+                    entrevistasDaPesquisa.add(e);
+                }
+            }
+            //pega os filtros selecionados
+            String regiao = limparFiltro(caixaRegiao.getValue());
+            String candidato = limparFiltro(caixaCandidato.getValue());
+            LocalDate dataInicio = idDataInicio.getValue();
+            LocalDate dataFim = idDataFinal.getValue();
+            String filtroGenero = limparFiltro(caixaGenero.getValue());
+            String filtroEscolaridade = limparFiltro(caixaEscolaridade.getValue());
+            String filtroFaixaEtaria = limparFiltro(caixaFaixaEtaria.getValue());
+            String filtroRenda = limparFiltro(caixaFaixaRenda.getValue());
+            //filtro pelas as caracteristicas dos participantes
+            List<Entrevista> entrevistasFiltradasAmostra = new ArrayList<>();
+            for (Entrevista e : entrevistasDaPesquisa) {
+                if (e.getParticipante() != null) {
+                    if (filtroGenero != null && !filtroGenero.equalsIgnoreCase(e.getParticipante().getGenero())) {
+                        continue;
+                    }
+                    if (filtroEscolaridade != null && !filtroEscolaridade.equalsIgnoreCase(e.getParticipante().getEscolaridade())) {
+                        continue;
+                    }
+                    if (filtroFaixaEtaria != null && !filtroFaixaEtaria.equalsIgnoreCase(e.getParticipante().getFaixaEtaria())) {
+                        continue;
+                    }
+                    if (regiao != null && !regiao.equalsIgnoreCase(e.getParticipante().getRegiao())) {
+                        continue;
+                    }
+                    if (filtroRenda != null && !filtroRenda.equalsIgnoreCase(e.getParticipante().getFaixaRenda())) {
+                        continue;
+                    }
+                }
+                entrevistasFiltradasAmostra.add(e);
+            }
+            String titulo = "Relatório - " + pesquisa.getNome();
+            this.relatorioAtual = relatorioController.gerarRelatorio(
+                    pesquisa, titulo, entrevistasFiltradasAmostra, regiao, dataInicio, dataFim, candidato
+            );
+            preencherTabela(this.relatorioAtual);
+        } catch (CaixaPesquisaVazia| PesquisaInvalidaException | RelatorioException e) {
+            trataAlerta(Alert.AlertType.WARNING, "Aviso", e.getMessage()); //cria um alerta na tela
+            idTabelaRelatorio.getItems().clear();
+        } catch (IOException e) {
+            trataAlerta(Alert.AlertType.ERROR, "Erro de Arquivo", "Erro ao processar arquivo: " + e.getMessage());
+        }
     }
 
 }
