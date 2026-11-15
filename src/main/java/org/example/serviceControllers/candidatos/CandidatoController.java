@@ -8,6 +8,7 @@ import org.example.models.candidatos.IndicadoresCadastrais;
 import org.example.models.candidatos.Partido;
 import org.example.models.candidatos.SituacaoCandidatura;
 import org.example.models.comum.Cargo;
+import org.example.models.researchModels.Pesquisa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,22 +76,34 @@ public class CandidatoController {
         return new IndicadoresCadastrais(candidaturas, repositorio.getPartidos());
     }
 
-    //criterios nulos sao ignorados, os preenchidos se combinam
-    public List<Candidatura> consultar(Cargo cargo, Partido partido, SituacaoCandidatura situacao) {
+    //criterios nulos ou vazios sao ignorados, os preenchidos se combinam
+    public List<Candidatura> consultar(String nome, Integer numero, Cargo cargo, Partido partido,
+                                       SituacaoCandidatura situacao, Pesquisa pesquisa) {
         List<Candidatura> encontradas = new ArrayList<>();
         for (Candidatura c : candidaturas) {
-            boolean cargoOk = (cargo == null) || (c.getCargo() == cargo);
-            boolean partidoOk = (partido == null) || (c.getPartido() == partido);
-            boolean situacaoOk = (situacao == null) || (c.getSituacao() == situacao);
-            if (cargoOk && partidoOk && situacaoOk) {
+            boolean nomeOk = nome == null || nome.isBlank()
+                    || c.getCandidato().getNome().toLowerCase().contains(nome.trim().toLowerCase());
+            boolean numeroOk = numero == null || c.getNumero() == numero;
+            boolean cargoOk = cargo == null || c.getCargo() == cargo;
+            boolean partidoOk = partido == null || c.getPartido() == partido;
+            boolean situacaoOk = situacao == null || c.getSituacao() == situacao;
+            boolean pesquisaOk = pesquisa == null || participaDaPesquisa(c, pesquisa);
+            if (nomeOk && numeroOk && cargoOk && partidoOk && situacaoOk && pesquisaOk) {
                 encontradas.add(c);
             }
         }
         return encontradas;
     }
 
+    //a pesquisa guarda o cargo e os numeros das candidaturas associadas
+    //numero + cargo identificam uma unica candidatura
+    private boolean participaDaPesquisa(Candidatura c, Pesquisa pesquisa) {
+        return c.getCargo() == pesquisa.getCargo()
+                && pesquisa.getNumerosCandidaturasSalvas().contains(c.getNumero());
+    }
+
     //o numero nao pode se repetir dentro do mesmo cargo
-    //(a candidatura que esta sendo editada nao conta como repetida dela mesma)
+    //a candidatura que esta sendo editada nao conta como repetida dela mesma
     private void validarNumero(int numero, Cargo cargo, Candidatura atual) throws CandidaturaDuplicadaException {
         for (Candidatura c : candidaturas) {
             if (c != atual && c.getCargo() == cargo && c.getNumero() == numero) {
