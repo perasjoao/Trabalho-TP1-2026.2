@@ -23,21 +23,26 @@ public class PesquisaRepository {
                 String metodologiaLimpa = p.getMetodologia().replace("\n", " ").replace(";", ",");
 
                 // Regiões separadas por vírgula
-                String regioesStr = p.getRegioesAssociadas().stream()
-                        .map(Regiao::name)
-                        .collect(Collectors.joining(","));
+                String regioesStr = "";
+                /*
+                 String regioesStr = p.getRegioesAssociadas().stream()
+                .map(Regiao::name)
+                .collect(Collectors.joining(","));
+                */
 
                 // Números das candidaturas separados por vírgula
-                String candidaturasStr;
+                String candidaturasStr = "";
+                /*
                 if (!p.getCandidaturasAssociadas().isEmpty()) {
-                    candidaturasStr = p.getCandidaturasAssociadas().stream()
-                            .map(c -> String.valueOf(c.getNumero()))
-                            .collect(Collectors.joining(","));
-                } else {
+                candidaturasStr = p.getCandidaturasAssociadas().stream()
+                    .map(c -> String.valueOf(c.getNumero()))
+                    .collect(Collectors.joining(","));
+                 } else {
                     candidaturasStr = p.getNumerosCandidaturasSalvas().stream()
-                            .map(String::valueOf)
-                            .collect(Collectors.joining(","));
-                }
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+                     }
+                */
 
                 // Perguntas serializadas
                 String perguntasStr = serializarPerguntas(p.getPerguntas());
@@ -112,21 +117,23 @@ public class PesquisaRepository {
                 p.setEntrevistasRealizadas(Integer.parseInt(partes[10]));
             }
 
-            if (partes.length >= 12 && !partes[11].isEmpty()) {
-                List<Regiao> regioes = new ArrayList<>();
-                for (String reg : partes[11].split(",")) {
-                    if (!reg.isEmpty()) regioes.add(Regiao.valueOf(reg));
-                }
-                p.setRegioesAssociadas(regioes);
+            /*
+        if (partes.length >= 12 && !partes[11].isEmpty()) {
+            List<Regiao> regioes = new ArrayList<>();
+            for (String reg : partes[11].split(",")) {
+                if (!reg.isEmpty()) regioes.add(Regiao.valueOf(reg));
             }
+            p.setRegioesAssociadas(regioes);
+        }
 
-            if (partes.length >= 13 && !partes[12].isEmpty()) {
-                List<Integer> numeros = new ArrayList<>();
-                for (String num : partes[12].split(",")) {
-                    if (!num.isEmpty()) numeros.add(Integer.parseInt(num));
-                }
-                p.setNumerosCandidaturasSalvas(numeros);
+        if (partes.length >= 13 && !partes[12].isEmpty()) {
+            List<Integer> numeros = new ArrayList<>();
+            for (String num : partes[12].split(",")) {
+                if (!num.isEmpty()) numeros.add(Integer.parseInt(num));
             }
+            p.setNumerosCandidaturasSalvas(numeros);
+        }
+        */
 
             return p;
         }

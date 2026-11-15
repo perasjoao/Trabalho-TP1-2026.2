@@ -7,6 +7,7 @@ import org.example.models.Entrevista;
 import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
 import org.example.models.coleta.Resposta;
+import org.example.models.comum.Cargo;
 import org.example.models.researchModels.Pesquisa;
 
 import java.io.*;
@@ -37,25 +38,25 @@ public class RelatorioController {
         List<Entrevista> entrevistasFiltradas = new ArrayList<>();
         for (Entrevista e : entrevistas) {
             // Filtro por Região
-            // if (regiao != null && !regiao.trim().isEmpty()) {
-            //if (e.getRegiao() == null || !e.getRegiao().equalsIgnoreCase(regiao.trim())) {
-            //continue; // Pula se não for da região
-            //}
-            //}
+            if (regiao != null && !regiao.trim().isEmpty()) {
+                if (e.getRegiao() == null || !e.getRegiao().equalsIgnoreCase(regiao.trim())) {
+                    continue; // Pula se não for da região
+                }
+            }
 
             // Filtro por Data Inicial
-            // if (dataInicio != null && e.getData() != null) {
-            //if (e.getData().isBefore(dataInicio)) {
-            //continue; // Pula se anterior à data inicial
-            //}
-            //}
+            if (dataInicio != null && e.getData() != null) {
+                if (e.getData().isBefore(dataInicio)) {
+                    continue; // Pula se anterior à data inicial
+                }
+            }
 
             // Filtro por Data Final
-            //if (dataFim != null && e.getData() != null) {
-            //if (e.getData().isAfter(dataFim)) {
-            //continue; // Pula se posterior à data final
-            //}
-            //}
+            if (dataFim != null && e.getData() != null) {
+                if (e.getData().isAfter(dataFim)) {
+                    continue; // Pula se posterior à data final
+                }
+            }
 
             //filtrar por candidato
             if (candidato != null && !candidato.trim().isEmpty()) {
@@ -224,9 +225,9 @@ public class RelatorioController {
         if (r1 == null || r2 == null) {
             throw new RelatorioException("Precisa de dois relatorios para fazer a comparação");
         }
-        String cargo1 = r1.getPesquisa().getCargo();
-        String cargo2 = r2.getPesquisa().getCargo();
-        if (!cargo1.equalsIgnoreCase(cargo2)) {
+        Cargo cargo1 = r1.getPesquisa().getCargo();
+        Cargo cargo2 = r2.getPesquisa().getCargo();
+        if (cargo1 == null || cargo2 == null || !cargo1.getDescricao().equals(cargo2.getDescricao())) {
             throw new RelatorioException("Pesquisas de cargos diferentes");
         }
 
