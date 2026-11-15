@@ -4,6 +4,7 @@ import java.io.Serializable;
 import org.example.models.coleta.Entrevistador;
 import org.example.models.coleta.Participante;
 import org.example.models.coleta.Resposta;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Entrevista implements Serializable {
@@ -14,8 +15,10 @@ public class Entrevista implements Serializable {
     private Entrevistador entrevistador;
     private Participante participante;
     private List<Resposta> respostas;
+    private LocalDate data;
 
     public Entrevista() {
+        this.data = LocalDate.now();
     }
 
     public Entrevista(String idEntrevista, String codigoPesquisa, Entrevistador entrevistador, Participante participante, List<Resposta> respostas) {
@@ -24,6 +27,7 @@ public class Entrevista implements Serializable {
         this.entrevistador = entrevistador;
         this.participante = participante;
         this.respostas = respostas;
+        this.data = LocalDate.now();
     }
 
     public String getIdEntrevista() {
@@ -64,5 +68,18 @@ public class Entrevista implements Serializable {
 
     public void setRespostas(List<Resposta> respostas) {
         this.respostas = respostas;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
+    // a regiao vem do participante entrevistado; fica null se nao houver participante
+    public String getRegiao() {
+        return this.participante != null ? this.participante.getRegiao() : null;
     }
 }

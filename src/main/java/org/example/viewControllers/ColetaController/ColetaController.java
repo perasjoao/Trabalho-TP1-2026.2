@@ -21,7 +21,9 @@ import org.example.models.Entrevista;
 import org.example.models.coleta.Entrevistador;
 import org.example.models.coleta.Participante;
 import org.example.models.coleta.Resposta;
+import org.example.models.Usuario;
 import org.example.serviceControllers.ColetaServiceController;
+import org.example.utils.Sessao;
 
 import java.io.IOException;
 import java.net.URL;
@@ -70,6 +72,13 @@ public class ColetaController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Preenche o entrevistador com o usuário logado (o e-mail serve como código, já que Usuario não tem um)
+        Usuario logado = Sessao.getUsuarioLogado();
+        if (logado != null) {
+            if (txtCodigoEntrevistador != null && txtCodigoEntrevistador.getText().isEmpty()) txtCodigoEntrevistador.setText(logado.getEmail());
+            if (txtNomeEntrevistador != null && txtNomeEntrevistador.getText().isEmpty()) txtNomeEntrevistador.setText(logado.getNome());
+        }
+
         // Popula Amostra
         if (cbFaixaEtaria != null) cbFaixaEtaria.getItems().addAll("16-24 anos", "25-34 anos", "35-59 anos", "60+ anos");
         if (cbEscolaridade != null) cbEscolaridade.getItems().addAll("Ensino Fundamental", "Ensino Médio", "Ensino Superior", "Pós-Graduação");
