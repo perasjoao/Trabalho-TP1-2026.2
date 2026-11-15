@@ -22,6 +22,6 @@
                 <TableColumn fx:id="colunaSituacao" prefWidth="98.0" text="Situação" />
             </columns>
         </TableView>
-        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
+        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirGerenciarPartido" text="Voltar" />
     </children>
 </AnchorPane>

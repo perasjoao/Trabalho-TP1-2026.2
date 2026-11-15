@@ -11,6 +11,6 @@
         <TextField fx:id="campoSigla" editable="false" layoutX="215.0" layoutY="148.0" promptText="Sigla" />
         <TextField fx:id="campoNumero" editable="false" layoutX="215.0" layoutY="188.0" promptText="Número" />
         <Button layoutX="217.0" layoutY="237.0" mnemonicParsing="false" onAction="#excluirPartido" prefHeight="24.0" prefWidth="145.0" text="Excluir Partido" />
-        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
+        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirGerenciarPartido" text="Voltar" />
     </children>
 </AnchorPane>

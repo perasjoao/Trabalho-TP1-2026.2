@@ -23,6 +23,12 @@ public abstract class TelaCandidatos {
         trocarTela(event, "/view.Candidates/Candidatos.fxml");
     }
 
+    //voltar das telas de partido (Atualizar, Excluir e Buscar) e botao do menu do modulo
+    @FXML
+    public void AbrirGerenciarPartido(ActionEvent event) throws IOException {
+        trocarTela(event, "/view.Candidates/GerenciarPartido.fxml");
+    }
+
     //troca o conteudo da janela mantendo o tamanho atual
     protected void trocarTela(ActionEvent event, String caminhoFxml) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource(caminhoFxml));

@@ -14,6 +14,6 @@
         <TextField fx:id="campoNumero" layoutX="215.0" layoutY="188.0" promptText="Número" />
         <ComboBox fx:id="caixaSituacao" layoutX="215.0" layoutY="229.0" prefWidth="149.0" promptText="Situação" />
         <Button layoutX="215.0" layoutY="281.0" mnemonicParsing="false" onAction="#atualizarPartido" prefHeight="24.0" prefWidth="149.0" text="Atualizar Partido" />
-        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
+        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirGerenciarPartido" text="Voltar" />
     </children>
 </AnchorPane>
