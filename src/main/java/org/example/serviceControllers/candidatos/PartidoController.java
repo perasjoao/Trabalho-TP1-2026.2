@@ -77,4 +77,22 @@ public class PartidoController {
             }
         }
     }
+
+    //criterios nulos ou vazios sao ignorados, os preenchidos se combinam
+    //nome e sigla aceitam parte do texto, sem diferenciar maiusculas e minusculas
+    public List<Partido> consultar(String nome, String sigla, Integer numero, SituacaoPartido situacao) {
+        List<Partido> encontrados = new ArrayList<>();
+        for (Partido p : partidos) {
+            boolean nomeOk = nome == null || nome.isBlank()
+                    || p.getNome().toLowerCase().contains(nome.trim().toLowerCase());
+            boolean siglaOk = sigla == null || sigla.isBlank()
+                    || p.getSigla().contains(sigla.trim().toUpperCase());
+            boolean numeroOk = numero == null || p.getNumero() == numero;
+            boolean situacaoOk = situacao == null || p.getSituacao() == situacao;
+            if (nomeOk && siglaOk && numeroOk && situacaoOk) {
+                encontrados.add(p);
+            }
+        }
+        return encontrados;
+    }
 }
