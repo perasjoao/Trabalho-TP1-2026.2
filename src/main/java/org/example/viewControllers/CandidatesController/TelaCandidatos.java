@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.example.exceptions.DadoInvalidoException;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
 
 import java.io.IOException;
 
@@ -59,5 +61,16 @@ public abstract class TelaCandidatos {
         } catch (NumberFormatException e) {
             throw new DadoInvalidoException("O número deve conter apenas dígitos.");
         }
+    }
+
+    //pergunta antes de uma acao definitiva
+    //devolve true so se o usuario clicar em OK
+    protected boolean confirmar(String mensagem) {
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmação");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensagem);
+        Optional<ButtonType> resposta = alerta.showAndWait();
+        return resposta.isPresent() && resposta.get() == ButtonType.OK;
     }
 }
