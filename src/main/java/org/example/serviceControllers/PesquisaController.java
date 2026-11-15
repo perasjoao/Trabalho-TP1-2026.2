@@ -5,12 +5,20 @@ import org.example.exceptions.PesquisaInvalidaException;
 import org.example.models.comum.Cargo;
 import org.example.models.researchModels.Pesquisa;
 import org.example.models.researchModels.PesquisaRepository;
+import org.example.models.candidatos.Candidatura;
+import org.example.models.comum.Regiao;
+import org.example.models.researchModels.OpcaoResposta;
+import org.example.models.researchModels.Pergunta;
+import org.example.models.Entrevista;
+import org.example.models.coleta.Participante;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PesquisaController {
     private List<Pesquisa> pesquisas;
@@ -30,7 +38,7 @@ public class PesquisaController {
         }
     }
 
-    // --- SALVAR / CADASTRAR ---
+    // --- 1. SALVAR / CADASTRAR (com validação de situação inicial) ---
     public void salvar(Pesquisa pesquisa) throws PesquisaInvalidaException, PersistenciaException {
         validarPesquisa(pesquisa);
         try {
@@ -42,18 +50,39 @@ public class PesquisaController {
             }
         }
 
+        // Garante que não seja salva já "Em coleta" se for Intenção de voto sem candidatos (RNF 02)
+        // Nem criada diretamente como "Processada" sem antes ter sido encerrada (RNF 08)
+        if ("Processada".equalsIgnoreCase(pesquisa.getSituacao())) {
+            throw new PesquisaInvalidaException("Uma pesquisa não pode ser cadastrada diretamente como 'Processada'.");
+        }
+        validarRegrasDeSituacao(pesquisa, pesquisa.getSituacao());
+
         pesquisas.add(pesquisa);
         repository.salvarTodas(pesquisas);
     }
 
-    // --- EDITAR / ATUALIZAR ---
+    // --- 2. EDITAR / ATUALIZAR (com travas RNF 02, 08 e 09) ---
     public void atualizar(String codigo, Pesquisa pesquisaAtualizada) throws PesquisaInvalidaException, PersistenciaException {
         if (codigo == null || codigo.trim().isEmpty()) {
             throw new PesquisaInvalidaException("Código é obrigatório para atualização.");
         }
 
         Pesquisa pesquisaExistente = buscarPorCodigo(codigo);
+
+        // RNF 09: Pesquisa processada não pode ser alterada sem voltar de estado para reprocessamento
+        if ("Processada".equalsIgnoreCase(pesquisaExistente.getSituacao()) &&
+                "Processada".equalsIgnoreCase(pesquisaAtualizada.getSituacao())) {
+            throw new PesquisaInvalidaException("Pesquisas com situação 'Processada' não podem ter seus dados alterados. Altere a situação para reprocessar.");
+        }
+
         validarCamposEditaveis(pesquisaAtualizada);
+        // RNF 03: Impede trocar o cargo se já houver candidatos vinculados
+        boolean temCandidatos = !pesquisaExistente.getCandidaturasAssociadas().isEmpty()
+                || !pesquisaExistente.getNumerosCandidaturasSalvas().isEmpty();
+        if (temCandidatos && pesquisaExistente.getCargo() != pesquisaAtualizada.getCargo()) {
+            throw new PesquisaInvalidaException("Não é possível alterar o cargo da pesquisa enquanto houver candidatos associados. Remova-os primeiro.");
+        }
+        validarTransicaoSituacao(pesquisaExistente, pesquisaAtualizada.getSituacao());
 
         pesquisaExistente.setNome(pesquisaAtualizada.getNome());
         pesquisaExistente.setCargo(pesquisaAtualizada.getCargo());
@@ -68,18 +97,28 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- BUSCA COM FILTROS COMBINADOS (AMPLA) ---
-    public List<Pesquisa> buscarComFiltros(String termo, Cargo cargo, String tipo, String situacao, String abrangencia, LocalDate dataInicio, LocalDate dataFim) {
+    // --- BUSCA COM FILTROS COMBINADOS (RF 08, 09, 10) ---
+    public List<Pesquisa> buscarComFiltros(String termo, Cargo cargo, String tipo, String situacao,
+                                           Regiao regiao, Integer qtdMinEntrevistados,
+                                           LocalDate dataInicio, LocalDate dataFim,
+                                           boolean apenasAbaixoDaMeta, List<Entrevista> todasEntrevistas) {
+        sincronizarEntrevistasRealizadas(todasEntrevistas);
+
         return pesquisas.stream()
                 .filter(p -> (termo == null || termo.trim().isEmpty() ||
                         p.getNome().toLowerCase().contains(termo.toLowerCase()) ||
-                        p.getCodigo().equalsIgnoreCase(termo)))
+                        p.getCodigo().equalsIgnoreCase(termo) ||
+                        p.getCandidaturasAssociadas().stream().anyMatch(c ->
+                                c.getCandidato().getNome().toLowerCase().contains(termo.toLowerCase()))))
                 .filter(p -> (cargo == null || p.getCargo() == cargo))
                 .filter(p -> (tipo == null || tipo.trim().isEmpty() || p.getTipo().equalsIgnoreCase(tipo)))
                 .filter(p -> (situacao == null || situacao.trim().isEmpty() || p.getSituacao().equalsIgnoreCase(situacao)))
-                .filter(p -> (abrangencia == null || abrangencia.trim().isEmpty() || p.getAbrangencia().toLowerCase().contains(abrangencia.toLowerCase())))
+                .filter(p -> (regiao == null || p.getRegioesAssociadas().contains(regiao) ||
+                        (p.getAbrangencia() != null && p.getAbrangencia().equalsIgnoreCase(regiao.getDescricao()))))
+                .filter(p -> (qtdMinEntrevistados == null || p.getEntrevistasPrevistas() >= qtdMinEntrevistados))
                 .filter(p -> (dataInicio == null || (p.getDataInicio() != null && !p.getDataInicio().isBefore(dataInicio))))
                 .filter(p -> (dataFim == null || (p.getDataFim() != null && !p.getDataFim().isAfter(dataFim))))
+                .filter(p -> (!apenasAbaixoDaMeta || estaAbaixoDaMetaAmostral(p, todasEntrevistas)))
                 .collect(Collectors.toList());
     }
 
@@ -96,11 +135,196 @@ public class PesquisaController {
         throw new PesquisaInvalidaException("Nenhuma pesquisa encontrada com o código: " + codigo);
     }
 
-    // --- DELETAR ---
+    // --- 3. DELETAR (bloqueia exclusão de pesquisa processada - RNF 09) ---
     public void deletar(String codigo) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa pesquisaParaRemover = buscarPorCodigo(codigo);
+        if ("Processada".equalsIgnoreCase(pesquisaParaRemover.getSituacao())) {
+            throw new PesquisaInvalidaException("Não é possível excluir uma pesquisa que já foi 'Processada'.");
+        }
         pesquisas.remove(pesquisaParaRemover);
         repository.salvarTodas(pesquisas);
+    }
+
+    // --- 4. VERIFICAÇÃO PARA O MÓDULO DE COLETA (RNF 07) ---
+    public boolean podeReceberEntrevista(String codigoPesquisa) throws PesquisaInvalidaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        return !"Encerrada".equalsIgnoreCase(p.getSituacao()) &&
+                !"Processada".equalsIgnoreCase(p.getSituacao());
+    }
+    // --- 5. ASSOCIAÇÃO DE REGIÕES (RF 05 | RNF 09) ---
+    public void associarRegiao(String codigoPesquisa, Regiao regiao) throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        if (regiao == null) {
+            throw new PesquisaInvalidaException("Selecione uma região válida.");
+        }
+        if (p.getRegioesAssociadas().contains(regiao)) {
+            throw new PesquisaInvalidaException("A região " + regiao + " já está associada a esta pesquisa.");
+        }
+        p.getRegioesAssociadas().add(regiao);
+        repository.salvarTodas(pesquisas);
+    }
+
+    public void removerRegiao(String codigoPesquisa, Regiao regiao) throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        p.getRegioesAssociadas().remove(regiao);
+        repository.salvarTodas(pesquisas);
+    }
+
+    // --- 6. ASSOCIAÇÃO DE CANDIDATURAS (RF 06 | RNF 03, 04, 05, 06, 09) ---
+    public void associarCandidatura(String codigoPesquisa, Candidatura candidatura) throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        if (candidatura == null) {
+            throw new PesquisaInvalidaException("Selecione uma candidatura válida.");
+        }
+        // RNF 03: Cargo compatível
+        if (candidatura.getCargo() != p.getCargo()) {
+            throw new PesquisaInvalidaException("Cargo incompatível: a pesquisa é para " + p.getCargo() +
+                    ", mas a candidatura é para " + candidatura.getCargo() + ".");
+        }
+        // RNF 05: Situação permitida para participar de pesquisa
+        if (!candidatura.podeParticiparDePesquisa()) {
+            throw new PesquisaInvalidaException("A candidatura de " + candidatura.getCandidato().getNome() +
+                    " está com situação '" + candidatura.getSituacao() + "' e não pode participar de pesquisas.");
+        }
+        // RNF 06: Não associar duas vezes à mesma pesquisa (RNF 04 permite participar de várias pesquisas)
+        boolean jaAssociada = p.getCandidaturasAssociadas().stream()
+                .anyMatch(c -> c.getNumero() == candidatura.getNumero());
+        if (jaAssociada || p.getNumerosCandidaturasSalvas().contains(candidatura.getNumero())) {
+            throw new PesquisaInvalidaException("Esta candidatura já está associada a esta pesquisa.");
+        }
+
+        p.getCandidaturasAssociadas().add(candidatura);
+        if (!p.getNumerosCandidaturasSalvas().contains(candidatura.getNumero())) {
+            p.getNumerosCandidaturasSalvas().add(candidatura.getNumero());
+        }
+        repository.salvarTodas(pesquisas);
+    }
+
+    public void removerCandidatura(String codigoPesquisa, Candidatura candidatura) throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        if (candidatura != null) {
+            p.getCandidaturasAssociadas().removeIf(c -> c.getNumero() == candidatura.getNumero());
+            p.getNumerosCandidaturasSalvas().remove(Integer.valueOf(candidatura.getNumero()));
+            repository.salvarTodas(pesquisas);
+        }
+    }
+
+    // Reconstrói as referências de Candidatura em memória após carregar os números do arquivo TXT
+    public void vincularCandidaturasCarregadas(List<Candidatura> todasCandidaturasDoSistema) {
+        if (todasCandidaturasDoSistema == null) return;
+        for (Pesquisa p : pesquisas) {
+            if (p.getCandidaturasAssociadas().isEmpty() && !p.getNumerosCandidaturasSalvas().isEmpty()) {
+                for (Integer numero : p.getNumerosCandidaturasSalvas()) {
+                    todasCandidaturasDoSistema.stream()
+                            .filter(c -> c.getNumero() == numero)
+                            .findFirst()
+                            .ifPresent(c -> p.getCandidaturasAssociadas().add(c));
+                }
+            }
+        }
+    }
+    // --- 7. GESTÃO DE PERGUNTAS E OPÇÕES DE RESPOSTA (RF 04 | RNF 09) ---
+
+    public void adicionarPergunta(String codigoPesquisa, Pergunta pergunta) throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        if (pergunta == null || pergunta.getEnunciado() == null || pergunta.getEnunciado().trim().isEmpty()) {
+            throw new PesquisaInvalidaException("O enunciado da pergunta é obrigatório.");
+        }
+        if (pergunta.getTipo() == null || pergunta.getTipo().trim().isEmpty()) {
+            throw new PesquisaInvalidaException("O tipo da pergunta é obrigatório.");
+        }
+        boolean idDuplicado = p.getPerguntas().stream()
+                .anyMatch(q -> q.getId().equalsIgnoreCase(pergunta.getId()));
+        if (idDuplicado) {
+            throw new PesquisaInvalidaException("Já existe uma pergunta com o código/ID: " + pergunta.getId());
+        }
+
+        p.getPerguntas().add(pergunta);
+        repository.salvarTodas(pesquisas);
+    }
+
+    public void editarPergunta(String codigoPesquisa, String idPergunta, String novoEnunciado, String novoTipo, List<OpcaoResposta> novasOpcoes)
+            throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        Pergunta alvo = p.getPerguntas().stream()
+                .filter(q -> q.getId().equalsIgnoreCase(idPergunta))
+                .findFirst()
+                .orElseThrow(() -> new PesquisaInvalidaException("Pergunta não encontrada."));
+
+        if (novoEnunciado == null || novoEnunciado.trim().isEmpty()) {
+            throw new PesquisaInvalidaException("O enunciado da pergunta não pode ser vazio.");
+        }
+        if (novoTipo == null || novoTipo.trim().isEmpty()) {
+            throw new PesquisaInvalidaException("O tipo da pergunta é obrigatório.");
+        }
+
+        alvo.setEnunciado(novoEnunciado);
+        alvo.setTipo(novoTipo);
+        if (novasOpcoes != null) {
+            alvo.setOpcoes(novasOpcoes);
+        }
+        repository.salvarTodas(pesquisas);
+    }
+
+    public void removerPergunta(String codigoPesquisa, String idPergunta) throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        boolean removida = p.getPerguntas().removeIf(q -> q.getId().equalsIgnoreCase(idPergunta));
+        if (!removida) {
+            throw new PesquisaInvalidaException("Pergunta não encontrada para remoção.");
+        }
+        repository.salvarTodas(pesquisas);
+    }
+    // --- INTEGRAÇÃO COM COLETA E META AMOSTRAL (RF 09, 10 | RNF 10) ---
+    public void sincronizarEntrevistasRealizadas(List<Entrevista> todasEntrevistas) {
+        if (todasEntrevistas == null) return;
+        for (Pesquisa p : pesquisas) {
+            int count = (int) todasEntrevistas.stream()
+                    .filter(e -> p.getCodigo().equalsIgnoreCase(e.getCodigoPesquisa()))
+                    .count();
+            p.setEntrevistasRealizadas(count);
+        }
+    }
+
+    public boolean estaAbaixoDaMetaAmostral(Pesquisa pesquisa, List<Entrevista> todasEntrevistas) {
+        if (pesquisa == null || pesquisa.getPlanoAmostral() == null ||
+                pesquisa.getPlanoAmostral().getMetasPorGrupo().isEmpty()) {
+            return false;
+        }
+
+        Map<String, Integer> contagemPorGrupo = new HashMap<>();
+        if (todasEntrevistas != null) {
+            for (Entrevista e : todasEntrevistas) {
+                if (pesquisa.getCodigo().equalsIgnoreCase(e.getCodigoPesquisa()) && e.getParticipante() != null) {
+                    Participante part = e.getParticipante();
+                    incrementarGrupo(contagemPorGrupo, part.getRegiao());
+                    incrementarGrupo(contagemPorGrupo, part.getFaixaEtaria());
+                    incrementarGrupo(contagemPorGrupo, part.getGenero());
+                    incrementarGrupo(contagemPorGrupo, part.getEscolaridade());
+                    incrementarGrupo(contagemPorGrupo, part.getFaixaRenda());
+                }
+            }
+        }
+        return !pesquisa.getPlanoAmostral().atingiuMetaTodosGrupos(contagemPorGrupo);
+    }
+
+    private void incrementarGrupo(Map<String, Integer> mapa, String chave) {
+        if (chave != null && !chave.trim().isEmpty()) {
+            mapa.put(chave, mapa.getOrDefault(chave, 0) + 1);
+        }
     }
 
     // --- LISTAR TODAS ---
@@ -120,6 +344,29 @@ public class PesquisaController {
             throw new PesquisaInvalidaException("O código da pesquisa é obrigatório.");
         }
         validarCamposEditaveis(pesquisa);
+    }
+    private void verificarBloqueioProcessada(Pesquisa p) throws PesquisaInvalidaException {
+        if ("Processada".equalsIgnoreCase(p.getSituacao())) {
+            throw new PesquisaInvalidaException("Esta pesquisa está 'Processada' e seus dados não podem ser modificados.");
+        }
+    }
+
+    private void validarTransicaoSituacao(Pesquisa atual, String novaSituacao) throws PesquisaInvalidaException {
+        // RNF 08: Somente pode ser processada após encerramento
+        if ("Processada".equalsIgnoreCase(novaSituacao) && !"Encerrada".equalsIgnoreCase(atual.getSituacao())) {
+            throw new PesquisaInvalidaException("Uma pesquisa somente pode ser 'Processada' após estar 'Encerrada'.");
+        }
+        validarRegrasDeSituacao(atual, novaSituacao);
+    }
+
+    private void validarRegrasDeSituacao(Pesquisa p, String situacaoAlvo) throws PesquisaInvalidaException {
+        // RNF 02: Intenção de voto exige >= 1 candidato associado para sair de "Planejada"
+        if (!"Planejada".equalsIgnoreCase(situacaoAlvo) && "Intenção de voto".equalsIgnoreCase(p.getTipo())) {
+            boolean temCandidato = !p.getCandidaturasAssociadas().isEmpty() || !p.getNumerosCandidaturasSalvas().isEmpty();
+            if (!temCandidato) {
+                throw new PesquisaInvalidaException("Pesquisas do tipo 'Intenção de voto' devem possuir pelo menos um candidato associado antes de iniciar a coleta.");
+            }
+        }
     }
 
     private void validarCamposEditaveis(Pesquisa pesquisa) throws PesquisaInvalidaException {

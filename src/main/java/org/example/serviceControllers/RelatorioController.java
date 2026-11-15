@@ -7,6 +7,7 @@ import org.example.models.Entrevista;
 import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
 import org.example.models.coleta.Resposta;
+import org.example.models.comum.Cargo;
 import org.example.models.researchModels.Pesquisa;
 
 import java.io.*;
@@ -224,9 +225,9 @@ public class RelatorioController {
         if (r1 == null || r2 == null) {
             throw new RelatorioException("Precisa de dois relatorios para fazer a comparação");
         }
-        String cargo1 = r1.getPesquisa().getCargo();
-        String cargo2 = r2.getPesquisa().getCargo();
-        if (!cargo1.equalsIgnoreCase(cargo2)) {
+        Cargo cargo1 = r1.getPesquisa().getCargo();
+        Cargo cargo2 = r2.getPesquisa().getCargo();
+        if (cargo1==null || cargo1!=cargo2 ) {
             throw new RelatorioException("Pesquisas de cargos diferentes");
         }
 
