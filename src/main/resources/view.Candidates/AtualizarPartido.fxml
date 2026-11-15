@@ -5,21 +5,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.AtualizarPartidoController">
     <children>
-        <TextField layoutX="215.0" layoutY="188.0" promptText="Número" />
-        <TextField layoutX="215.0" layoutY="144.0" promptText="Sigla" />
-        <TextField layoutX="215.0" layoutY="106.0" promptText="Nome" />
-        <ComboBox layoutX="215.0" layoutY="229.0" prefWidth="149.0" promptText="Situação">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Ativo" />
-                    <String fx:value="Inativo" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Button layoutX="226.0" layoutY="281.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="149.0" text="Atualizar Partido" />
+        <Label layoutX="235.0" layoutY="30.0" text="ATUALIZAR PARTIDO" />
+        <ComboBox fx:id="caixaPartido" layoutX="150.0" layoutY="65.0" onAction="#selecionarPartido" prefWidth="300.0" promptText="Escolha o partido" />
+        <TextField fx:id="campoNome" layoutX="215.0" layoutY="110.0" promptText="Nome" />
+        <TextField fx:id="campoSigla" layoutX="215.0" layoutY="148.0" promptText="Sigla" />
+        <TextField fx:id="campoNumero" layoutX="215.0" layoutY="188.0" promptText="Número" />
+        <ComboBox fx:id="caixaSituacao" layoutX="215.0" layoutY="229.0" prefWidth="149.0" promptText="Situação" />
+        <Button layoutX="215.0" layoutY="281.0" mnemonicParsing="false" onAction="#atualizarPartido" prefHeight="24.0" prefWidth="149.0" text="Atualizar Partido" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
-      <Label layoutX="221.0" layoutY="33.0" prefHeight="51.0" prefWidth="149.0" text="ATUALIZAR PARTIDO" />
     </children>
 </AnchorPane>

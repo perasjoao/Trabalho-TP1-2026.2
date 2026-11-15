@@ -3,13 +3,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.ExcluirPartidoController">
     <children>
-        <TextField layoutX="215.0" layoutY="188.0" promptText="Número" />
-        <TextField layoutX="215.0" layoutY="144.0" promptText="Sigla" />
-        <TextField layoutX="215.0" layoutY="106.0" promptText="Nome" />
-        <Button layoutX="217.0" layoutY="237.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="145.0" text="Excluir Partido" />
+        <Label layoutX="240.0" layoutY="30.0" text="EXCLUIR PARTIDO" />
+        <ComboBox fx:id="caixaPartido" layoutX="150.0" layoutY="65.0" onAction="#selecionarPartido" prefWidth="300.0" promptText="Escolha o partido" />
+        <TextField fx:id="campoNome" editable="false" layoutX="215.0" layoutY="110.0" promptText="Nome" />
+        <TextField fx:id="campoSigla" editable="false" layoutX="215.0" layoutY="148.0" promptText="Sigla" />
+        <TextField fx:id="campoNumero" editable="false" layoutX="215.0" layoutY="188.0" promptText="Número" />
+        <Button layoutX="217.0" layoutY="237.0" mnemonicParsing="false" onAction="#excluirPartido" prefHeight="24.0" prefWidth="145.0" text="Excluir Partido" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
-      <Label layoutX="232.0" layoutY="58.0" text="EXCLUIR PARTIDO" />
     </children>
 </AnchorPane>
