@@ -3,11 +3,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.AssociarCandidatoController">
    <children>
-      <TextField layoutX="215.0" layoutY="188.0" promptText="Partido" />
-      <TextField layoutX="215.0" layoutY="134.0" promptText="Candidato" />
-      <Button layoutX="264.0" layoutY="220.0" mnemonicParsing="false" text="Associar" />
+      <ComboBox fx:id="caixaCandidatura" layoutX="150.0" layoutY="134.0" prefWidth="300.0" promptText="Candidatura" />
+      <ComboBox fx:id="caixaPartido" layoutX="150.0" layoutY="188.0" prefWidth="300.0" promptText="Partido" />
+      <Button layoutX="264.0" layoutY="240.0" mnemonicParsing="false" onAction="#associar" text="Associar" />
       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
       <Label layoutX="221.0" layoutY="35.0" prefHeight="67.0" prefWidth="138.0" text="ASSOCIAR CANDIDATO" />
    </children>
