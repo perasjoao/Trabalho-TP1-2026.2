@@ -9,7 +9,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
     public void start(Stage telaPrincipal) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("/view.Menu/Menu.fxml"));
+        // a aplicacao comeca pelo login; o LoginController abre o Menu.fxml apos autenticar
+        Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/Login.fxml"));
 
         telaPrincipal.setTitle("Sistema de Pesquisas Eleitorais");
         telaPrincipal.setScene(new Scene(root));

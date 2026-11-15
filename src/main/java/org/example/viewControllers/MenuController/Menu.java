@@ -4,13 +4,27 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import org.example.models.Perfil;
+import org.example.models.Usuario;
+import org.example.utils.Sessao;
 
 import java.io.IOException;
 
 public class Menu {
     public void AbrirAdm(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/Login.fxml"));
+        // o login agora acontece na abertura do sistema; aqui so checa se o usuario e administrador
+        Usuario usuario = Sessao.getUsuarioLogado();
+        if (usuario == null || usuario.getPerfil() != Perfil.ADMINISTRADOR) {
+            Alert alerta = new Alert(Alert.AlertType.WARNING);
+            alerta.setTitle("Acesso negado");
+            alerta.setHeaderText(null);
+            alerta.setContentText("Apenas administradores podem acessar este módulo.");
+            alerta.showAndWait();
+            return;
+        }
+        Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/MenuAdmin.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
         double width = tela.getWidth();
         double height = tela.getHeight();
