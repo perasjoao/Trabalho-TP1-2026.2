@@ -5,23 +5,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.CadastrarCandidatoController">
    <children>
-      <TextField layoutX="202.0" layoutY="107.0" promptText="Nome" />
-      <TextField layoutX="202.0" layoutY="154.0" promptText="Número" />
-      <TextField layoutX="202.0" layoutY="200.0" promptText="Cargo" />
-      <ComboBox layoutX="213.0" layoutY="240.0" prefWidth="150.0" promptText="Situação">
-      <items>
-         <FXCollections fx:factory="observableArrayList">
-            <String fx:value="pré-candidato" />
-            <String fx:value="candidato" />
-            <String fx:value="candidatura inativa" />
-            <String fx:value="candidatura validada" />
-         </FXCollections>
-      </items>
-      </ComboBox>
+      <TextField fx:id="campoNome" layoutX="202.0" layoutY="107.0" promptText="Nome" />
+      <TextField fx:id="campoNumero" layoutX="202.0" layoutY="154.0" promptText="Número" />
+      <ComboBox fx:id="caixaCargo" layoutX="202.0" layoutY="200.0" prefWidth="150.0" promptText="Cargo" />
+      <ComboBox fx:id="caixaSituacao" layoutX="213.0" layoutY="240.0" prefWidth="150.0" promptText="Situação" />
       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
-      <Button layoutX="212.0" layoutY="289.0" mnemonicParsing="false" text="Cadastrar Candidato" />
+      <Button layoutX="212.0" layoutY="289.0" mnemonicParsing="false" onAction="#cadastrarCandidato" text="Cadastrar Candidato" />
       <Label layoutX="197.0" layoutY="51.0" prefHeight="38.0" prefWidth="159.0" text="CADASTRO DE CANDIDATO" />
    </children>
 </AnchorPane>
