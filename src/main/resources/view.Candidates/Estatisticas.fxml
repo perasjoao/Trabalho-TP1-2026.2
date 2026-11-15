@@ -5,24 +5,25 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.Candidates">
-   <children>
-      <TableView layoutX="357.0" prefHeight="400.0" prefWidth="243.0">
-        <columns>
-          <TableColumn prefWidth="160.0" text="Critério" />
-          <TableColumn prefWidth="82.0" text="Quantidade" />
-        </columns>
-      </TableView>
-      <ComboBox layoutX="59.0" layoutY="119.0" prefHeight="24.0" prefWidth="163.0" promptText="Obter Dados De:">
-       <items>
-           <FXCollections fx:factory="observableArrayList">
-               <String fx:value="Partidos" />
-               <String fx:value="Candidatos" />
-               <String fx:value="Candidaturas" />
-           </FXCollections>
-       </items>
-       </ComboBox>
-       <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
-      <Label layoutX="77.0" layoutY="14.0" prefHeight="81.0" prefWidth="243.0" text="ESTATÍSTICAS DE CANDIDATOS E PARTIDOS" />
-   </children>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.EstatisticasController">
+    <children>
+        <Label layoutX="40.0" layoutY="45.0" text="ESTATÍSTICAS DE CANDIDATOS E PARTIDOS" />
+        <ComboBox fx:id="caixaDados" layoutX="40.0" layoutY="90.0" onAction="#mostrarIndicadores" prefHeight="24.0" prefWidth="180.0" promptText="Obter Dados De:">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Todos" />
+                    <String fx:value="Partidos" />
+                    <String fx:value="Candidatos" />
+                    <String fx:value="Candidaturas" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <TableView fx:id="tabelaIndicadores" layoutX="250.0" layoutY="40.0" prefHeight="340.0" prefWidth="330.0">
+            <columns>
+                <TableColumn fx:id="colunaCriterio" prefWidth="230.0" text="Critério" />
+                <TableColumn fx:id="colunaQuantidade" prefWidth="95.0" text="Quantidade" />
+            </columns>
+        </TableView>
+        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
+    </children>
 </AnchorPane>

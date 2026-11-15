@@ -86,4 +86,9 @@ public class IndicadoresCadastrais {
     public Map<String, Integer> getCandidaturasPorPartido() {
         return Collections.unmodifiableMap(candidaturasPorPartido);
     }
+
+    //partidos inativos nao contam como ativos
+    public int getPartidosInativos() {
+        return totalPartidos - partidosAtivos;
+    }
 }
