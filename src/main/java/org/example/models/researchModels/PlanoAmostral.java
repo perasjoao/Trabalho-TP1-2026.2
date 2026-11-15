@@ -16,7 +16,7 @@ public class PlanoAmostral {
         this.metasPorGrupo.put(grupo, quantidadeMinima);
     }
 
-    public boolean atingiuMeta(Map<String, Integer> realizadasPorGrupo) {
+    public boolean atingiuMetaTodosGrupos(Map<String, Integer> realizadasPorGrupo) {
         for (Map.Entry<String, Integer> meta : metasPorGrupo.entrySet()) {
             int realizadas = realizadasPorGrupo.getOrDefault(meta.getKey(), 0);
             if (realizadas < meta.getValue()) {
