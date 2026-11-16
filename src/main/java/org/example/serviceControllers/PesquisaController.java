@@ -2,29 +2,29 @@ package org.example.serviceControllers;
 
 import org.example.exceptions.PersistenciaException;
 import org.example.exceptions.PesquisaInvalidaException;
-import org.example.models.comum.Cargo;
-import org.example.models.researchModels.Pesquisa;
-import org.example.models.researchModels.PesquisaRepository;
+import org.example.models.Entrevista;
 import org.example.models.candidatos.Candidatura;
+import org.example.models.coleta.Participante;
+import org.example.models.comum.Cargo;
 import org.example.models.comum.Regiao;
 import org.example.models.researchModels.OpcaoResposta;
 import org.example.models.researchModels.Pergunta;
-import org.example.models.Entrevista;
-import org.example.models.coleta.Participante;
+import org.example.models.researchModels.Pesquisa;
+import org.example.models.researchModels.PesquisaRepository;
+import org.example.models.researchModels.PlanoAmostral;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PesquisaController {
     private List<Pesquisa> pesquisas;
     private final PesquisaRepository repository;
 
-    // Listas de domínios restritos alinhadas aos requisitos
     private static final List<String> TIPOS_VALIDOS = Arrays.asList("Intenção de voto", "Conhecimento", "Rejeição", "Segundo turno simulado");
     private static final List<String> SITUACOES_VALIDAS = Arrays.asList("Planejada", "Em coleta", "Encerrada", "Processada");
 
@@ -38,7 +38,7 @@ public class PesquisaController {
         }
     }
 
-    // --- 1. SALVAR / CADASTRAR (com validação de situação inicial) ---
+    // --- 1. SALVAR / CADASTRAR ---
     public void salvar(Pesquisa pesquisa) throws PesquisaInvalidaException, PersistenciaException {
         validarPesquisa(pesquisa);
         try {
@@ -50,8 +50,6 @@ public class PesquisaController {
             }
         }
 
-        // Garante que não seja salva já "Em coleta" se for Intenção de voto sem candidatos (RNF 02)
-        // Nem criada diretamente como "Processada" sem antes ter sido encerrada (RNF 08)
         if ("Processada".equalsIgnoreCase(pesquisa.getSituacao())) {
             throw new PesquisaInvalidaException("Uma pesquisa não pode ser cadastrada diretamente como 'Processada'.");
         }
@@ -61,7 +59,7 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- 2. EDITAR / ATUALIZAR (com travas RNF 02, 08 e 09) ---
+    // --- 2. EDITAR / ATUALIZAR ---
     public void atualizar(String codigo, Pesquisa pesquisaAtualizada) throws PesquisaInvalidaException, PersistenciaException {
         if (codigo == null || codigo.trim().isEmpty()) {
             throw new PesquisaInvalidaException("Código é obrigatório para atualização.");
@@ -69,14 +67,12 @@ public class PesquisaController {
 
         Pesquisa pesquisaExistente = buscarPorCodigo(codigo);
 
-        // RNF 09: Pesquisa processada não pode ser alterada sem voltar de estado para reprocessamento
         if ("Processada".equalsIgnoreCase(pesquisaExistente.getSituacao()) &&
                 "Processada".equalsIgnoreCase(pesquisaAtualizada.getSituacao())) {
             throw new PesquisaInvalidaException("Pesquisas com situação 'Processada' não podem ter seus dados alterados. Altere a situação para reprocessar.");
         }
 
         validarCamposEditaveis(pesquisaAtualizada);
-        // RNF 03: Impede trocar o cargo se já houver candidatos vinculados
         boolean temCandidatos = !pesquisaExistente.getCandidaturasAssociadas().isEmpty()
                 || !pesquisaExistente.getNumerosCandidaturasSalvas().isEmpty();
         if (temCandidatos && pesquisaExistente.getCargo() != pesquisaAtualizada.getCargo()) {
@@ -97,7 +93,20 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- BUSCA COM FILTROS COMBINADOS (RF 08, 09, 10) ---
+    // --- ATUALIZAR PLANO AMOSTRAL (Tela Configurar Pesquisa) ---
+    public void atualizarPlanoAmostral(String codigoPesquisa, PlanoAmostral planoAmostral)
+            throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        p.setPlanoAmostral(planoAmostral);
+        if (planoAmostral != null) {
+            p.setMetodologia(planoAmostral.getDescricaoMetodologia());
+        }
+        repository.salvarTodas(pesquisas);
+    }
+
+    // --- BUSCA COM FILTROS COMBINADOS ---
     public List<Pesquisa> buscarComFiltros(String termo, Cargo cargo, String tipo, String situacao,
                                            Regiao regiao, Integer qtdMinEntrevistados,
                                            LocalDate dataInicio, LocalDate dataFim,
@@ -135,7 +144,7 @@ public class PesquisaController {
         throw new PesquisaInvalidaException("Nenhuma pesquisa encontrada com o código: " + codigo);
     }
 
-    // --- 3. DELETAR (bloqueia exclusão de pesquisa processada - RNF 09) ---
+    // --- 3. DELETAR ---
     public void deletar(String codigo) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa pesquisaParaRemover = buscarPorCodigo(codigo);
         if ("Processada".equalsIgnoreCase(pesquisaParaRemover.getSituacao())) {
@@ -145,13 +154,18 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- 4. VERIFICAÇÃO PARA O MÓDULO DE COLETA (RNF 07) ---
+    public void deletarPesquisa(String codigo) throws PesquisaInvalidaException, PersistenciaException {
+        deletar(codigo);
+    }
+
+    // --- 4. VERIFICAÇÃO PARA O MÓDULO DE COLETA ---
     public boolean podeReceberEntrevista(String codigoPesquisa) throws PesquisaInvalidaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         return !"Encerrada".equalsIgnoreCase(p.getSituacao()) &&
                 !"Processada".equalsIgnoreCase(p.getSituacao());
     }
-    // --- 5. ASSOCIAÇÃO DE REGIÕES (RF 05 | RNF 09) ---
+
+    // --- 5. ASSOCIAÇÃO DE REGIÕES ---
     public void associarRegiao(String codigoPesquisa, Regiao regiao) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
@@ -174,7 +188,7 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- 6. ASSOCIAÇÃO DE CANDIDATURAS (RF 06 | RNF 03, 04, 05, 06, 09) ---
+    // --- 6. ASSOCIAÇÃO DE CANDIDATURAS ---
     public void associarCandidatura(String codigoPesquisa, Candidatura candidatura) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
@@ -182,17 +196,14 @@ public class PesquisaController {
         if (candidatura == null) {
             throw new PesquisaInvalidaException("Selecione uma candidatura válida.");
         }
-        // RNF 03: Cargo compatível
         if (candidatura.getCargo() != p.getCargo()) {
             throw new PesquisaInvalidaException("Cargo incompatível: a pesquisa é para " + p.getCargo() +
                     ", mas a candidatura é para " + candidatura.getCargo() + ".");
         }
-        // RNF 05: Situação permitida para participar de pesquisa
         if (!candidatura.podeParticiparDePesquisa()) {
             throw new PesquisaInvalidaException("A candidatura de " + candidatura.getCandidato().getNome() +
                     " está com situação '" + candidatura.getSituacao() + "' e não pode participar de pesquisas.");
         }
-        // RNF 06: Não associar duas vezes à mesma pesquisa (RNF 04 permite participar de várias pesquisas)
         boolean jaAssociada = p.getCandidaturasAssociadas().stream()
                 .anyMatch(c -> c.getNumero() == candidatura.getNumero());
         if (jaAssociada || p.getNumerosCandidaturasSalvas().contains(candidatura.getNumero())) {
@@ -217,7 +228,6 @@ public class PesquisaController {
         }
     }
 
-    // Reconstrói as referências de Candidatura em memória após carregar os números do arquivo TXT
     public void vincularCandidaturasCarregadas(List<Candidatura> todasCandidaturasDoSistema) {
         if (todasCandidaturasDoSistema == null) return;
         for (Pesquisa p : pesquisas) {
@@ -231,8 +241,8 @@ public class PesquisaController {
             }
         }
     }
-    // --- 7. GESTÃO DE PERGUNTAS E OPÇÕES DE RESPOSTA (RF 04 | RNF 09) ---
 
+    // --- 7. GESTÃO DE PERGUNTAS E OPÇÕES DE RESPOSTA ---
     public void adicionarPergunta(String codigoPesquisa, Pergunta pergunta) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
@@ -288,7 +298,8 @@ public class PesquisaController {
         }
         repository.salvarTodas(pesquisas);
     }
-    // --- INTEGRAÇÃO COM COLETA E META AMOSTRAL (RF 09, 10 | RNF 10) ---
+
+    // --- INTEGRAÇÃO COM COLETA E META AMOSTRAL ---
     public void sincronizarEntrevistasRealizadas(List<Entrevista> todasEntrevistas) {
         if (todasEntrevistas == null) return;
         for (Pesquisa p : pesquisas) {
@@ -335,6 +346,11 @@ public class PesquisaController {
         return new ArrayList<>(pesquisas);
     }
 
+    // Versão segura para TableView (retorna lista vazia sem lançar exceção)
+    public List<Pesquisa> getPesquisas() {
+        return new ArrayList<>(pesquisas);
+    }
+
     // --- VALIDAÇÕES DE REGRAS DE NEGÓCIO ---
     private void validarPesquisa(Pesquisa pesquisa) throws PesquisaInvalidaException {
         if (pesquisa == null) {
@@ -345,6 +361,7 @@ public class PesquisaController {
         }
         validarCamposEditaveis(pesquisa);
     }
+
     private void verificarBloqueioProcessada(Pesquisa p) throws PesquisaInvalidaException {
         if ("Processada".equalsIgnoreCase(p.getSituacao())) {
             throw new PesquisaInvalidaException("Esta pesquisa está 'Processada' e seus dados não podem ser modificados.");
@@ -352,7 +369,6 @@ public class PesquisaController {
     }
 
     private void validarTransicaoSituacao(Pesquisa atual, String novaSituacao) throws PesquisaInvalidaException {
-        // RNF 08: Somente pode ser processada após encerramento
         if ("Processada".equalsIgnoreCase(novaSituacao) && !"Encerrada".equalsIgnoreCase(atual.getSituacao())) {
             throw new PesquisaInvalidaException("Uma pesquisa somente pode ser 'Processada' após estar 'Encerrada'.");
         }
@@ -360,7 +376,6 @@ public class PesquisaController {
     }
 
     private void validarRegrasDeSituacao(Pesquisa p, String situacaoAlvo) throws PesquisaInvalidaException {
-        // RNF 02: Intenção de voto exige >= 1 candidato associado para sair de "Planejada"
         if (!"Planejada".equalsIgnoreCase(situacaoAlvo) && "Intenção de voto".equalsIgnoreCase(p.getTipo())) {
             boolean temCandidato = !p.getCandidaturasAssociadas().isEmpty() || !p.getNumerosCandidaturasSalvas().isEmpty();
             if (!temCandidato) {

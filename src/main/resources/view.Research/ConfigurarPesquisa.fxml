@@ -30,7 +30,7 @@
                 <HBox alignment="CENTER" spacing="10.0">
                     <children>
                         <Label text="Pesquisa:" />
-                        <ComboBox prefWidth="250.0" promptText="Selecione a pesquisa" />
+                        <ComboBox fx:id="cbPesquisa" onAction="#aoSelecionarPesquisa" prefWidth="300.0" promptText="Selecione a pesquisa" />
                     </children>
                 </HBox>
                 <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
@@ -45,30 +45,31 @@
                                     <children>
                                         <VBox prefWidth="260.0" spacing="8.0">
                                             <children>
-                                                <TextField promptText="Texto da pergunta" />
-                                                <ComboBox maxWidth="1.7976931348623157E308" promptText="Tipo de pergunta" />
+                                                <TextField fx:id="txtEnunciadoPergunta" promptText="Texto da pergunta" />
+                                                <ComboBox fx:id="cbTipoPergunta" maxWidth="1.7976931348623157E308" promptText="Tipo de pergunta" />
                                                 <HBox spacing="5.0">
                                                     <children>
-                                                        <TextField promptText="Opção de resposta" HBox.hgrow="ALWAYS" />
-                                                        <Button mnemonicParsing="false" text="+" />
+                                                        <TextField fx:id="txtNovaOpcao" promptText="Opção de resposta" HBox.hgrow="ALWAYS" />
+                                                        <Button mnemonicParsing="false" onAction="#adicionarOpcao" text="+" />
+                                                        <Button mnemonicParsing="false" onAction="#removerOpcao" text="-" />
                                                     </children>
                                                 </HBox>
-                                                <ListView prefHeight="120.0" />
+                                                <ListView fx:id="listOpcoes" prefHeight="120.0" />
                                                 <HBox spacing="5.0">
                                                     <children>
-                                                        <Button mnemonicParsing="false" text="Adicionar" />
-                                                        <Button mnemonicParsing="false" text="Editar" />
-                                                        <Button mnemonicParsing="false" text="Excluir" />
+                                                        <Button mnemonicParsing="false" onAction="#adicionarPergunta" text="Adicionar" />
+                                                        <Button mnemonicParsing="false" onAction="#editarPergunta" text="Editar" />
+                                                        <Button mnemonicParsing="false" onAction="#excluirPergunta" text="Excluir" />
                                                     </children>
                                                 </HBox>
                                             </children>
                                         </VBox>
-                                        <TableView HBox.hgrow="ALWAYS">
+                                        <TableView fx:id="tblPerguntas" HBox.hgrow="ALWAYS">
                                             <columns>
-                                                <TableColumn prefWidth="40.0" text="Nº" />
-                                                <TableColumn prefWidth="220.0" text="Pergunta" />
-                                                <TableColumn prefWidth="90.0" text="Tipo" />
-                                                <TableColumn prefWidth="110.0" text="Opções" />
+                                                <TableColumn fx:id="colNumPergunta" prefWidth="50.0" text="Nº" />
+                                                <TableColumn fx:id="colTextoPergunta" prefWidth="210.0" text="Pergunta" />
+                                                <TableColumn fx:id="colTipoPergunta" prefWidth="95.0" text="Tipo" />
+                                                <TableColumn fx:id="colOpcoesPergunta" prefWidth="115.0" text="Opções" />
                                             </columns>
                                         </TableView>
                                     </children>
@@ -86,19 +87,19 @@
                                         <VBox spacing="5.0">
                                             <children>
                                                 <Label text="Regiões disponíveis" />
-                                                <ListView prefHeight="220.0" prefWidth="250.0" />
+                                                <ListView fx:id="listRegioesDisponiveis" prefHeight="220.0" prefWidth="250.0" />
                                             </children>
                                         </VBox>
                                         <VBox alignment="CENTER" spacing="10.0">
                                             <children>
-                                                <Button mnemonicParsing="false" prefWidth="90.0" text="Associar &gt;" />
-                                                <Button mnemonicParsing="false" prefWidth="90.0" text="&lt; Remover" />
+                                                <Button mnemonicParsing="false" onAction="#associarRegiao" prefWidth="90.0" text="Associar &gt;" />
+                                                <Button mnemonicParsing="false" onAction="#removerRegiao" prefWidth="90.0" text="&lt; Remover" />
                                             </children>
                                         </VBox>
                                         <VBox spacing="5.0">
                                             <children>
                                                 <Label text="Regiões da pesquisa" />
-                                                <ListView prefHeight="220.0" prefWidth="250.0" />
+                                                <ListView fx:id="listRegioesAssociadas" prefHeight="220.0" prefWidth="250.0" />
                                             </children>
                                         </VBox>
                                     </children>
@@ -116,19 +117,19 @@
                                         <VBox spacing="5.0">
                                             <children>
                                                 <Label text="Candidatos disponíveis" />
-                                                <ListView prefHeight="220.0" prefWidth="250.0" />
+                                                <ListView fx:id="listCandidatosDisponiveis" prefHeight="220.0" prefWidth="250.0" />
                                             </children>
                                         </VBox>
                                         <VBox alignment="CENTER" spacing="10.0">
                                             <children>
-                                                <Button mnemonicParsing="false" prefWidth="90.0" text="Associar &gt;" />
-                                                <Button mnemonicParsing="false" prefWidth="90.0" text="&lt; Remover" />
+                                                <Button mnemonicParsing="false" onAction="#associarCandidato" prefWidth="90.0" text="Associar &gt;" />
+                                                <Button mnemonicParsing="false" onAction="#removerCandidato" prefWidth="90.0" text="&lt; Remover" />
                                             </children>
                                         </VBox>
                                         <VBox spacing="5.0">
                                             <children>
                                                 <Label text="Candidatos da pesquisa" />
-                                                <ListView prefHeight="220.0" prefWidth="250.0" />
+                                                <ListView fx:id="listCandidatosAssociados" prefHeight="220.0" prefWidth="250.0" />
                                             </children>
                                         </VBox>
                                     </children>
@@ -139,7 +140,7 @@
                 </TabPane>
                 <HBox alignment="CENTER" spacing="15.0">
                     <children>
-                        <Button mnemonicParsing="false" text="Salvar configuração" />
+                        <Button mnemonicParsing="false" onAction="#salvarConfiguracao" text="Salvar configuração" />
                         <Button mnemonicParsing="false" onAction="#voltarParaGerenciar" text="Voltar" />
                     </children>
                 </HBox>

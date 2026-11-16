@@ -14,45 +14,25 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="592.0" prefWidth="846.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.ResearchController.GerenciarPesquisasController">
     <children>
-        <Button layoutX="113.0" layoutY="398.0" mnemonicParsing="false" text="Filtrar" />
+        <Button layoutX="113.0" layoutY="398.0" mnemonicParsing="false" onAction="#filtrarPesquisas" text="Filtrar" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuResearch" text="Voltar" />
-        <TableView layoutX="271.0" layoutY="126.0" prefHeight="209.0" prefWidth="572.0">
+        <TableView fx:id="tblPesquisas" layoutX="271.0" layoutY="126.0" prefHeight="209.0" prefWidth="572.0">
             <columns>
-                <TableColumn prefWidth="75.0" text="Código" />
-                <TableColumn prefWidth="75.0" text="Nome" />
-                <TableColumn prefWidth="75.0" text="Tipo" />
-                <TableColumn prefWidth="75.0" text="Região" />
-                <TableColumn prefWidth="75.0" text="Cargo" />
-                <TableColumn prefWidth="75.0" text="Situação" />
-                <TableColumn prefWidth="75.0" text="Período" />
+                <TableColumn fx:id="colCodigo" prefWidth="65.0" text="Código" />
+                <TableColumn fx:id="colNome" prefWidth="115.0" text="Nome" />
+                <TableColumn fx:id="colTipo" prefWidth="85.0" text="Tipo" />
+                <TableColumn fx:id="colRegiao" prefWidth="80.0" text="Região" />
+                <TableColumn fx:id="colCargo" prefWidth="80.0" text="Cargo" />
+                <TableColumn fx:id="colSituacao" prefWidth="72.0" text="Situação" />
+                <TableColumn fx:id="colPeriodo" prefWidth="75.0" text="Período" />
             </columns>
         </TableView>
         <ListView layoutX="36.0" layoutY="108.0" prefHeight="247.0" prefWidth="200.0" />
-        <Button layoutX="110.0" layoutY="438.0" mnemonicParsing="false" text="Limpar" />
+        <Button layoutX="110.0" layoutY="438.0" mnemonicParsing="false" onAction="#limparFiltros" text="Limpar" />
         <Label layoutX="37.0" layoutY="108.0" prefHeight="25.0" prefWidth="200.0" text="Filtros" />
-        <ComboBox layoutX="36.0" layoutY="205.0" prefHeight="25.0" prefWidth="200.0" promptText="Região">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Centro-oeste" />
-                    <String fx:value="Norte" />
-                    <String fx:value="Nordeste" />
-                    <String fx:value="Sudeste" />
-                    <String fx:value="Sul" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <ComboBox layoutX="36.0" layoutY="229.0" prefHeight="25.0" prefWidth="200.0" promptText="Cargo">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Deputado Estadual" />
-                    <String fx:value="Deputado Federal" />
-                    <String fx:value="Governador" />
-                    <String fx:value="Presidente" />
-                    <String fx:value="Senador" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <ComboBox layoutX="36.0" layoutY="180.0" prefHeight="25.0" prefWidth="200.0" promptText="Tipo">
+        <TextField fx:id="txtCodigo" layoutX="36.0" layoutY="133.0" prefHeight="25.0" prefWidth="200.0" promptText="Código" />
+        <TextField fx:id="txtNomeCandidato" layoutX="36.0" layoutY="155.0" prefHeight="25.0" prefWidth="200.0" promptText="Nome do candidato" />
+        <ComboBox fx:id="cbTipo" layoutX="36.0" layoutY="180.0" prefHeight="25.0" prefWidth="200.0" promptText="Tipo">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Intenção de voto" />
@@ -62,7 +42,9 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <ComboBox layoutX="36.0" layoutY="254.0" prefHeight="25.0" prefWidth="200.0" promptText="Situação">
+        <ComboBox fx:id="cbRegiao" layoutX="36.0" layoutY="205.0" prefHeight="25.0" prefWidth="200.0" promptText="Região" />
+        <ComboBox fx:id="cbCargo" layoutX="36.0" layoutY="229.0" prefHeight="25.0" prefWidth="200.0" promptText="Cargo" />
+        <ComboBox fx:id="cbSituacao" layoutX="36.0" layoutY="254.0" prefHeight="25.0" prefWidth="200.0" promptText="Situação">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Planejada" />
@@ -72,15 +54,13 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <TextField layoutX="36.0" layoutY="155.0" prefHeight="25.0" prefWidth="200.0" promptText="Nome do candidato" />
-        <DatePicker layoutX="36.0" layoutY="305.0" prefHeight="25.0" prefWidth="200.0" />
-        <DatePicker layoutX="36.0" layoutY="330.0" prefHeight="25.0" prefWidth="200.0" />
         <Label layoutX="37.0" layoutY="279.0" prefHeight="25.0" prefWidth="200.0" text="Filtrar por período (início-fim)" />
+        <DatePicker fx:id="dpDataInicio" layoutX="36.0" layoutY="305.0" prefHeight="25.0" prefWidth="200.0" promptText="Data início" />
+        <DatePicker fx:id="dpDataFim" layoutX="36.0" layoutY="330.0" prefHeight="25.0" prefWidth="200.0" promptText="Data fim" />
         <Label layoutX="334.0" layoutY="27.0" prefHeight="64.0" prefWidth="178.0" text="GERENCIAR SUAS PESQUISAS" />
-      <Button layoutX="290.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirCadastrarPesquisa" text="Criar pesquisa" />
-      <Button layoutX="400.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirEditarPesquisa" text="Editar pesquisa" />
-      <Button layoutX="515.0" layoutY="360.0" mnemonicParsing="false" text="Excluir pesquisa" />
-      <Button layoutX="635.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirConfigurarPesquisa" text="Configurar pesquisa" />
-      <TextField layoutX="36.0" layoutY="133.0" prefHeight="25.0" prefWidth="200.0" promptText="Código" />
+        <Button layoutX="290.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirCadastrarPesquisa" text="Criar pesquisa" />
+        <Button layoutX="400.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirEditarPesquisa" text="Editar pesquisa" />
+        <Button layoutX="515.0" layoutY="360.0" mnemonicParsing="false" onAction="#excluirPesquisa" text="Excluir pesquisa" />
+        <Button layoutX="635.0" layoutY="360.0" mnemonicParsing="false" onAction="#abrirConfigurarPesquisa" text="Configurar pesquisa" />
     </children>
 </AnchorPane>
