@@ -8,7 +8,7 @@
     <children>
         <Label layoutX="235.0" layoutY="42.0" prefHeight="62.0" prefWidth="130.0" text="        PESQUISAS" />
         <Button layoutX="113.0" layoutY="194.0" mnemonicParsing="false" onAction="#abrirConsultarPesquisas" text="Consultar pesquisas" />
-        <Button layoutX="365.0" layoutY="194.0" mnemonicParsing="false" onAction="#abrirGerenciarPesquisas" text="Gerenciar Pesquisas" />
+        <Button layoutX="365.0" layoutY="194.0" fx:id="botaoGerenciar" mnemonicParsing="false" onAction="#abrirGerenciarPesquisas" text="Gerenciar Pesquisas" />
         <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuPrincipal" text="Voltar" />
     </children>
 </AnchorPane>

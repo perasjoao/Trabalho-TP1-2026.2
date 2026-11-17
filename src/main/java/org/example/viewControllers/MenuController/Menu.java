@@ -1,18 +1,45 @@
 package org.example.viewControllers.MenuController;
 
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import org.example.models.Perfil;
 import org.example.models.Usuario;
 import org.example.utils.Sessao;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class Menu {
+public class Menu implements Initializable {
+    @FXML private Button botaoAdm;
+    @FXML private Button botaoPesquisa;
+    @FXML private Button botaoColeta;
+    @FXML private Button botaoAnalise;
+    @FXML private Button botaoCandidato;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Usuario usrLogado= Sessao.getUsuarioLogado();
+        if(usrLogado.getPerfil()==Perfil.PESQUISADOR){
+            botaoAdm.setVisible(false);
+            botaoAnalise.setVisible(false);
+            botaoCandidato.setVisible(false);
+        }
+        if(usrLogado.getPerfil()==Perfil.ANALISTA){
+            botaoAdm.setVisible(false);
+            botaoCandidato.setVisible(false);
+            botaoColeta.setVisible(false);
+        }
+    }
+
     public void AbrirAdm(ActionEvent event) throws IOException {
         // o login agora acontece na abertura do sistema; aqui so checa se o usuario e administrador
         Usuario usuario = Sessao.getUsuarioLogado();
@@ -88,5 +115,4 @@ public class Menu {
         tela.setHeight(height);
 
     }
-
 }
