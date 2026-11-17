@@ -23,35 +23,35 @@
                   <Font size="24.0" />
                </font>
             </Label>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ComboBox prefWidth="150.0" promptText="Pesquisa A" />
-                  <ComboBox prefWidth="150.0" promptText="Pesquisa B" />
-                  <Button mnemonicParsing="false" prefWidth="150.0" text="Comparar" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-               <children>
-                  <TableView prefHeight="200.0" prefWidth="250.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="Opção" />
-                      <TableColumn prefWidth="75.0" text="\% Pesquisa A" />
-                        <TableColumn prefWidth="75.0" text="\% Pesquisa B" />
-                    </columns>
-                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TableView>
-                  <BarChart title="Comparação entre pesquisas">
-                    <xAxis>
-                      <CategoryAxis label="Candidato" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis label="\%" side="LEFT" />
-                    </yAxis>
-                  </BarChart>
-               </children>
-            </HBox>
+             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                 <children>
+                     <ComboBox fx:id="caixaPesquisaA" prefWidth="150.0" promptText="Pesquisa A" />
+                     <ComboBox fx:id="caixaPesquisaB" prefWidth="150.0" promptText="Pesquisa B" />
+                     <Button mnemonicParsing="false" onAction="#acaoCompararPesquisas" prefWidth="150.0" text="Comparar" />
+                 </children>
+             </HBox>
+             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                 <children>
+                     <TableView fx:id="tabelaComparacao" prefHeight="200.0" prefWidth="320.0">
+                         <columns>
+                             <TableColumn fx:id="colCompOpcao" prefWidth="140.0" text="Opção" />
+                             <TableColumn fx:id="colCompPesquisaA" prefWidth="90.0" text="\% Pesquisa A" />
+                             <TableColumn fx:id="colCompPesquisaB" prefWidth="90.0" text="\% Pesquisa B" />
+                         </columns>
+                         <columnResizePolicy>
+                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                         </columnResizePolicy>
+                     </TableView>
+                     <BarChart fx:id="graficoComparacao" title="Comparação entre pesquisas">
+                         <xAxis>
+                             <CategoryAxis label="Candidato" />
+                         </xAxis>
+                         <yAxis>
+                             <NumberAxis label="\%" side="LEFT" />
+                         </yAxis>
+                     </BarChart>
+                 </children>
+             </HBox>
             <Button mnemonicParsing="false" onAction="#abrirMenuAnalise" text="Voltar" />
          </children>
       </VBox>

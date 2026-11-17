@@ -9,30 +9,35 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.example.exceptions.CaixaPesquisaVazia;
 import org.example.exceptions.PesquisaInvalidaException;
 import org.example.exceptions.RelatorioException;
 import org.example.exceptions.RelatorioVazioException;
+import org.example.models.ComparaPesquisa;
 import org.example.models.Entrevista;
 import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
 import org.example.models.coleta.Resposta;
 import org.example.models.researchModels.Pesquisa;
 import org.example.serviceControllers.ColetaServiceController;
+import org.example.serviceControllers.ParametroController;
 import org.example.serviceControllers.PesquisaController;
 import org.example.serviceControllers.RelatorioController;
-
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 
 public class AnaliseController implements Initializable { //implenta a interface que executa o codigo assim q a pagina carrega
     private final RelatorioController relatorioController = new RelatorioController();
     private final PesquisaController pesquisaController = new PesquisaController();
     private final ColetaServiceController coletaController = new ColetaServiceController();
+    private final ParametroController parametroController = new ParametroController();
     private Relatorio relatorioAtual;
 
     @FXML private ComboBox<Pesquisa> caixaPesquisa;
@@ -40,16 +45,21 @@ public class AnaliseController implements Initializable { //implenta a interface
     @FXML private ComboBox<String> caixaCandidato;
     @FXML private DatePicker idDataInicio;
     @FXML private DatePicker idDataFinal;
-
     @FXML private ComboBox<String> caixaFaixaEtaria;
     @FXML private ComboBox<String> caixaEscolaridade;
     @FXML private ComboBox<String> caixaGenero;
     @FXML private ComboBox<String> caixaFaixaRenda;
-
     @FXML private TableView<LinhaTabelaRelatorio> idTabelaRelatorio;
     @FXML private TableColumn<LinhaTabelaRelatorio, String> colunaOpcao;
     @FXML private TableColumn<LinhaTabelaRelatorio, String> colunaQuantidade;
     @FXML private TableColumn<LinhaTabelaRelatorio, String> colunaEst;
+    @FXML private ComboBox<Pesquisa> caixaPesquisaA;
+    @FXML private ComboBox<Pesquisa> caixaPesquisaB;
+    @FXML private TableView<LinhaTabelaRelatorio> tabelaComparacao;
+    @FXML private TableColumn<LinhaTabelaRelatorio, String> colCompOpcao;
+    @FXML private TableColumn<LinhaTabelaRelatorio, String> colCompPesquisaA;
+    @FXML private TableColumn<LinhaTabelaRelatorio, String> colCompPesquisaB;
+    @FXML private BarChart<String, Number> graficoComparacao;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) { //executa assim que a pagina carrega
@@ -57,6 +67,10 @@ public class AnaliseController implements Initializable { //implenta a interface
             configurarTabela();
             carregarPesquisas();
             carregarParametros();
+        }
+        if (caixaPesquisaA != null && caixaPesquisaB != null) {
+            configurarTabelaComparacao();
+            carregarPesquisasComparacao();
         }
     }
 
@@ -75,11 +89,45 @@ public class AnaliseController implements Initializable { //implenta a interface
         colunaEst.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().percentual));
     }
 
+    private void configurarTabelaComparacao() {
+        colCompOpcao.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().opcao));
+        colCompPesquisaA.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().quantidade));
+        colCompPesquisaB.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().percentual));
+    }
+
+    private void carregarPesquisasComparacao() {
+        try {
+            List<Pesquisa> lista = pesquisaController.listarTodas();
+            ObservableList<Pesquisa> obs = FXCollections.observableArrayList(lista);
+            caixaPesquisaA.setItems(obs);
+            caixaPesquisaB.setItems(obs);
+        } catch (PesquisaInvalidaException e) {
+            caixaPesquisaA.setItems(FXCollections.observableArrayList());
+            caixaPesquisaB.setItems(FXCollections.observableArrayList());
+        }
+    }
+
     private void carregarParametros() {
-        //chamar meotodo que lista todos os parametros, esses sao so para testes
+        List<String> regioes = new ArrayList<>();
+        regioes.add("Todas");
+        regioes.addAll(parametroController.listarRegioes());
+        caixaRegiao.setItems(FXCollections.observableArrayList(regioes));
+
+        List<String> faixasEtarias = new ArrayList<>();
+        faixasEtarias.add("Todas");
+        faixasEtarias.addAll(parametroController.listarFaixasEtarias());
+        caixaFaixaEtaria.setItems(FXCollections.observableArrayList(faixasEtarias));
+
+        List<String> escolaridades = new ArrayList<>();
+        escolaridades.add("Todas");
+        escolaridades.addAll(parametroController.listarEscolaridades());
+        caixaEscolaridade.setItems(FXCollections.observableArrayList(escolaridades));
+
+        List<String> faixasRenda = new ArrayList<>();
+        faixasRenda.add("Todas");
+        faixasRenda.addAll(parametroController.listarFaixasRenda());
+        caixaFaixaRenda.setItems(FXCollections.observableArrayList(faixasRenda));
         caixaGenero.setItems(FXCollections.observableArrayList("Todos", "Masculino", "Feminino", "Outro"));
-        caixaEscolaridade.setItems(FXCollections.observableArrayList("Todos", "Fundamental", "Médio", "Superior"));
-        caixaFaixaEtaria.setItems(FXCollections.observableArrayList("Todos", "16-24", "25-34", "35-44", "45-59", "60+"));
     }
 
     //funcao para facilitar a troca da tela atual para a do caminho informado
@@ -94,15 +142,6 @@ public class AnaliseController implements Initializable { //implenta a interface
     }
 
     //botoes dentro do menu de analise
-    @FXML
-    public void abrirResultados(ActionEvent event) throws IOException {
-        trocarTela(event, "/view.Analise/Resultados.fxml");
-    }
-
-    @FXML
-    public void abrirProcessarPesquisa(ActionEvent event) throws IOException {
-        trocarTela(event, "/view.Analise/ProcessarPesquisa.fxml");
-    }
 
     @FXML
     public void abrirCompararPesquisas(ActionEvent event) throws IOException {
@@ -268,6 +307,91 @@ public class AnaliseController implements Initializable { //implenta a interface
             trataAlerta(Alert.AlertType.ERROR, "Erro ao Exportar", "Não foi possível salvar o CSV: " + e.getMessage());
         }
     }
+
+    @FXML
+    public void acaoCompararPesquisas(ActionEvent event) {
+        try {
+            Pesquisa pA = caixaPesquisaA.getValue();
+            Pesquisa pB = caixaPesquisaB.getValue();
+
+            if (pA == null || pB == null) {
+                throw new CaixaPesquisaVazia("Selecione as duas pesquisas (A e B) para comparar.");
+            }
+            if (pA.getCodigo().equalsIgnoreCase(pB.getCodigo())) {
+                throw new RelatorioException("Selecione duas pesquisas diferentes para comparar.");
+            }
+
+            List<Entrevista> entA = new ArrayList<>();
+            List<Entrevista> entB = new ArrayList<>();
+            for (Entrevista e : coletaController.listarEntrevistas()) {
+                if (e.getCodigoPesquisa() != null) {
+                    if (e.getCodigoPesquisa().equalsIgnoreCase(pA.getCodigo())) {
+                        entA.add(e);
+                    } else if (e.getCodigoPesquisa().equalsIgnoreCase(pB.getCodigo())) {
+                        entB.add(e);
+                    }
+                }
+            }
+
+            Relatorio rA = relatorioController.gerarRelatorio(pA, pA.getNome(), entA, null, null, null, null);
+            Relatorio rB = relatorioController.gerarRelatorio(pB, pB.getNome(), entB, null, null, null, null);
+
+            // Valida cargos e executa a comparação oficial no RelatorioController
+            ComparaPesquisa comparacao = relatorioController.compararPesquisas(rA, rB);
+
+            preencherTabelaEGraficoComparacao(rA, rB, comparacao);
+
+        } catch (CaixaPesquisaVazia | PesquisaInvalidaException | RelatorioException e) {
+            trataAlerta(Alert.AlertType.WARNING, "Aviso", e.getMessage());
+            tabelaComparacao.getItems().clear();
+            graficoComparacao.getData().clear();
+        } catch (IOException e) {
+            trataAlerta(Alert.AlertType.ERROR, "Erro de Arquivo", "Erro ao processar comparação: " + e.getMessage());
+        }
+    }
+
+    private void preencherTabelaEGraficoComparacao(Relatorio rA, Relatorio rB, ComparaPesquisa comparacao) {
+        ObservableList<LinhaTabelaRelatorio> linhas = FXCollections.observableArrayList();
+        graficoComparacao.getData().clear();
+        XYChart.Series<String, Number> serieA = new XYChart.Series<>();
+        serieA.setName(rA.getPesquisa().getNome());
+        XYChart.Series<String, Number> serieB = new XYChart.Series<>();
+        serieB.setName(rB.getPesquisa().getNome());
+        Map<String, Float> mapA = extrairPercentuaisGerais(rA);
+        Map<String, Float> mapB = extrairPercentuaisGerais(rB);
+
+        Set<String> todasOpcoes = new LinkedHashSet<>();
+        todasOpcoes.addAll(mapA.keySet());
+        todasOpcoes.addAll(mapB.keySet());
+
+        for (String opcao : todasOpcoes) {
+            float pctA = mapA.getOrDefault(opcao, 0.0f);
+            float pctB = mapB.getOrDefault(opcao, 0.0f);
+
+            linhas.add(new LinhaTabelaRelatorio(opcao, pctA + "%", pctB + "%"));
+            serieA.getData().add(new XYChart.Data<>(opcao, pctA));
+            serieB.getData().add(new XYChart.Data<>(opcao, pctB));
+        }
+
+        tabelaComparacao.setItems(linhas);
+        graficoComparacao.getData().addAll(serieA, serieB);
+    }
+
+    private Map<String, Float> extrairPercentuaisGerais(Relatorio r) {
+        Map<String, Float> resultado = new LinkedHashMap<>();
+        if (r.getEstatisticas() != null) {
+            for (Estatisticas est : r.getEstatisticas()) {
+                if (est.getParametro().startsWith("[Geral]") && est.getEstatistica() != null) {
+                    for (Map.Entry<String, Float> entry : est.getEstatistica().entrySet()) {
+                        String nomeLimpo = entry.getKey().split(" \\(")[0];
+                        resultado.put(nomeLimpo, entry.getValue());
+                    }
+                }
+            }
+        }
+        return resultado;
+    }
+
 }
 class LinhaTabelaRelatorio {
     final String opcao;
