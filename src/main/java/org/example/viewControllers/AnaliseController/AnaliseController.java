@@ -23,6 +23,7 @@ import org.example.models.Relatorio;
 import org.example.models.coleta.Resposta;
 import org.example.models.researchModels.Pesquisa;
 import org.example.serviceControllers.ColetaServiceController;
+import org.example.serviceControllers.ParametroController;
 import org.example.serviceControllers.PesquisaController;
 import org.example.serviceControllers.RelatorioController;
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class AnaliseController implements Initializable { //implenta a interface
     private final RelatorioController relatorioController = new RelatorioController();
     private final PesquisaController pesquisaController = new PesquisaController();
     private final ColetaServiceController coletaController = new ColetaServiceController();
+    private final ParametroController parametroController = new ParametroController();
     private Relatorio relatorioAtual;
 
     @FXML private ComboBox<Pesquisa> caixaPesquisa;
@@ -106,10 +108,26 @@ public class AnaliseController implements Initializable { //implenta a interface
     }
 
     private void carregarParametros() {
-        //chamar meotodo que lista todos os parametros, esses sao so para testes
+        List<String> regioes = new ArrayList<>();
+        regioes.add("Todas");
+        regioes.addAll(parametroController.listarRegioes());
+        caixaRegiao.setItems(FXCollections.observableArrayList(regioes));
+
+        List<String> faixasEtarias = new ArrayList<>();
+        faixasEtarias.add("Todas");
+        faixasEtarias.addAll(parametroController.listarFaixasEtarias());
+        caixaFaixaEtaria.setItems(FXCollections.observableArrayList(faixasEtarias));
+
+        List<String> escolaridades = new ArrayList<>();
+        escolaridades.add("Todas");
+        escolaridades.addAll(parametroController.listarEscolaridades());
+        caixaEscolaridade.setItems(FXCollections.observableArrayList(escolaridades));
+
+        List<String> faixasRenda = new ArrayList<>();
+        faixasRenda.add("Todas");
+        faixasRenda.addAll(parametroController.listarFaixasRenda());
+        caixaFaixaRenda.setItems(FXCollections.observableArrayList(faixasRenda));
         caixaGenero.setItems(FXCollections.observableArrayList("Todos", "Masculino", "Feminino", "Outro"));
-        caixaEscolaridade.setItems(FXCollections.observableArrayList("Todos", "Fundamental", "Médio", "Superior"));
-        caixaFaixaEtaria.setItems(FXCollections.observableArrayList("Todos", "16-24", "25-34", "35-44", "45-59", "60+"));
     }
 
     //funcao para facilitar a troca da tela atual para a do caminho informado
@@ -124,19 +142,10 @@ public class AnaliseController implements Initializable { //implenta a interface
     }
 
     //botoes dentro do menu de analise
-    @FXML
-    public void abrirResultados(ActionEvent event) throws IOException {
-        trocarTela(event, "/view.Analise/Resultados.fxml");
-    }
 
     @FXML
     public void abrirCompararPesquisas(ActionEvent event) throws IOException {
         trocarTela(event, "/view.Analise/CompararPesquisas.fxml");
-    }
-
-    @FXML
-    public void abrirProcessarPesquisa(ActionEvent event) throws IOException {
-        trocarTela(event, "/view.Analise/ProcessarPesquisa.fxml");
     }
 
     @FXML

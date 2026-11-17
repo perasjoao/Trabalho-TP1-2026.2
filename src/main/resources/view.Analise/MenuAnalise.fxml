@@ -15,8 +15,6 @@
                   <Font size="24.0" />
                </font>
             </Label>
-            <Button mnemonicParsing="false" onAction="#abrirProcessarPesquisa" prefWidth="200.0" text="Processar Pesquisa" />
-            <Button mnemonicParsing="false" onAction="#abrirResultados" prefWidth="200.0" text="Resultados Estatísticos" />
             <Button mnemonicParsing="false" onAction="#abrirCompararPesquisas" prefWidth="200.0" text="Comparar Pesquisas" />
             <Button mnemonicParsing="false" onAction="#abrirRelatorios" prefWidth="200.0" text="Relatórios" />
             <Button mnemonicParsing="false" onAction="#voltarMenuPrincipal" prefWidth="200.0" text="Voltar" />
