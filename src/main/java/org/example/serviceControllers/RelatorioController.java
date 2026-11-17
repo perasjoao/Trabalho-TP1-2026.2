@@ -230,6 +230,10 @@ public class RelatorioController {
         if (cargo1 == null || cargo2 == null || !cargo1.getDescricao().equals(cargo2.getDescricao())) {
             throw new RelatorioException("Pesquisas de cargos diferentes");
         }
+        String s1=r1.getPesquisa().getAbrangencia();
+        String s2=r1.getPesquisa().getAbrangencia();
+
+    //if(!r1.equals(r2)){throw new RelatorioException("Pesquisas de requisitos diferentes");}
 
         List<Estatisticas> listaComparacoes = new ArrayList<>();
         if (r1.getEstatisticas() == null || r2.getEstatisticas() == null) {
