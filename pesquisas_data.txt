@@ -1,0 +1,2 @@
+1;PesquisaTeste;PRESIDENTE;Conhecimento;Em coleta;Nacional;2026-10-12;2026-11-12;20;;0;;;
+2;PesquisaBtata;PRESIDENTE;Conhecimento;Em coleta;Nacional;2026-10-12;2026-11-12;23;;0;;;
