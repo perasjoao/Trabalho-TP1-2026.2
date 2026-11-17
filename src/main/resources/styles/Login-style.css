@@ -1,0 +1,21 @@
+.label-campo {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.campo-texto {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+}
+
+.label-erro {
+    -fx-text-fill: #c62828;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
