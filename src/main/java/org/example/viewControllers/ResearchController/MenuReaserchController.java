@@ -2,13 +2,23 @@ package org.example.viewControllers.ResearchController;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import org.example.models.Usuario;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class MenuReaserchController {
+public class MenuReaserchController implements Initializable {
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+    }
+
 
     public void abrirGerenciarPesquisas(ActionEvent event) throws IOException{
         Parent root = FXMLLoader.load(getClass().getResource("/view.Research/GerenciarPesquisa.fxml"));
@@ -39,4 +49,5 @@ public class MenuReaserchController {
         tela.setWidth(width);
         tela.setHeight(height);
     }
+
 }
