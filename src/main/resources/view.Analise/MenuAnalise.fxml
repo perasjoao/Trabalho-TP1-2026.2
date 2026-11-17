@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.AnaliseController.AnaliseController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0" stylesheets="@/styles/style.css"
+            xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.viewControllers.AnaliseController.AnaliseController">
    <children>
-      <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="TOP_CENTER" spacing="16.0"
+            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="Análise Estatística" textAlignment="CENTER">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Label>
-            <Button mnemonicParsing="false" onAction="#abrirCompararPesquisas" prefWidth="200.0" text="Comparar Pesquisas" />
-            <Button mnemonicParsing="false" onAction="#abrirRelatorios" prefWidth="200.0" text="Relatórios" />
-            <Button mnemonicParsing="false" onAction="#voltarMenuPrincipal" prefWidth="200.0" text="Voltar" />
+            <Label maxWidth="1.7976931348623157E308" styleClass="titulo-topo" text="Análise Estatística" />
+
+            <VBox alignment="CENTER" spacing="14.0" VBox.vgrow="ALWAYS">
+               <padding>
+                  <Insets bottom="30.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+               <children>
+                  <Button mnemonicParsing="false" onAction="#abrirCompararPesquisas" styleClass="botao" text="Comparar Pesquisas" />
+                  <Button mnemonicParsing="false" onAction="#abrirRelatorios" styleClass="botao" text="Relatórios" />
+                  <Button mnemonicParsing="false" onAction="#voltarMenuPrincipal" styleClass="botao" text="Voltar" />
+               </children>
+            </VBox>
          </children>
       </VBox>
    </children>
