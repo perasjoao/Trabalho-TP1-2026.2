@@ -22,7 +22,10 @@ import org.example.models.coleta.Entrevistador;
 import org.example.models.coleta.Participante;
 import org.example.models.coleta.Resposta;
 import org.example.models.Usuario;
+import org.example.exceptions.PesquisaInvalidaException;
+import org.example.models.researchModels.Pesquisa;
 import org.example.serviceControllers.ColetaServiceController;
+import org.example.serviceControllers.PesquisaController;
 import org.example.utils.Sessao;
 
 import java.io.IOException;
@@ -62,7 +65,7 @@ public class ColetaController implements Initializable {
     @FXML private ComboBox<String> cbP4;
     @FXML private ToggleGroup GROUP4;
 
-    @FXML private ComboBox<String> cbPesquisaPertencente;
+    @FXML private ComboBox<Pesquisa> cbPesquisaPertencente;
 
     // Campos da tela FiltroEntrevistas.fxml
     @FXML private ComboBox<String> cbFiltroEscolaridade;
@@ -97,7 +100,28 @@ public class ColetaController implements Initializable {
         if (cbP2 != null) cbP2.getItems().addAll("Candidato A", "Candidato B", "Candidato C");
         if (cbP3 != null) cbP3.getItems().addAll("Sim", "Não", "Parcialmente");
         if (cbP4 != null) cbP4.getItems().addAll("Sim", "Não");
-        if (cbPesquisaPertencente != null) cbPesquisaPertencente.getItems().addAll("Pesquisa Eleitoral 2026", "Pesquisa Local");
+        if (cbPesquisaPertencente != null) carregarPesquisasDisponiveis();
+    }
+
+    // Busca as pesquisas cadastradas pelo módulo de Pesquisas (arquivo pesquisas_data.txt).
+    // Um novo PesquisaController é criado a cada abertura da tela para reler o arquivo
+    // e enxergar pesquisas criadas depois que o programa iniciou.
+    private void carregarPesquisasDisponiveis() {
+        cbPesquisaPertencente.getItems().clear();
+        PesquisaController pesquisaController = new PesquisaController();
+        try {
+            for (Pesquisa p : pesquisaController.listarTodas()) {
+                // Regra de negócio: pesquisa encerrada/processada não recebe novas entrevistas
+                if (pesquisaController.podeReceberEntrevista(p.getCodigo())) {
+                    cbPesquisaPertencente.getItems().add(p);
+                }
+            }
+        } catch (PesquisaInvalidaException e) {
+            // Nenhuma pesquisa cadastrada: o combo fica vazio e o aviso aparece ao finalizar
+        }
+        if (cbPesquisaPertencente.getItems().isEmpty()) {
+            cbPesquisaPertencente.setPromptText("Nenhuma pesquisa disponível");
+        }
     }
 
     private void salvarAmostraAtual() {
@@ -240,10 +264,14 @@ public class ColetaController implements Initializable {
                 }
             }
 
+            // Toda entrevista deve estar vinculada a uma pesquisa existente
+            Pesquisa pesquisaSelecionada = (cbPesquisaPertencente != null) ? cbPesquisaPertencente.getValue() : null;
+            if (pesquisaSelecionada == null) {
+                throw new ColetaIncompletaException("Selecione a pesquisa à qual esta entrevista pertence!");
+            }
+
             String idEntrevista = "ENT" + (System.currentTimeMillis() % 10000);
-            String codigoPesquisa = (cbPesquisaPertencente != null && cbPesquisaPertencente.getValue() != null)
-                    ? cbPesquisaPertencente.getValue()
-                    : "PESQ001";
+            String codigoPesquisa = pesquisaSelecionada.getCodigo();
 
             Entrevista entrevistaCompleta = new Entrevista(
                     idEntrevista,
