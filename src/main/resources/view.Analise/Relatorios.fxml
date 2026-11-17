@@ -53,7 +53,7 @@
 
                   <Button mnemonicParsing="false" onAction="#acaoGerarRelatorio" prefWidth="200.0" styleClass="botao-acao" text="Gerar Relatório" />
 
-                  <TableView fx:id="idTabelaRelatorio" maxWidth="680.0" prefHeight="250.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="idTabelaRelatorio" maxWidth="1150.0" prefHeight="320.0" VBox.vgrow="ALWAYS">
                      <columns>
                         <TableColumn fx:id="colunaOpcao" prefWidth="360.0" text="Opção" />
                         <TableColumn fx:id="colunaQuantidade" prefWidth="160.0" text="Quantidade" />

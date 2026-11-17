@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.example.exceptions.CaixaPesquisaVazia;
@@ -189,7 +190,7 @@ public class AnaliseController implements Initializable { //implenta a interface
     }
 
     private String limparFiltro(String valor) {
-        if (valor == null || valor.trim().isEmpty() || valor.equalsIgnoreCase("Todos")) {
+        if (valor == null || valor.trim().isEmpty() || valor.equalsIgnoreCase("Todos")|| valor.equalsIgnoreCase("Todas")) {
             return null;
         }
         return valor.trim();
@@ -313,9 +314,16 @@ public class AnaliseController implements Initializable { //implenta a interface
         try {
             Pesquisa pA = caixaPesquisaA.getValue();
             Pesquisa pB = caixaPesquisaB.getValue();
+            graficoComparacao.setAnimated(false);
+            graficoComparacao.getData().clear();
+            //deita os nomes em baixo da tabela para nao cortar
+            CategoryAxis eixoX = (CategoryAxis) graficoComparacao.getXAxis();
+            eixoX.getCategories().clear();
+            eixoX.setAutoRanging(true);
+            eixoX.setTickLabelRotation(45);
 
             if (pA == null || pB == null) {
-                throw new CaixaPesquisaVazia("Selecione as duas pesquisas (A e B) para comparar.");
+                throw new CaixaPesquisaVazia("Selecione as duas pesquisas para comparar.");
             }
             if (pA.getCodigo().equalsIgnoreCase(pB.getCodigo())) {
                 throw new RelatorioException("Selecione duas pesquisas diferentes para comparar.");
@@ -332,13 +340,9 @@ public class AnaliseController implements Initializable { //implenta a interface
                     }
                 }
             }
-
             Relatorio rA = relatorioController.gerarRelatorio(pA, pA.getNome(), entA, null, null, null, null);
             Relatorio rB = relatorioController.gerarRelatorio(pB, pB.getNome(), entB, null, null, null, null);
-
-            // Valida cargos e executa a comparação oficial no RelatorioController
             ComparaPesquisa comparacao = relatorioController.compararPesquisas(rA, rB);
-
             preencherTabelaEGraficoComparacao(rA, rB, comparacao);
 
         } catch (CaixaPesquisaVazia | PesquisaInvalidaException | RelatorioException e) {
@@ -382,9 +386,12 @@ public class AnaliseController implements Initializable { //implenta a interface
         if (r.getEstatisticas() != null) {
             for (Estatisticas est : r.getEstatisticas()) {
                 if (est.getParametro().startsWith("[Geral]") && est.getEstatistica() != null) {
+                    String pergunta = est.getParametro().replace("[Geral] ", "").trim();
                     for (Map.Entry<String, Float> entry : est.getEstatistica().entrySet()) {
                         String nomeLimpo = entry.getKey().split(" \\(")[0];
-                        resultado.put(nomeLimpo, entry.getValue());
+                        //junto a pergunta e opcao
+                        String chaveCompleta = pergunta + " -> " + nomeLimpo;
+                        resultado.put(chaveCompleta, entry.getValue());
                     }
                 }
             }
