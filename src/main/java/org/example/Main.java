@@ -7,16 +7,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    public void start(Stage telaPrincipal) throws Exception {
 
-        // a aplicacao comeca pelo login; o LoginController abre o Menu.fxml apos autenticar
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/Login.fxml"));
-
-        telaPrincipal.setTitle("Sistema de Pesquisas Eleitorais");
-        telaPrincipal.setScene(new Scene(root));
-        // sempre que uma tela for trocada (setRoot), ajusta a janela ao tamanho da nova tela
-        telaPrincipal.getScene().rootProperty().addListener((obs, telaAntiga, telaNova) -> telaPrincipal.sizeToScene());
-        telaPrincipal.show();
+        primaryStage.setTitle("Sistema de Análise de Pesquisas Eleitorais");
+        primaryStage.setScene(new Scene(root));
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
