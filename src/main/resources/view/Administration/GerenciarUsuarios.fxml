@@ -12,45 +12,45 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.AdministrationController.GerenciarUsuariosController">
-   <children>
-      <Label layoutX="29.0" layoutY="66.0" prefHeight="34.0" prefWidth="148.0" text="Nome" />
-      <TextField layoutX="30.0" layoutY="100.0" />
-      <Label layoutX="29.0" layoutY="134.0" prefHeight="26.0" prefWidth="148.0" text="Email" />
-      <TextField layoutX="30.0" layoutY="160.0" />
-      <Label layoutX="30.0" layoutY="200.0" prefHeight="26.0" prefWidth="150.0" text="Senha" />
-      <PasswordField layoutX="30.0" layoutY="226.0" />
-      <ComboBox layoutX="30.0" layoutY="270.0" prefWidth="150.0" promptText="Perfil" />
-      <ComboBox layoutX="30.0" layoutY="305.0" prefWidth="150.0" promptText="Status">
+    <children>
+        <Label layoutX="29.0" layoutY="66.0" prefHeight="34.0" prefWidth="148.0" text="Nome" />
+        <TextField fx:id="txtNome" layoutX="30.0" layoutY="100.0" />
+        <Label layoutX="29.0" layoutY="134.0" prefHeight="26.0" prefWidth="148.0" text="Email" />
+        <TextField fx:id="txtEmail" layoutX="30.0" layoutY="160.0" />
+        <Label layoutX="30.0" layoutY="200.0" prefHeight="26.0" prefWidth="150.0" text="Senha" />
+        <PasswordField fx:id="txtSenha" layoutX="30.0" layoutY="226.0" />
+        <ComboBox fx:id="cbPerfil" layoutX="30.0" layoutY="270.0" prefWidth="150.0" promptText="Perfil" />
+        <ComboBox fx:id="cbStatus" layoutX="30.0" layoutY="305.0" prefWidth="150.0" promptText="Status">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Ativo" />
                     <String fx:value="Inativo" />
                 </FXCollections>
             </items>
-      </ComboBox>
-      <!-- busca por multiplos criterios -->
-      <TextField layoutX="209.0" layoutY="55.0" prefWidth="120.0" promptText="Buscar por nome" />
-      <ComboBox layoutX="335.0" layoutY="55.0" prefWidth="95.0" promptText="Perfil" />
-      <ComboBox layoutX="436.0" layoutY="55.0" prefWidth="85.0" promptText="Status">
+        </ComboBox>
+        <TextField fx:id="txtBuscaNome" layoutX="209.0" layoutY="55.0" prefWidth="120.0" promptText="Buscar por nome" />
+        <ComboBox fx:id="cbFiltroPerfil" layoutX="335.0" layoutY="55.0" prefWidth="95.0" promptText="Perfil" />
+        <ComboBox fx:id="cbFiltroStatus" layoutX="436.0" layoutY="55.0" prefWidth="85.0" promptText="Status">
             <items>
                 <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Todos" />
                     <String fx:value="Ativo" />
                     <String fx:value="Inativo" />
                 </FXCollections>
             </items>
-      </ComboBox>
-      <Button layoutX="527.0" layoutY="55.0" mnemonicParsing="false" text="Buscar" />
-      <Button layoutX="300.0" layoutY="315.0" mnemonicParsing="false" text="Salvar" />
-      <Button layoutX="392.0" layoutY="315.0" mnemonicParsing="false" text="Editar" />
-      <Button layoutX="487.0" layoutY="315.0" mnemonicParsing="false" text="Excluir" />
-      <Button layoutX="538.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
-      <TableView layoutX="209.0" layoutY="91.0" prefHeight="200.0" prefWidth="376.0">
-        <columns>
-          <TableColumn prefWidth="75.0" text="Nome" />
-          <TableColumn prefWidth="75.0" text="Email" />
-            <TableColumn prefWidth="75.0" text="Perfil" />
-            <TableColumn prefWidth="75.0" text="Status" />
-        </columns>
-      </TableView>
-   </children>
+        </ComboBox>
+        <Button layoutX="527.0" layoutY="55.0" mnemonicParsing="false" onAction="#buscarUsuarios" text="Buscar" />
+        <Button layoutX="300.0" layoutY="315.0" mnemonicParsing="false" onAction="#salvarUsuario" text="Salvar" />
+        <Button layoutX="392.0" layoutY="315.0" mnemonicParsing="false" onAction="#editarUsuario" text="Editar" />
+        <Button layoutX="487.0" layoutY="315.0" mnemonicParsing="false" onAction="#excluirUsuario" text="Excluir" />
+        <Button layoutX="538.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
+        <TableView fx:id="tabelaUsuarios" layoutX="209.0" layoutY="91.0" prefHeight="200.0" prefWidth="376.0">
+            <columns>
+                <TableColumn fx:id="colNome" prefWidth="105.0" text="Nome" />
+                <TableColumn fx:id="colEmail" prefWidth="115.0" text="Email" />
+                <TableColumn fx:id="colPerfil" prefWidth="90.0" text="Perfil" />
+                <TableColumn fx:id="colStatus" prefWidth="65.0" text="Status" />
+            </columns>
+        </TableView>
+    </children>
 </AnchorPane>

@@ -42,6 +42,10 @@ public class LoginController {
         // so chega aqui se a autenticacao deu certo
         Parent root = FXMLLoader.load(getClass().getResource("/view.Menu/Menu.fxml"));
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
         tela.getScene().setRoot(root);
+        tela.setWidth(width);
+        tela.setHeight(height);
     }
 }
