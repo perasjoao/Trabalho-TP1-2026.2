@@ -1,0 +1,34 @@
+/*fundo da tela*/
+.root {
+    -fx-background-color: #ffffff;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+.caixaTitulo{
+    width: 100px;
+}
+
+.titulo-topo {
+    -fx-background-color: #006B47;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 22px 16px;
+}
+.botao {
+    -fx-background-color: #006B47;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-pref-width: 280px;
+    -fx-pref-height: 46px;
+    -fx-background-radius: 3px;
+    -fx-cursor: hand;
+}
+.botao:hover {
+    -fx-background-color: #005236;
+}
+.botao:active{
+    -fx-background-color: #003D28;
+}

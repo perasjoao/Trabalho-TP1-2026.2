@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.ResearchController.MenuReaserchController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0" stylesheets="@/styles/style.css"
+            xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.viewControllers.ResearchController.MenuReaserchController">
     <children>
-        <Label layoutX="235.0" layoutY="42.0" prefHeight="62.0" prefWidth="130.0" text="        PESQUISAS" />
-        <Button layoutX="113.0" layoutY="194.0" mnemonicParsing="false" onAction="#abrirConsultarPesquisas" text="Consultar pesquisas" />
-        <Button layoutX="365.0" layoutY="194.0" fx:id="botaoGerenciar" mnemonicParsing="false" onAction="#abrirGerenciarPesquisas" text="Gerenciar Pesquisas" />
-        <Button layoutY="2.0" mnemonicParsing="false" onAction="#abrirMenuPrincipal" text="Voltar" />
+        <VBox alignment="TOP_CENTER" spacing="16.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Label maxWidth="1.7976931348623157E308" styleClass="titulo-topo" text="Pesquisas" />
+
+                <VBox alignment="CENTER" spacing="14.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="30.0" left="20.0" right="20.0" top="10.0" />
+                    </padding>
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#abrirConsultarPesquisas" styleClass="botao" text="Consultar Pesquisas" />
+                        <Button fx:id="botaoGerenciar" mnemonicParsing="false" onAction="#abrirGerenciarPesquisas" styleClass="botao" text="Gerenciar Pesquisas" />
+                        <Button mnemonicParsing="false" onAction="#abrirMenuPrincipal" styleClass="botao" text="Voltar" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>
