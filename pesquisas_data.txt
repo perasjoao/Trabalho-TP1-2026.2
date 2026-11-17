@@ -1,3 +1,4 @@
 1;PesquisaTeste;PRESIDENTE;Conhecimento;Em coleta;Nacional;2026-10-12;2026-11-12;20;;0;;;
 2;PesquisaBtata;PRESIDENTE;Conhecimento;Em coleta;Nacional;2026-10-12;2026-11-12;23;;0;;;
 3;Pesquisa Permissao;PRESIDENTE;Conhecimento;Planejada;Nacional;2026-11-03;2026-12-03;2;;0;;;
+123;pesquisaNORTE;PRESIDENTE;Intenção de voto;Planejada;Norte;2026-11-17;2026-11-26;67;aura;0;;;
