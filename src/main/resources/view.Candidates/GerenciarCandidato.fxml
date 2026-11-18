@@ -1,20 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.GerenciarCandidatoController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.viewControllers.CandidatesController.GerenciarCandidatoController">
+    <stylesheets>
+        <URL value="@/styles/style.css" />
+        <URL value="@/styles/Login-style.css" />
+        <URL value="@/styles/ComparaPesquisa-style.css" />
+        <URL value="@/styles/Admin-style.css" />
+    </stylesheets>
     <children>
-        <Label layoutX="222.0" layoutY="40.0" text="GERENCIAR CANDIDATO" />
-        <ComboBox fx:id="caixaCandidatura" layoutX="150.0" layoutY="80.0" onAction="#selecionarCandidatura" prefWidth="300.0" promptText="Escolha a candidatura" />
-        <TextField fx:id="campoNome" layoutX="215.0" layoutY="125.0" promptText="Nome" />
-        <TextField fx:id="campoNumero" layoutX="215.0" layoutY="160.0" promptText="Número" />
-        <ComboBox fx:id="caixaCargo" layoutX="215.0" layoutY="195.0" prefWidth="150.0" promptText="Cargo" />
-        <ComboBox fx:id="caixaSituacao" layoutX="215.0" layoutY="230.0" prefWidth="150.0" promptText="Situação" />
-        <Button layoutX="227.0" layoutY="290.0" mnemonicParsing="false" onAction="#atualizarCandidato" prefWidth="146.0" text="Atualizar Candidato" />
-        <Button layoutX="227.0" layoutY="325.0" mnemonicParsing="false" onAction="#excluirCandidato" prefWidth="146.0" text="Excluir Candidato" />
-        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirMenuCandidato" text="Voltar" />
+        <VBox spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Label maxWidth="1.7976931348623157E308" styleClass="titulo-topo" text="Gerenciar Candidato" />
+
+                <VBox spacing="14.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="20.0" left="36.0" right="36.0" top="4.0" />
+                    </padding>
+                    <children>
+                        <VBox spacing="12.0" styleClass="card-painel" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="titulo-secao" text="Selecione a candidatura e edite os dados" />
+
+                                <GridPane hgap="16.0" vgap="12.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="120.0" prefWidth="130.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Label styleClass="label-campo" text="Candidatura:" />
+                                        <ComboBox fx:id="caixaCandidatura" maxWidth="1.7976931348623157E308" onAction="#selecionarCandidatura" prefHeight="38.0" promptText="Escolha a candidatura" GridPane.columnIndex="1" />
+
+                                        <Label styleClass="label-campo" text="Nome:" GridPane.rowIndex="1" />
+                                        <TextField fx:id="campoNome" promptText="Nome do candidato" styleClass="campo-texto" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                        <Label styleClass="label-campo" text="Número:" GridPane.rowIndex="2" />
+                                        <TextField fx:id="campoNumero" promptText="Número da candidatura" styleClass="campo-texto" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                        <Label styleClass="label-campo" text="Cargo:" GridPane.rowIndex="3" />
+                                        <ComboBox fx:id="caixaCargo" maxWidth="1.7976931348623157E308" prefHeight="38.0" promptText="Selecione o cargo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                                        <Label styleClass="label-campo" text="Situação:" GridPane.rowIndex="4" />
+                                        <ComboBox fx:id="caixaSituacao" maxWidth="1.7976931348623157E308" prefHeight="38.0" promptText="Selecione a situação" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#AbrirMenuCandidato" styleClass="botao-secundario" text="Voltar" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#excluirCandidato" style="-fx-pref-width: 180px;" styleClass="botao-excluir" text="Excluir Candidato" />
+                                <Button mnemonicParsing="false" onAction="#atualizarCandidato" style="-fx-pref-width: 180px;" styleClass="botao-acao" text="Atualizar Candidato" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>
