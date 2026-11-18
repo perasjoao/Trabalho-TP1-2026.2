@@ -5,6 +5,7 @@
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -12,13 +13,14 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="580.0" prefWidth="820.0"
+<AnchorPane prefHeight="610.0" prefWidth="820.0"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.viewControllers.ResearchController.CadastrarPesquisaController">
     <stylesheets>
@@ -93,14 +95,23 @@
                                             </items>
                                         </ComboBox>
 
-                                        <Label styleClass="label-campo" text="Abrangência:" GridPane.rowIndex="5" />
-                                        <TextField fx:id="txtAbrangencia" promptText="Ex: Nacional, Estadual" styleClass="campo-texto" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                        <Label styleClass="label-campo" text="Abrangência / Regiões:" GridPane.rowIndex="5" />
+                                        <FlowPane hgap="14.0" vgap="6.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                            <children>
+                                                <CheckBox fx:id="chkNorte" onAction="#aoAlterarRegiao" text="Norte" />
+                                                <CheckBox fx:id="chkNordeste" onAction="#aoAlterarRegiao" text="Nordeste" />
+                                                <CheckBox fx:id="chkCentroOeste" onAction="#aoAlterarRegiao" text="Centro-Oeste" />
+                                                <CheckBox fx:id="chkSudeste" onAction="#aoAlterarRegiao" text="Sudeste" />
+                                                <CheckBox fx:id="chkSul" onAction="#aoAlterarRegiao" text="Sul" />
+                                                <CheckBox fx:id="chkNacional" onAction="#aoAlterarNacional" style="-fx-font-weight: bold;" text="Nacional" />
+                                            </children>
+                                        </FlowPane>
 
                                         <Label styleClass="label-campo" text="Período de coleta:" GridPane.rowIndex="6" />
                                         <HBox spacing="12.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
                                             <children>
-                                                <DatePicker fx:id="dpDataInicio" prefHeight="38.0" promptText="Início" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-                                                <DatePicker fx:id="dpDataFim" prefHeight="38.0" promptText="Fim" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+                                                <DatePicker fx:id="dpDataInicio" maxWidth="1.7976931348623157E308" prefHeight="38.0" promptText="Início" HBox.hgrow="ALWAYS" />
+                                                <DatePicker fx:id="dpDataFim" maxWidth="1.7976931348623157E308" prefHeight="38.0" promptText="Fim" HBox.hgrow="ALWAYS" />
                                             </children>
                                         </HBox>
 
