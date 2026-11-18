@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import org.example.exceptions.PersistenciaException;
 import org.example.exceptions.PesquisaInvalidaException;
 import org.example.models.candidatos.Candidatura;
-import org.example.models.comum.Regiao;
 import org.example.models.researchModels.OpcaoResposta;
 import org.example.models.researchModels.Pergunta;
 import org.example.models.researchModels.Pesquisa;
@@ -22,7 +21,6 @@ import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,11 +41,7 @@ public class ConfigurarPesquisaController {
     @FXML private TableColumn<Pergunta, String> colTipoPergunta;
     @FXML private TableColumn<Pergunta, String> colOpcoesPergunta;
 
-    // Aba 2: Regiões
-    @FXML private ListView<Regiao> listRegioesDisponiveis;
-    @FXML private ListView<Regiao> listRegioesAssociadas;
-
-    // Aba 3: Candidatos
+    // Aba 2: Candidatos
     @FXML private ListView<Candidatura> listCandidatosDisponiveis;
     @FXML private ListView<Candidatura> listCandidatosAssociados;
 
@@ -127,15 +121,7 @@ public class ConfigurarPesquisaController {
         tblPerguntas.setItems(FXCollections.observableArrayList(pesquisaAtual.getPerguntas()));
         limparFormularioPergunta();
 
-        // 2. Atualiza listas de regiões
-        List<Regiao> associadas = pesquisaAtual.getRegioesAssociadas();
-        List<Regiao> disponiveis = Arrays.stream(Regiao.values())
-                .filter(r -> !associadas.contains(r))
-                .collect(Collectors.toList());
-        listRegioesDisponiveis.setItems(FXCollections.observableArrayList(disponiveis));
-        listRegioesAssociadas.setItems(FXCollections.observableArrayList(associadas));
-
-        // 3. Busca as candidaturas reais do sistema e vincula as já salvas no TXT
+        // 2. Busca as candidaturas reais do sistema e vincula as já salvas no TXT
         List<Candidatura> todasCandidaturas = candidatoController.listar();
         GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(todasCandidaturas);
 
@@ -244,41 +230,7 @@ public class ConfigurarPesquisaController {
         opcoesEmEdicao.clear();
     }
 
-    // ==================== ABA 2: REGIÕES ====================
-
-    @FXML
-    public void associarRegiao(ActionEvent event) {
-        if (!verificarPesquisaSelecionada()) return;
-        Regiao selecionada = listRegioesDisponiveis.getSelectionModel().getSelectedItem();
-        if (selecionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atenção", "Selecione uma região disponível para associar.");
-            return;
-        }
-        try {
-            GerenciarPesquisasController.getPesquisaController().associarRegiao(pesquisaAtual.getCodigo(), selecionada);
-            atualizarTodasAsAbas();
-        } catch (PesquisaInvalidaException | PersistenciaException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
-        }
-    }
-
-    @FXML
-    public void removerRegiao(ActionEvent event) {
-        if (!verificarPesquisaSelecionada()) return;
-        Regiao selecionada = listRegioesAssociadas.getSelectionModel().getSelectedItem();
-        if (selecionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atenção", "Selecione uma região associada para remover.");
-            return;
-        }
-        try {
-            GerenciarPesquisasController.getPesquisaController().removerRegiao(pesquisaAtual.getCodigo(), selecionada);
-            atualizarTodasAsAbas();
-        } catch (PesquisaInvalidaException | PersistenciaException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
-        }
-    }
-
-    // ==================== ABA 3: CANDIDATOS ====================
+    // ==================== ABA 2: CANDIDATOS ====================
 
     @FXML
     public void associarCandidato(ActionEvent event) {
