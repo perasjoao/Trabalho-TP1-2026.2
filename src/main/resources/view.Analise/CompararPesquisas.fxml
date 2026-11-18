@@ -42,7 +42,7 @@
                         </HBox>
                         <HBox alignment="CENTER" spacing="25.0" VBox.vgrow="ALWAYS">
                             <children>
-                                <TableView fx:id="tabelaComparacao" maxHeight="550.0" prefHeight="780.0" prefWidth="900.0">
+                                <TableView fx:id="tabelaComparacao" maxHeight="1500.0" prefHeight="880.0" prefWidth="900.0">
                                     <columns>
                                         <TableColumn fx:id="colCompOpcao" prefWidth="900.0" text="Opção" />
                                         <TableColumn fx:id="colCompPesquisaA" prefWidth="305.0" text="\% Pesquisa A" />
@@ -52,7 +52,7 @@
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                     </columnResizePolicy>
                                 </TableView>
-                                <BarChart fx:id="graficoComparacao" maxHeight="620.0" prefHeight="280.0" prefWidth="750.0" title="Comparação entre pesquisas">
+                                <BarChart fx:id="graficoComparacao" maxHeight="1150.0" prefHeight="580.0" prefWidth="750.0" title="Comparação entre pesquisas">
                                     <xAxis>
                                         <CategoryAxis label="Candidato" />
                                     </xAxis>
