@@ -18,6 +18,7 @@ import org.example.models.comum.Regiao;
 import org.example.models.researchModels.OpcaoResposta;
 import org.example.models.researchModels.Pergunta;
 import org.example.models.researchModels.Pesquisa;
+import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,17 +28,7 @@ import java.util.stream.Collectors;
 
 public class ConfigurarPesquisaController {
 
-    // Lista compartilhada com o módulo de Candidatos para povoar os candidatos disponíveis
-    private static List<Candidatura> candidaturasDoSistema = new ArrayList<>();
-
-    public static void setCandidaturasDoSistema(List<Candidatura> candidaturas) {
-        candidaturasDoSistema = (candidaturas != null) ? candidaturas : new ArrayList<>();
-        GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(candidaturasDoSistema);
-    }
-
-    public static List<Candidatura> getCandidaturasDoSistema() {
-        return candidaturasDoSistema;
-    }
+    private final CandidatoController candidatoController = new CandidatoController();
 
     @FXML private ComboBox<Pesquisa> cbPesquisa;
 
@@ -75,6 +66,10 @@ public class ConfigurarPesquisaController {
 
         listOpcoes.setItems(opcoesEmEdicao);
 
+        // Formata a exibição das candidaturas nas duas ListViews usando getDescricao()
+        configurarCellFactoryCandidatura(listCandidatosDisponiveis);
+        configurarCellFactoryCandidatura(listCandidatosAssociados);
+
         colNumPergunta.setCellValueFactory(new PropertyValueFactory<>("id"));
         colTextoPergunta.setCellValueFactory(new PropertyValueFactory<>("enunciado"));
         colTipoPergunta.setCellValueFactory(new PropertyValueFactory<>("tipo"));
@@ -89,12 +84,21 @@ public class ConfigurarPesquisaController {
             return new SimpleStringProperty(resumo);
         });
 
-        // Preenche os campos à esquerda ao clicar em uma pergunta na tabela
         tblPerguntas.getSelectionModel().selectedItemProperty().addListener((obs, antiga, selecionada) -> {
             if (selecionada != null) {
                 txtEnunciadoPergunta.setText(selecionada.getEnunciado());
                 cbTipoPergunta.setValue(selecionada.getTipo());
                 opcoesEmEdicao.setAll(selecionada.getOpcoes() != null ? selecionada.getOpcoes() : new ArrayList<>());
+            }
+        });
+    }
+
+    private void configurarCellFactoryCandidatura(ListView<Candidatura> listView) {
+        listView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Candidatura item, boolean empty) {
+                super.updateItem(item, empty);
+                setText((empty || item == null) ? null : item.getDescricao());
             }
         });
     }
@@ -131,13 +135,16 @@ public class ConfigurarPesquisaController {
         listRegioesDisponiveis.setItems(FXCollections.observableArrayList(disponiveis));
         listRegioesAssociadas.setItems(FXCollections.observableArrayList(associadas));
 
-        // 3. Atualiza listas de candidaturas (filtra pelo mesmo cargo e exclui já associadas)
-        GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(candidaturasDoSistema);
+        // 3. Busca as candidaturas reais do sistema e vincula as já salvas no TXT
+        List<Candidatura> todasCandidaturas = candidatoController.listar();
+        GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(todasCandidaturas);
+
         List<Candidatura> candAssociadas = pesquisaAtual.getCandidaturasAssociadas();
-        List<Candidatura> candDisponiveis = candidaturasDoSistema.stream()
+        List<Candidatura> candDisponiveis = todasCandidaturas.stream()
                 .filter(c -> c.getCargo() == pesquisaAtual.getCargo())
                 .filter(c -> candAssociadas.stream().noneMatch(a -> a.getNumero() == c.getNumero()))
                 .collect(Collectors.toList());
+
         listCandidatosDisponiveis.setItems(FXCollections.observableArrayList(candDisponiveis));
         listCandidatosAssociados.setItems(FXCollections.observableArrayList(candAssociadas));
     }

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 public class PesquisaController {
     private List<Pesquisa> pesquisas;
@@ -106,11 +107,26 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- BUSCA COM FILTROS COMBINADOS ---
+    // --- BUSCA COM FILTROS COMBINADOS (Compatibilidade com chamada simples) ---
     public List<Pesquisa> buscarComFiltros(String termo, Cargo cargo, String tipo, String situacao,
                                            Regiao regiao, Integer qtdMinEntrevistados,
                                            LocalDate dataInicio, LocalDate dataFim,
                                            boolean apenasAbaixoDaMeta, List<Entrevista> todasEntrevistas) {
+        return buscarComFiltrosMultiplos(
+                termo,
+                cargo != null ? Collections.singletonList(cargo) : Collections.emptyList(),
+                (tipo != null && !tipo.trim().isEmpty()) ? Collections.singletonList(tipo) : Collections.emptyList(),
+                (situacao != null && !situacao.trim().isEmpty()) ? Collections.singletonList(situacao) : Collections.emptyList(),
+                regiao != null ? Collections.singletonList(regiao) : Collections.emptyList(),
+                qtdMinEntrevistados, dataInicio, dataFim, apenasAbaixoDaMeta, todasEntrevistas
+        );
+    }
+
+    // --- BUSCA COM FILTROS MÚLTIPLOS POR CHECKBOX (RF 08, 09, 10) ---
+    public List<Pesquisa> buscarComFiltrosMultiplos(String termo, List<Cargo> cargos, List<String> tipos,
+                                                    List<String> situacoes, List<Regiao> regioes,
+                                                    Integer qtdMinEntrevistados, LocalDate dataInicio, LocalDate dataFim,
+                                                    boolean apenasAbaixoDaMeta, List<Entrevista> todasEntrevistas) {
         sincronizarEntrevistasRealizadas(todasEntrevistas);
 
         return pesquisas.stream()
@@ -119,16 +135,37 @@ public class PesquisaController {
                         p.getCodigo().equalsIgnoreCase(termo) ||
                         p.getCandidaturasAssociadas().stream().anyMatch(c ->
                                 c.getCandidato().getNome().toLowerCase().contains(termo.toLowerCase()))))
-                .filter(p -> (cargo == null || p.getCargo() == cargo))
-                .filter(p -> (tipo == null || tipo.trim().isEmpty() || p.getTipo().equalsIgnoreCase(tipo)))
-                .filter(p -> (situacao == null || situacao.trim().isEmpty() || p.getSituacao().equalsIgnoreCase(situacao)))
-                .filter(p -> (regiao == null || p.getRegioesAssociadas().contains(regiao) ||
-                        (p.getAbrangencia() != null && p.getAbrangencia().equalsIgnoreCase(regiao.getDescricao()))))
+                .filter(p -> (cargos == null || cargos.isEmpty() || cargos.contains(p.getCargo())))
+                .filter(p -> (tipos == null || tipos.isEmpty() ||
+                        tipos.stream().anyMatch(t -> t.equalsIgnoreCase(p.getTipo()))))
+                .filter(p -> (situacoes == null || situacoes.isEmpty() ||
+                        situacoes.stream().anyMatch(s -> s.equalsIgnoreCase(p.getSituacao()))))
+                .filter(p -> correspondeAlgumaRegiao(p, regioes))
                 .filter(p -> (qtdMinEntrevistados == null || p.getEntrevistasPrevistas() >= qtdMinEntrevistados))
                 .filter(p -> (dataInicio == null || (p.getDataInicio() != null && !p.getDataInicio().isBefore(dataInicio))))
                 .filter(p -> (dataFim == null || (p.getDataFim() != null && !p.getDataFim().isAfter(dataFim))))
                 .filter(p -> (!apenasAbaixoDaMeta || estaAbaixoDaMetaAmostral(p, todasEntrevistas)))
                 .collect(Collectors.toList());
+    }
+
+    private boolean correspondeAlgumaRegiao(Pesquisa p, List<Regiao> regioesFiltro) {
+        if (regioesFiltro == null || regioesFiltro.isEmpty()) {
+            return true;
+        }
+        for (Regiao r : regioesFiltro) {
+            if (r == Regiao.NACIONAL) {
+                boolean isNacional = "Nacional".equalsIgnoreCase(p.getAbrangencia())
+                        || p.getRegioesAssociadas().contains(Regiao.NACIONAL)
+                        || p.getRegioesAssociadas().size() == 5;
+                if (isNacional) return true;
+            } else {
+                if (p.getRegioesAssociadas().contains(r) ||
+                        (p.getAbrangencia() != null && p.getAbrangencia().toLowerCase().contains(r.getDescricao().toLowerCase()))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // --- BUSCAR POR CÓDIGO ---
