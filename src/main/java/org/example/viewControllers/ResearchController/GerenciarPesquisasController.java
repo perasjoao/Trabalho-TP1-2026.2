@@ -16,6 +16,7 @@ import org.example.models.comum.Cargo;
 import org.example.models.comum.Regiao;
 import org.example.models.researchModels.Pesquisa;
 import org.example.serviceControllers.PesquisaController;
+import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 
 public class GerenciarPesquisasController {
 
-    // Instância compartilhada do controller de negócio entre as telas de Pesquisa
     private static PesquisaController pesquisaController;
 
     public static PesquisaController getPesquisaController() {
@@ -43,10 +43,30 @@ public class GerenciarPesquisasController {
 
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNomeCandidato;
-    @FXML private ComboBox<String> cbTipo;
-    @FXML private ComboBox<Regiao> cbRegiao;
-    @FXML private ComboBox<Cargo> cbCargo;
-    @FXML private ComboBox<String> cbSituacao;
+
+    @FXML private CheckBox chkTipoIntencao;
+    @FXML private CheckBox chkTipoConhecimento;
+    @FXML private CheckBox chkTipoRejeicao;
+    @FXML private CheckBox chkTipoSegundoTurno;
+
+    @FXML private CheckBox chkRegiaoNorte;
+    @FXML private CheckBox chkRegiaoNordeste;
+    @FXML private CheckBox chkRegiaoCentroOeste;
+    @FXML private CheckBox chkRegiaoSudeste;
+    @FXML private CheckBox chkRegiaoSul;
+    @FXML private CheckBox chkRegiaoNacional;
+
+    @FXML private CheckBox chkCargoPresidente;
+    @FXML private CheckBox chkCargoGovernador;
+    @FXML private CheckBox chkCargoSenador;
+    @FXML private CheckBox chkCargoDepFederal;
+    @FXML private CheckBox chkCargoDepEstadual;
+
+    @FXML private CheckBox chkSituacaoPlanejada;
+    @FXML private CheckBox chkSituacaoEmColeta;
+    @FXML private CheckBox chkSituacaoEncerrada;
+    @FXML private CheckBox chkSituacaoProcessada;
+
     @FXML private DatePicker dpDataInicio;
     @FXML private DatePicker dpDataFim;
 
@@ -60,14 +80,12 @@ public class GerenciarPesquisasController {
     @FXML private TableColumn<Pesquisa, String> colPeriodo;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private boolean atualizandoCheckBoxesRegiao = false;
 
     @FXML
     public void initialize() {
-        // Popula os ComboBoxes com os enums reais
-        cbRegiao.setItems(FXCollections.observableArrayList(Regiao.values()));
-        cbCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
+        configurarCheckBoxesRegiao();
 
-        // Configura as colunas da TableView
         colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
@@ -80,6 +98,9 @@ public class GerenciarPesquisasController {
 
         colRegiao.setCellValueFactory(cellData -> {
             Pesquisa p = cellData.getValue();
+            if ("Nacional".equalsIgnoreCase(p.getAbrangencia())) {
+                return new SimpleStringProperty("Nacional");
+            }
             if (p.getRegioesAssociadas() != null && !p.getRegioesAssociadas().isEmpty()) {
                 String regioes = p.getRegioesAssociadas().stream()
                         .map(Regiao::toString)
@@ -96,31 +117,95 @@ public class GerenciarPesquisasController {
             return new SimpleStringProperty(ini + " - " + fim);
         });
 
+        getPesquisaController().vincularCandidaturasCarregadas(new CandidatoController().listar());
         carregarTabela(getPesquisaController().getPesquisas());
+    }
+
+    private void configurarCheckBoxesRegiao() {
+        CheckBox[] regionais = {
+                chkRegiaoNorte, chkRegiaoNordeste, chkRegiaoCentroOeste, chkRegiaoSudeste, chkRegiaoSul
+        };
+
+        chkRegiaoNacional.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
+            if (atualizandoCheckBoxesRegiao) return;
+            atualizandoCheckBoxesRegiao = true;
+            for (CheckBox chk : regionais) {
+                chk.setSelected(marcadoAgora);
+            }
+            atualizandoCheckBoxesRegiao = false;
+        });
+
+        for (CheckBox chk : regionais) {
+            chk.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
+                if (atualizandoCheckBoxesRegiao) return;
+                atualizandoCheckBoxesRegiao = true;
+                boolean todasMarcadas = chkRegiaoNorte.isSelected()
+                        && chkRegiaoNordeste.isSelected()
+                        && chkRegiaoCentroOeste.isSelected()
+                        && chkRegiaoSudeste.isSelected()
+                        && chkRegiaoSul.isSelected();
+                chkRegiaoNacional.setSelected(todasMarcadas);
+                atualizandoCheckBoxesRegiao = false;
+            });
+        }
     }
 
     private void carregarTabela(List<Pesquisa> lista) {
         tblPesquisas.setItems(FXCollections.observableArrayList(lista));
     }
 
+    private List<String> obterTiposMarcados() {
+        List<String> lista = new ArrayList<>();
+        if (chkTipoIntencao.isSelected()) lista.add("Intenção de voto");
+        if (chkTipoConhecimento.isSelected()) lista.add("Conhecimento");
+        if (chkTipoRejeicao.isSelected()) lista.add("Rejeição");
+        if (chkTipoSegundoTurno.isSelected()) lista.add("Segundo turno simulado");
+        return lista;
+    }
+
+    private List<Regiao> obterRegioesMarcadas() {
+        List<Regiao> lista = new ArrayList<>();
+        if (chkRegiaoNorte.isSelected()) lista.add(Regiao.NORTE);
+        if (chkRegiaoNordeste.isSelected()) lista.add(Regiao.NORDESTE);
+        if (chkRegiaoCentroOeste.isSelected()) lista.add(Regiao.CENTRO_OESTE);
+        if (chkRegiaoSudeste.isSelected()) lista.add(Regiao.SUDESTE);
+        if (chkRegiaoSul.isSelected()) lista.add(Regiao.SUL);
+        if (chkRegiaoNacional.isSelected()) lista.add(Regiao.NACIONAL);
+        return lista;
+    }
+
+    private List<Cargo> obterCargosMarcados() {
+        List<Cargo> lista = new ArrayList<>();
+        if (chkCargoPresidente.isSelected()) lista.add(Cargo.PRESIDENTE);
+        if (chkCargoGovernador.isSelected()) lista.add(Cargo.GOVERNADOR);
+        if (chkCargoSenador.isSelected()) lista.add(Cargo.SENADOR);
+        if (chkCargoDepFederal.isSelected()) lista.add(Cargo.DEPUTADO_FEDERAL);
+        if (chkCargoDepEstadual.isSelected()) lista.add(Cargo.DEPUTADO_ESTADUAL);
+        return lista;
+    }
+
+    private List<String> obterSituacoesMarcadas() {
+        List<String> lista = new ArrayList<>();
+        if (chkSituacaoPlanejada.isSelected()) lista.add("Planejada");
+        if (chkSituacaoEmColeta.isSelected()) lista.add("Em coleta");
+        if (chkSituacaoEncerrada.isSelected()) lista.add("Encerrada");
+        if (chkSituacaoProcessada.isSelected()) lista.add("Processada");
+        return lista;
+    }
+
     @FXML
     public void filtrarPesquisas(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String candidato = txtNomeCandidato.getText();
-        String tipo = cbTipo.getValue();
-        Regiao regiao = cbRegiao.getValue();
-        Cargo cargo = cbCargo.getValue();
-        String situacao = cbSituacao.getValue();
         LocalDate inicio = dpDataInicio.getValue();
         LocalDate fim = dpDataFim.getValue();
 
-        // Aplica o filtro combinado pelo PesquisaController
-        List<Pesquisa> filtradas = getPesquisaController().buscarComFiltros(
-                candidato, cargo, tipo, situacao, regiao,
+        List<Pesquisa> filtradas = getPesquisaController().buscarComFiltrosMultiplos(
+                candidato, obterCargosMarcados(), obterTiposMarcados(),
+                obterSituacoesMarcadas(), obterRegioesMarcadas(),
                 null, inicio, fim, false, new ArrayList<>()
         );
 
-        // Refina pelo código caso o usuário tenha preenchido o campo Código
         if (codigo != null && !codigo.trim().isEmpty()) {
             String codBusca = codigo.trim().toLowerCase();
             filtradas = filtradas.stream()
@@ -135,10 +220,30 @@ public class GerenciarPesquisasController {
     public void limparFiltros(ActionEvent event) {
         txtCodigo.clear();
         txtNomeCandidato.clear();
-        cbTipo.setValue(null);
-        cbRegiao.setValue(null);
-        cbCargo.setValue(null);
-        cbSituacao.setValue(null);
+
+        chkTipoIntencao.setSelected(false);
+        chkTipoConhecimento.setSelected(false);
+        chkTipoRejeicao.setSelected(false);
+        chkTipoSegundoTurno.setSelected(false);
+
+        chkRegiaoNorte.setSelected(false);
+        chkRegiaoNordeste.setSelected(false);
+        chkRegiaoCentroOeste.setSelected(false);
+        chkRegiaoSudeste.setSelected(false);
+        chkRegiaoSul.setSelected(false);
+        chkRegiaoNacional.setSelected(false);
+
+        chkCargoPresidente.setSelected(false);
+        chkCargoGovernador.setSelected(false);
+        chkCargoSenador.setSelected(false);
+        chkCargoDepFederal.setSelected(false);
+        chkCargoDepEstadual.setSelected(false);
+
+        chkSituacaoPlanejada.setSelected(false);
+        chkSituacaoEmColeta.setSelected(false);
+        chkSituacaoEncerrada.setSelected(false);
+        chkSituacaoProcessada.setSelected(false);
+
         dpDataInicio.setValue(null);
         dpDataFim.setValue(null);
 
@@ -181,7 +286,7 @@ public class GerenciarPesquisasController {
         Parent root = loader.load();
 
         CadastrarPesquisaController controller = loader.getController();
-        controller.setPesquisaEdicao(null); // Modo criação
+        controller.setPesquisaEdicao(null);
 
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
         tela.getScene().setRoot(root);
@@ -200,7 +305,7 @@ public class GerenciarPesquisasController {
         Parent root = loader.load();
 
         CadastrarPesquisaController controller = loader.getController();
-        controller.setPesquisaEdicao(selecionada); // Modo edição
+        controller.setPesquisaEdicao(selecionada);
 
         Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
         tela.getScene().setRoot(root);
