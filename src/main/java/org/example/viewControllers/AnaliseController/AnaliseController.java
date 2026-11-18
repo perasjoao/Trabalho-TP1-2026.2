@@ -94,6 +94,15 @@ public class AnaliseController implements Initializable { //implenta a interface
         colCompOpcao.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().opcao));
         colCompPesquisaA.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().quantidade));
         colCompPesquisaB.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().percentual));
+        colCompOpcao.setCellFactory(tc -> {
+            TableCell<LinhaTabelaRelatorio, String> cell = new TableCell<>();
+            javafx.scene.text.Text text = new javafx.scene.text.Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(colCompOpcao.widthProperty().subtract(12));
+            text.textProperty().bind(cell.itemProperty());
+            return cell;
+        });
     }
 
     private void carregarPesquisasComparacao() {
@@ -367,14 +376,32 @@ public class AnaliseController implements Initializable { //implenta a interface
         Set<String> todasOpcoes = new LinkedHashSet<>();
         todasOpcoes.addAll(mapA.keySet());
         todasOpcoes.addAll(mapB.keySet());
+        //muda cada pergunta para um codigo referente a ela
+        Map<String, String> codigosPerguntas = new LinkedHashMap<>();
+        int contadorPergunta = 1;
+        int contadorPerguntaTabela=1;
 
-        for (String opcao : todasOpcoes) {
-            float pctA = mapA.getOrDefault(opcao, 0.0f);
-            float pctB = mapB.getOrDefault(opcao, 0.0f);
+        for (String opcaoCompleta : todasOpcoes) {
+            float pctA = mapA.getOrDefault(opcaoCompleta, 0.0f);
+            float pctB = mapB.getOrDefault(opcaoCompleta, 0.0f);
 
-            linhas.add(new LinhaTabelaRelatorio(opcao, pctA + "%", pctB + "%"));
-            serieA.getData().add(new XYChart.Data<>(opcao, pctA));
-            serieB.getData().add(new XYChart.Data<>(opcao, pctB));
+            linhas.add(new LinhaTabelaRelatorio("P"+ contadorPerguntaTabela+": "+opcaoCompleta, pctA + "%", pctB + "%"));
+            String rotuloGrafico = opcaoCompleta;
+            if (opcaoCompleta.contains(" -> ")) {
+                String[] partes = opcaoCompleta.split(" -> ", 2);
+                String pergunta = partes[0];
+                String resposta = partes[1];
+                if (!codigosPerguntas.containsKey(pergunta)) {
+                    codigosPerguntas.put(pergunta, "P" + contadorPergunta);
+                }
+                rotuloGrafico = codigosPerguntas.get(pergunta) + ": " + resposta;
+            }
+            serieA.getData().add(new XYChart.Data<>(rotuloGrafico, pctA));
+            serieB.getData().add(new XYChart.Data<>(rotuloGrafico, pctB));
+            if(contadorPergunta%2==0){
+                contadorPerguntaTabela++;
+            }
+            contadorPergunta++;
         }
 
         tabelaComparacao.setItems(linhas);
