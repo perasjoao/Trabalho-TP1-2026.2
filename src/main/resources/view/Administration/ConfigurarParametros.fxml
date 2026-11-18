@@ -1,42 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.AdministrationController.ConfigurarParametrosController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.viewControllers.AdministrationController.ConfigurarParametrosController">
+    <stylesheets>
+        <URL value="@/styles/style.css" />
+        <URL value="@/styles/Login-style.css" />
+        <URL value="@/styles/ComparaPesquisa-style.css" />
+        <URL value="@/styles/Admin-style.css" />
+    </stylesheets>
     <children>
-        <TabPane fx:id="tabPaneCategorias" layoutX="241.0" layoutY="72.0" prefHeight="230.0" prefWidth="323.0" tabClosingPolicy="UNAVAILABLE">
-            <tabs>
-                <Tab text="Faixa etária">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="202.0" prefWidth="366.0" />
-                    </content>
-                </Tab>
-                <Tab text="Escolaridade">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                </Tab>
-                <Tab text="Região">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                </Tab>
-                <Tab text="Faixa de renda">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                </Tab>
-            </tabs>
-        </TabPane>
-        <TextField fx:id="txtCategoria" layoutX="47.0" layoutY="289.0" promptText="Digite uma categoria" />
-        <Button layoutX="47.0" layoutY="334.0" mnemonicParsing="false" onAction="#adicionarCategoria" text="adicionar" />
-        <Button layoutX="136.0" layoutY="334.0" mnemonicParsing="false" onAction="#removerCategoria" text="remover" />
-        <ListView fx:id="listCategorias" layoutX="22.0" layoutY="72.0" prefHeight="200.0" prefWidth="200.0" />
-        <Button layoutX="541.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="voltar" />
+        <VBox spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Label maxWidth="1.7976931348623157E308" styleClass="titulo-topo" text="Configurar Parâmetros" />
+
+                <VBox spacing="14.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="20.0" left="36.0" right="36.0" top="6.0" />
+                    </padding>
+                    <children>
+                        <TabPane fx:id="tabPaneCategorias" prefHeight="38.0" tabClosingPolicy="UNAVAILABLE">
+                            <tabs>
+                                <Tab text="Faixa etária" />
+                                <Tab text="Escolaridade" />
+                                <Tab text="Região" />
+                                <Tab text="Faixa de renda" />
+                            </tabs>
+                        </TabPane>
+
+                        <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+                            <children>
+                                <VBox spacing="8.0" styleClass="card-painel" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label styleClass="titulo-secao" text="Itens Cadastrados" />
+                                        <ListView fx:id="listCategorias" VBox.vgrow="ALWAYS" />
+                                    </children>
+                                </VBox>
+
+                                <VBox prefWidth="280.0" spacing="12.0" styleClass="card-painel">
+                                    <children>
+                                        <Label styleClass="titulo-secao" text="Gerenciar Categoria" />
+                                        <Label styleClass="label-campo" text="Novo valor" />
+                                        <TextField fx:id="txtCategoria" promptText="Digite uma categoria" styleClass="campo-texto" />
+                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#adicionarCategoria" styleClass="botao-acao" text="Adicionar" />
+                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#removerCategoria" styleClass="botao-excluir" text="Remover Selecionado" />
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#voltarParaMenu" styleClass="botao-secundario" text="Voltar" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>
