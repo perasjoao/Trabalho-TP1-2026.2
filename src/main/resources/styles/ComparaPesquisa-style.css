@@ -1,0 +1,62 @@
+/* Botão compacto para barras de filtro/ação */
+.botao-acao {
+    -fx-background-color: #006B47;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 40px;
+    -fx-background-radius: 3px;
+    -fx-cursor: hand;
+}
+
+.botao-acao:hover {
+    -fx-background-color: #005236;
+}
+
+.botao-acao:active {
+    -fx-background-color: #003D28;
+}
+.botao-voltar {
+    -fx-background-color: #006B47;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 40px;
+    -fx-background-radius: 3px;
+    -fx-cursor: hand;
+}
+
+.botao-voltar:hover {
+    -fx-background-color: #006B47;
+}
+
+.combo-box {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-font-size: 13px;
+}
+
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #006B47;
+    -fx-background-radius: 3px 3px 0 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #ffffff;
+}
+.default-color0.chart-bar {
+    -fx-bar-fill: #006B47;
+}
+
+.default-color1.chart-bar {
+    -fx-bar-fill: #34d399;
+}

@@ -1,16 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.CandidatesController.ExcluirPartidoController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.viewControllers.CandidatesController.ExcluirPartidoController">
+    <stylesheets>
+        <URL value="@/styles/style.css" />
+        <URL value="@/styles/Login-style.css" />
+        <URL value="@/styles/ComparaPesquisa-style.css" />
+        <URL value="@/styles/Admin-style.css" />
+    </stylesheets>
     <children>
-        <Label layoutX="240.0" layoutY="30.0" text="EXCLUIR PARTIDO" />
-        <ComboBox fx:id="caixaPartido" layoutX="150.0" layoutY="65.0" onAction="#selecionarPartido" prefWidth="300.0" promptText="Escolha o partido" />
-        <TextField fx:id="campoNome" editable="false" layoutX="215.0" layoutY="110.0" promptText="Nome" />
-        <TextField fx:id="campoSigla" editable="false" layoutX="215.0" layoutY="148.0" promptText="Sigla" />
-        <TextField fx:id="campoNumero" editable="false" layoutX="215.0" layoutY="188.0" promptText="Número" />
-        <Button layoutX="217.0" layoutY="237.0" mnemonicParsing="false" onAction="#excluirPartido" prefHeight="24.0" prefWidth="145.0" text="Excluir Partido" />
-        <Button layoutY="2.0" mnemonicParsing="false" onAction="#AbrirGerenciarPartido" text="Voltar" />
+        <VBox spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Label maxWidth="1.7976931348623157E308" styleClass="titulo-topo" text="Excluir Partido" />
+
+                <VBox spacing="14.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="20.0" left="36.0" right="36.0" top="4.0" />
+                    </padding>
+                    <children>
+                        <VBox spacing="12.0" styleClass="card-painel" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="titulo-secao" text="Selecione o partido que será excluído" />
+
+                                <GridPane hgap="16.0" vgap="12.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="120.0" prefWidth="130.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Label styleClass="label-campo" text="Partido:" />
+                                        <ComboBox fx:id="caixaPartido" maxWidth="1.7976931348623157E308" onAction="#selecionarPartido" prefHeight="38.0" promptText="Escolha o partido" GridPane.columnIndex="1" />
+
+                                        <Label styleClass="label-campo" text="Nome:" GridPane.rowIndex="1" />
+                                        <TextField fx:id="campoNome" editable="false" promptText="Nome" styleClass="campo-texto" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                        <Label styleClass="label-campo" text="Sigla:" GridPane.rowIndex="2" />
+                                        <TextField fx:id="campoSigla" editable="false" promptText="Sigla" styleClass="campo-texto" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                        <Label styleClass="label-campo" text="Número:" GridPane.rowIndex="3" />
+                                        <TextField fx:id="campoNumero" editable="false" promptText="Número" styleClass="campo-texto" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#AbrirGerenciarPartido" styleClass="botao-secundario" text="Voltar" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#excluirPartido" style="-fx-pref-width: 180px;" styleClass="botao-excluir" text="Excluir Partido" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>

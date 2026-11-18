@@ -1,0 +1,201 @@
+Título;pesquisaNORTE
+Pesquisa;pesquisaNORTE
+Cargo;Presidente
+
+Parâmetro: [Geral] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato A (2 votos);50.0
+Não sabe (Abstenção/Indeciso - 1 votos);20.0
+Candidato B (2 votos);50.0
+
+Parâmetro: [Geral] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 2 votos);40.0
+Não (3 votos);100.0
+
+Parâmetro: [Geral] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 2 votos);40.0
+Sim (2 votos);66.67
+Não (1 votos);33.33
+
+Parâmetro: [Geral] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato A (2 votos);50.0
+Não sabe (Abstenção/Indeciso - 1 votos);20.0
+Candidato B (2 votos);50.0
+
+Parâmetro: [Gênero: Feminino] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato A (1 votos);50.0
+Candidato B (1 votos);50.0
+
+Parâmetro: [Gênero: Feminino] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não (2 votos);100.0
+
+Parâmetro: [Gênero: Feminino] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Sim (1 votos);50.0
+Não (1 votos);50.0
+
+Parâmetro: [Gênero: Feminino] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato B (2 votos);100.0
+
+Parâmetro: [Gênero: Masculino] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato A (1 votos);50.0
+Não sabe (Abstenção/Indeciso - 1 votos);33.33
+Candidato B (1 votos);50.0
+
+Parâmetro: [Gênero: Masculino] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 2 votos);66.67
+Não (1 votos);100.0
+
+Parâmetro: [Gênero: Masculino] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 2 votos);66.67
+Sim (1 votos);100.0
+
+Parâmetro: [Gênero: Masculino] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato A (2 votos);100.0
+Não sabe (Abstenção/Indeciso - 1 votos);33.33
+
+Parâmetro: [Escolaridade: Ensino Superior] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato A (1 votos);50.0
+Candidato B (1 votos);50.0
+
+Parâmetro: [Escolaridade: Ensino Superior] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);50.0
+Não (1 votos);100.0
+
+Parâmetro: [Escolaridade: Ensino Superior] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);50.0
+Sim (1 votos);100.0
+
+Parâmetro: [Escolaridade: Ensino Superior] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato A (2 votos);100.0
+
+Parâmetro: [Escolaridade: Educaçãõ de Jovens e Adultos] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato A (1 votos);100.0
+
+Parâmetro: [Escolaridade: Educaçãõ de Jovens e Adultos] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não (1 votos);100.0
+
+Parâmetro: [Escolaridade: Educaçãõ de Jovens e Adultos] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não (1 votos);100.0
+
+Parâmetro: [Escolaridade: Educaçãõ de Jovens e Adultos] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato B (1 votos);100.0
+
+Parâmetro: [Escolaridade: Pós-Graduação] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato B (1 votos);100.0
+
+Parâmetro: [Escolaridade: Pós-Graduação] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não (1 votos);100.0
+
+Parâmetro: [Escolaridade: Pós-Graduação] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Sim (1 votos);100.0
+
+Parâmetro: [Escolaridade: Pós-Graduação] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato B (1 votos);100.0
+
+Parâmetro: [Escolaridade: Ensino Fundamental] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);100.0
+
+Parâmetro: [Escolaridade: Ensino Fundamental] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);100.0
+
+Parâmetro: [Escolaridade: Ensino Fundamental] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);100.0
+
+Parâmetro: [Escolaridade: Ensino Fundamental] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);100.0
+
+Parâmetro: [Faixa Etária: 16-24 anos] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato A (1 votos);100.0
+Não sabe (Abstenção/Indeciso - 1 votos);50.0
+
+Parâmetro: [Faixa Etária: 16-24 anos] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);50.0
+Não (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 16-24 anos] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);50.0
+Sim (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 16-24 anos] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato A (1 votos);100.0
+Não sabe (Abstenção/Indeciso - 1 votos);50.0
+
+Parâmetro: [Faixa Etária: 60 anos ou mais] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato A (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 60 anos ou mais] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 60 anos ou mais] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 60 anos ou mais] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato B (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 35-59 anos] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato B (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 35-59 anos] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);100.0
+
+Parâmetro: [Faixa Etária: 35-59 anos] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Não sabe (Abstenção/Indeciso - 1 votos);100.0
+
+Parâmetro: [Faixa Etária: 35-59 anos] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato A (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 60+ anos] Em qual desses NÃO VOTARIA de forma alguma?
+Opção;Percentual
+Candidato B (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 60+ anos] Votaria NULO ou BRANCO?
+Opção;Percentual
+Não (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 60+ anos] Você conhece as propostas do seu candidato?
+Opção;Percentual
+Sim (1 votos);100.0
+
+Parâmetro: [Faixa Etária: 60+ anos] Se a eleição presidencial fosse hoje, qual seria seu candidato?
+Opção;Percentual
+Candidato B (1 votos);100.0
+
