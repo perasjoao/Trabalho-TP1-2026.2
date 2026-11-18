@@ -1,24 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.AdministrationController.RelatorioUsuarioController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.viewControllers.AdministrationController.RelatorioUsuarioController">
+   <stylesheets>
+      <URL value="@/styles/style.css" />
+      <URL value="@/styles/Login-style.css" />
+      <URL value="@/styles/ComparaPesquisa-style.css" />
+      <URL value="@/styles/Admin-style.css" />
+   </stylesheets>
    <children>
-      <Label layoutX="64.0" layoutY="59.0" prefHeight="37.0" prefWidth="136.0" text="Total de usuários" />
-      <Label fx:id="lblTotalUsuarios" layoutX="103.0" layoutY="97.0" text="0" />
-      <Label layoutX="64.0" layoutY="128.0" prefHeight="38.0" prefWidth="94.0" text="Ativos" />
-      <Label fx:id="lblAtivos" layoutX="103.0" layoutY="167.0" text="0" />
-      <Label layoutX="64.0" layoutY="200.0" prefHeight="38.0" prefWidth="94.0" text="Inativos" />
-      <Label fx:id="lblInativos" layoutX="106.0" layoutY="251.0" text="0" />
-      <ComboBox fx:id="cbFiltroPerfil" layoutX="308.0" layoutY="102.0" prefWidth="150.0" promptText="Filtrar por perfil" />
-      <Button layoutX="324.0" layoutY="153.0" mnemonicParsing="false" onAction="#exportarRelatorio" text="Exportar CSV / PDF" />
-      <Label layoutX="308.0" layoutY="205.0" text="Usuários por perfil" />
-      <Label fx:id="lblAdmins" layoutX="308.0" layoutY="230.0" text="Administradores: 0" />
-      <Label fx:id="lblPesquisadores" layoutX="308.0" layoutY="252.0" text="Pesquisadores: 0" />
-      <Label fx:id="lblAnalistas" layoutX="308.0" layoutY="274.0" text="Analistas: 0" />
-      <Button layoutX="538.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
+      <VBox spacing="18.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label maxWidth="1.7976931348623157E308" styleClass="titulo-topo" text="Relatório de Usuários" />
+
+            <VBox spacing="18.0" VBox.vgrow="ALWAYS">
+               <padding>
+                  <Insets bottom="24.0" left="36.0" right="36.0" top="8.0" />
+               </padding>
+               <children>
+                  <!-- Cards de Resumo -->
+                  <HBox spacing="18.0">
+                     <children>
+                        <VBox spacing="6.0" styleClass="card-indicador" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="label-campo" text="Total de Usuários" />
+                              <Label fx:id="lblTotalUsuarios" styleClass="valor-indicador" text="0" />
+                           </children>
+                        </VBox>
+
+                        <VBox spacing="6.0" styleClass="card-indicador" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="label-campo" text="Usuários Ativos" />
+                              <Label fx:id="lblAtivos" styleClass="valor-indicador" text="0" />
+                           </children>
+                        </VBox>
+
+                        <VBox spacing="6.0" styleClass="card-indicador" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="label-campo" text="Usuários Inativos" />
+                              <Label fx:id="lblInativos" styleClass="valor-indicador-inativo" text="0" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+
+                  <!-- Distribuição por Perfil e Exportação -->
+                  <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <VBox spacing="10.0" styleClass="card-painel" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="titulo-secao" text="Distribuição por Perfil" />
+                              <Label fx:id="lblAdmins" styleClass="texto-detalhe" text="Administradores: 0" />
+                              <Label fx:id="lblPesquisadores" styleClass="texto-detalhe" text="Pesquisadores: 0" />
+                              <Label fx:id="lblAnalistas" styleClass="texto-detalhe" text="Analistas: 0" />
+                           </children>
+                        </VBox>
+
+                        <VBox prefWidth="280.0" spacing="12.0" styleClass="card-painel">
+                           <children>
+                              <Label styleClass="titulo-secao" text="Filtro e Exportação" />
+                              <Label styleClass="label-campo" text="Filtrar indicadores por perfil" />
+                              <ComboBox fx:id="cbFiltroPerfil" maxWidth="1.7976931348623157E308" prefHeight="38.0" promptText="Todos os perfis" />
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#exportarRelatorio" styleClass="botao-acao" text="Exportar CSV" />
+                              <Region VBox.vgrow="ALWAYS" />
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#voltarParaMenu" styleClass="botao-secundario" text="Voltar" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
