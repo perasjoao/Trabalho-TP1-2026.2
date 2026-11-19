@@ -6,8 +6,10 @@ import org.example.models.ComparaPesquisa;
 import org.example.models.Entrevista;
 import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
+import org.example.models.candidatos.Candidatura;
 import org.example.models.coleta.Resposta;
 import org.example.models.comum.Cargo;
+import org.example.models.researchModels.Pergunta;
 import org.example.models.researchModels.Pesquisa;
 
 import java.io.*;
@@ -15,18 +17,41 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class RelatorioController {
-    private List<Relatorio>relatorios;
+    private List<Relatorio> relatorios;
     private final String pastaRelatorios = "dados/relatorios/";
 
     public RelatorioController() {
         this.relatorios = new ArrayList<>();
         File pasta = new File(pastaRelatorios);
         if (!pasta.exists()) {
-            pasta.mkdirs(); // so cria uma pasta se ela n ja existir para exportar os relatorios para la
+            pasta.mkdirs();
         }
     }
 
     public Relatorio gerarRelatorio(Pesquisa pesquisa, String titulo, List<Entrevista> entrevistas, String regiao, LocalDate dataInicio, LocalDate dataFim, String candidato)
+            throws RelatorioException, PesquisaInvalidaException, IOException {
+        List<Candidatura> candidatosFiltro = null;
+
+        if (pesquisa != null && candidato != null && !candidato.trim().isEmpty()) {
+            Candidatura encontrada = resolverCandidaturaPorTexto(pesquisa, candidato.trim());
+            if (encontrada != null) {
+                candidatosFiltro = Collections.singletonList(encontrada);
+            } else {
+                // Caso a pesquisa ainda não tenha perguntas configuradas com Candidatura,
+                // mantém compatibilidade buscando pelo texto da opção escolhida
+                if (pesquisa.getPerguntas() == null || pesquisa.getPerguntas().isEmpty()) {
+                    return gerarRelatorioLegadoPorOpcao(pesquisa, titulo, entrevistas, regiao, dataInicio, dataFim, candidato);
+                }
+                throw new RelatorioException("Candidato '" + candidato + "' não encontrado nesta pesquisa.");
+            }
+        }
+
+        return gerarRelatorioPorCandidatos(pesquisa, titulo, entrevistas, regiao, dataInicio, dataFim, candidatosFiltro);
+    }
+
+    public Relatorio gerarRelatorioPorCandidatos(Pesquisa pesquisa, String titulo, List<Entrevista> entrevistas,
+                                                 String regiao, LocalDate dataInicio, LocalDate dataFim,
+                                                 List<Candidatura> candidatosSelecionados)
             throws RelatorioException, PesquisaInvalidaException, IOException {
         if (pesquisa == null) {
             throw new PesquisaInvalidaException("A pesquisa precisa ser informada.");
@@ -35,115 +60,127 @@ public class RelatorioController {
             throw new RelatorioException("A lista de entrevistas precisa ser informada e não pode estar vazia.");
         }
 
-        List<Entrevista> entrevistasFiltradas = new ArrayList<>();
-        for (Entrevista e : entrevistas) {
-            //por regiao
-            if (regiao != null && !regiao.trim().isEmpty()) {
-                if (e.getRegiao() == null || !e.getRegiao().equalsIgnoreCase(regiao.trim())) {
-                    continue; // Pula se não for da região
-                }
-            }
-
-            //por data
-            if (dataInicio != null && e.getData() != null) {
-                if (e.getData().isBefore(dataInicio)) {
-                    continue; // Pula se anterior à data inicial
-                }
-            }
-
-            //por data final
-            if (dataFim != null && e.getData() != null) {
-                if (e.getData().isAfter(dataFim)) {
-                    continue;
-                }
-            }
-
-            //filtrar por candidato
-            if (candidato != null && !candidato.trim().isEmpty()) {
-                boolean votouNoCandidato = false;
-                if (e.getRespostas() != null) {
-                    for (Resposta r : e.getRespostas()) {
-                        if (r.getOpcaoEscolhida() != null && r.getOpcaoEscolhida().equalsIgnoreCase(candidato.trim())) {
-                            votouNoCandidato = true;
-                            break;
-                        }
+        // Filtra as perguntas da pesquisa associadas ao(s) candidato(s) escolhido(s) ou a "Todos"
+        List<Pergunta> perguntasPermitidas = null;
+        if (candidatosSelecionados != null && !candidatosSelecionados.isEmpty()) {
+            perguntasPermitidas = new ArrayList<>();
+            if (pesquisa.getPerguntas() != null) {
+                for (Pergunta q : pesquisa.getPerguntas()) {
+                    boolean pertence = q.isParaTodosCandidatos() ||
+                            candidatosSelecionados.stream().anyMatch(q::refereSeAoCandidato);
+                    if (pertence) {
+                        perguntasPermitidas.add(q);
                     }
                 }
-                if (!votouNoCandidato) {
-                    continue; //se n votou no candidato pula
-                }
             }
-            entrevistasFiltradas.add(e);
+            if (perguntasPermitidas.isEmpty()) {
+                throw new RelatorioException("Nenhuma pergunta desta pesquisa está associada ao candidato selecionado.");
+            }
         }
+
+        List<Entrevista> entrevistasFiltradas = filtrarEntrevistasPorRegiaoEData(entrevistas, regiao, dataInicio, dataFim);
         if (entrevistasFiltradas.isEmpty()) {
             throw new RelatorioException("Nenhuma entrevista encontrada para os filtros selecionados.");
         }
-        List<Estatisticas> listaEstatisticas = new ArrayList<>();
-        //estatisticas gerais
-        List<Estatisticas> estatisticasGerais = processarEstatisticas(entrevistasFiltradas, "Geral");
-        for (Estatisticas est : estatisticasGerais) {
-            listaEstatisticas.add(est);
+
+        return montarEExportarRelatorio(pesquisa, titulo, entrevistasFiltradas, perguntasPermitidas);
+    }
+
+    private Relatorio gerarRelatorioLegadoPorOpcao(Pesquisa pesquisa, String titulo, List<Entrevista> entrevistas,
+                                                   String regiao, LocalDate dataInicio, LocalDate dataFim, String candidato)
+            throws RelatorioException, PesquisaInvalidaException, IOException {
+        if (pesquisa == null) {
+            throw new PesquisaInvalidaException("A pesquisa precisa ser informada.");
+        }
+        if (entrevistas == null || entrevistas.isEmpty()) {
+            throw new RelatorioException("A lista de entrevistas precisa ser informada e não pode estar vazia.");
         }
 
-        //separa as estatisticas por gruos
+        List<Entrevista> base = filtrarEntrevistasPorRegiaoEData(entrevistas, regiao, dataInicio, dataFim);
+        List<Entrevista> entrevistasFiltradas = new ArrayList<>();
+        for (Entrevista e : base) {
+            boolean votouNoCandidato = false;
+            if (e.getRespostas() != null) {
+                for (Resposta r : e.getRespostas()) {
+                    if (r.getOpcaoEscolhida() != null && r.getOpcaoEscolhida().equalsIgnoreCase(candidato.trim())) {
+                        votouNoCandidato = true;
+                        break;
+                    }
+                }
+            }
+            if (votouNoCandidato) {
+                entrevistasFiltradas.add(e);
+            }
+        }
+
+        if (entrevistasFiltradas.isEmpty()) {
+            throw new RelatorioException("Nenhuma entrevista encontrada para os filtros selecionados.");
+        }
+
+        return montarEExportarRelatorio(pesquisa, titulo, entrevistasFiltradas, null);
+    }
+
+    private List<Entrevista> filtrarEntrevistasPorRegiaoEData(List<Entrevista> entrevistas, String regiao,
+                                                              LocalDate dataInicio, LocalDate dataFim) {
+        List<Entrevista> filtradas = new ArrayList<>();
+        for (Entrevista e : entrevistas) {
+            if (regiao != null && !regiao.trim().isEmpty()) {
+                if (e.getRegiao() == null || !e.getRegiao().equalsIgnoreCase(regiao.trim())) {
+                    continue;
+                }
+            }
+            if (dataInicio != null && e.getData() != null && e.getData().isBefore(dataInicio)) {
+                continue;
+            }
+            if (dataFim != null && e.getData() != null && e.getData().isAfter(dataFim)) {
+                continue;
+            }
+            filtradas.add(e);
+        }
+        return filtradas;
+    }
+
+    private Relatorio montarEExportarRelatorio(Pesquisa pesquisa, String titulo,
+                                               List<Entrevista> entrevistasFiltradas,
+                                               List<Pergunta> perguntasPermitidas)
+            throws RelatorioException, IOException {
+        List<Estatisticas> listaEstatisticas = new ArrayList<>();
+
+        List<Estatisticas> estatisticasGerais = processarEstatisticas(entrevistasFiltradas, "Geral", perguntasPermitidas);
+        if (estatisticasGerais.isEmpty()) {
+            throw new RelatorioException("Nenhuma resposta encontrada para as perguntas associadas ao candidato selecionado.");
+        }
+        listaEstatisticas.addAll(estatisticasGerais);
+
         Map<String, List<Entrevista>> gruposPorGenero = new HashMap<>();
         Map<String, List<Entrevista>> gruposPorEscolaridade = new HashMap<>();
         Map<String, List<Entrevista>> gruposPorFaixaEtaria = new HashMap<>();
 
         for (Entrevista e : entrevistasFiltradas) {
-            //agrupa por genero
             if (e.getParticipante() != null) {
                 String genero = e.getParticipante().getGenero();
                 if (genero != null && !genero.trim().isEmpty()) {
-                    if (!gruposPorGenero.containsKey(genero)) {
-                        gruposPorGenero.put(genero, new ArrayList<>());
-                    }
-                    gruposPorGenero.get(genero).add(e);
+                    gruposPorGenero.computeIfAbsent(genero, k -> new ArrayList<>()).add(e);
                 }
-                //agrupa por escolaridade
                 String escolaridade = e.getParticipante().getEscolaridade();
                 if (escolaridade != null && !escolaridade.trim().isEmpty()) {
-                    if (!gruposPorEscolaridade.containsKey(escolaridade)) {
-                        gruposPorEscolaridade.put(escolaridade, new ArrayList<>());
-                    }
-                    gruposPorEscolaridade.get(escolaridade).add(e);
+                    gruposPorEscolaridade.computeIfAbsent(escolaridade, k -> new ArrayList<>()).add(e);
                 }
-                //agrupa por faixa etaria
                 String faixaEtaria = e.getParticipante().getFaixaEtaria();
                 if (faixaEtaria != null && !faixaEtaria.trim().isEmpty()) {
-                    if (!gruposPorFaixaEtaria.containsKey(faixaEtaria)) {
-                        gruposPorFaixaEtaria.put(faixaEtaria, new ArrayList<>());
-                    }
-                    gruposPorFaixaEtaria.get(faixaEtaria).add(e);
+                    gruposPorFaixaEtaria.computeIfAbsent(faixaEtaria, k -> new ArrayList<>()).add(e);
                 }
             }
         }
 
-        // estatisticas por gênero
         for (String genero : gruposPorGenero.keySet()) {
-            List<Entrevista> entrevistasDoGenero = gruposPorGenero.get(genero);
-            List<Estatisticas> statsGenero = processarEstatisticas(entrevistasDoGenero, "Gênero: " + genero);
-            for (Estatisticas est : statsGenero) {
-                listaEstatisticas.add(est);
-            }
+            listaEstatisticas.addAll(processarEstatisticas(gruposPorGenero.get(genero), "Gênero: " + genero, perguntasPermitidas));
         }
-
-        //estatisticas por escolaridade
         for (String escolaridade : gruposPorEscolaridade.keySet()) {
-            List<Entrevista> entrevistasDaEscolaridade = gruposPorEscolaridade.get(escolaridade);
-            List<Estatisticas> statsEscolaridade = processarEstatisticas(entrevistasDaEscolaridade, "Escolaridade: " + escolaridade);
-            for (Estatisticas est : statsEscolaridade) {
-                listaEstatisticas.add(est);
-            }
+            listaEstatisticas.addAll(processarEstatisticas(gruposPorEscolaridade.get(escolaridade), "Escolaridade: " + escolaridade, perguntasPermitidas));
         }
-
-        //estatisticas por faixa etaria
         for (String faixa : gruposPorFaixaEtaria.keySet()) {
-            List<Entrevista> entrevistasDaFaixa = gruposPorFaixaEtaria.get(faixa);
-            List<Estatisticas> statsFaixa = processarEstatisticas(entrevistasDaFaixa, "Faixa Etária: " + faixa);
-            for (Estatisticas est : statsFaixa) {
-                listaEstatisticas.add(est);
-            }
+            listaEstatisticas.addAll(processarEstatisticas(gruposPorFaixaEtaria.get(faixa), "Faixa Etária: " + faixa, perguntasPermitidas));
         }
 
         Relatorio relatorio = new Relatorio(pesquisa, titulo, listaEstatisticas.toArray(new Estatisticas[0]));
@@ -153,28 +190,59 @@ public class RelatorioController {
         return relatorio;
     }
 
-    private List<Estatisticas> processarEstatisticas(List<Entrevista> listaDeEntrevistas, String rotuloSegmento) {
+    private Candidatura resolverCandidaturaPorTexto(Pesquisa pesquisa, String textoCandidato) {
+        if (pesquisa.getCandidaturasAssociadas() == null) return null;
+        for (Candidatura c : pesquisa.getCandidaturasAssociadas()) {
+            if (c == null) continue;
+            String nomeComNumero = c.getCandidato().getNome() + " (" + c.getNumero() + ")";
+            if (textoCandidato.equalsIgnoreCase(nomeComNumero)
+                    || textoCandidato.equalsIgnoreCase(c.getDescricao())
+                    || textoCandidato.equalsIgnoreCase(c.getCandidato().getNome())
+                    || textoCandidato.equals(String.valueOf(c.getNumero()))) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private boolean respostaPertenceAsPerguntas(Resposta resposta, List<Pergunta> perguntasPermitidas) {
+        if (perguntasPermitidas == null) return true;
+        if (resposta == null) return false;
+
+        for (Pergunta q : perguntasPermitidas) {
+            boolean bateId = resposta.getIdPergunta() != null
+                    && resposta.getIdPergunta().trim().equalsIgnoreCase(q.getId().trim());
+            boolean bateEnunciado = resposta.getTextoPergunta() != null
+                    && resposta.getTextoPergunta().trim().equalsIgnoreCase(q.getEnunciado().trim());
+            if (bateId || bateEnunciado) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<Estatisticas> processarEstatisticas(List<Entrevista> listaDeEntrevistas, String rotuloSegmento,
+                                                     List<Pergunta> perguntasPermitidas) {
         Map<String, Map<String, Integer>> contagemPorPergunta = new HashMap<>();
 
-        //vai em cada entrevista e vai em cada resposta contar a reposta para a pergunta
         for (Entrevista entrevista : listaDeEntrevistas) {
             if (entrevista.getRespostas() == null) {
                 continue;
             }
             for (Resposta resposta : entrevista.getRespostas()) {
+                if (!respostaPertenceAsPerguntas(resposta, perguntasPermitidas)) {
+                    continue;
+                }
                 String pergunta = resposta.getTextoPergunta();
                 String opcao = resposta.getOpcaoEscolhida();
                 if (!contagemPorPergunta.containsKey(pergunta)) {
                     contagemPorPergunta.put(pergunta, new HashMap<>());
                 }
                 Map<String, Integer> mapaOpcoes = contagemPorPergunta.get(pergunta);
-                if (mapaOpcoes.containsKey(opcao)) {
-                    mapaOpcoes.put(opcao, mapaOpcoes.get(opcao) + 1);
-                } else {
-                    mapaOpcoes.put(opcao, 1);
-                }
+                mapaOpcoes.put(opcao, mapaOpcoes.getOrDefault(opcao, 0) + 1);
             }
         }
+
         List<Estatisticas> resultadoSegmentado = new ArrayList<>();
 
         for (String textoPergunta : contagemPorPergunta.keySet()) {
@@ -194,7 +262,6 @@ public class RelatorioController {
             for (String opcao : mapaOpcoes.keySet()) {
                 int qtd = mapaOpcoes.get(opcao);
                 float pct = 0.0f;
-
                 String chaveComQuantidade;
 
                 if (validaVoto(opcao)) {
@@ -203,7 +270,6 @@ public class RelatorioController {
                     }
                     chaveComQuantidade = opcao + " (" + qtd + " votos)";
                     percentuais.put(chaveComQuantidade, Math.round(pct * 100.0f) / 100.0f);
-                    //bota o total absoluto direto no nome
                 } else {
                     if (totalVotos > 0) {
                         pct = ((float) qtd / totalVotos) * 100.0f;
@@ -227,10 +293,6 @@ public class RelatorioController {
         if (cargo1 == null || cargo2 == null || !cargo1.getDescricao().equals(cargo2.getDescricao())) {
             throw new RelatorioException("Pesquisas de cargos diferentes");
         }
-        String s1=r1.getPesquisa().getAbrangencia();
-        String s2=r1.getPesquisa().getAbrangencia();
-
-    //if(!r1.equals(r2)){throw new RelatorioException("Pesquisas de requisitos diferentes");}
 
         List<Estatisticas> listaComparacoes = new ArrayList<>();
         if (r1.getEstatisticas() == null || r2.getEstatisticas() == null) {
@@ -249,7 +311,6 @@ public class RelatorioController {
                         float pctR1 = mapaOpcoesR1.get(opcaoCompletaR1);
                         float pctR2 = 0.0f;
                         String nomeLimpoR1 = opcaoCompletaR1.split(" \\(")[0];
-                        //limpa os textos para tirar o voto absoluto
                         for (String opcaoCompletaR2 : mapaOpcoesR2.keySet()) {
                             String nomeLimpoR2 = opcaoCompletaR2.split(" \\(")[0];
                             if (nomeLimpoR1.equalsIgnoreCase(nomeLimpoR2)) {
@@ -258,7 +319,6 @@ public class RelatorioController {
                             }
                         }
                         float diferenca = pctR2 - pctR1;
-                        //guarda sem o voo absoluto
                         variacoes.put(nomeLimpoR1, Math.round(diferenca * 100.0f) / 100.0f);
                     }
                     Estatisticas estComparativa = new Estatisticas("Comparativo: " + parametroR1, variacoes);
@@ -268,6 +328,7 @@ public class RelatorioController {
         }
         return new ComparaPesquisa(r1, r2, listaComparacoes);
     }
+
     public void salvarRelatorio(Relatorio relatorio) {
         if (relatorio != null && !relatorios.contains(relatorio)) {
             relatorios.add(relatorio);
@@ -281,8 +342,8 @@ public class RelatorioController {
     public void exportaRelatorio(Relatorio relatorio, String nomeArquivo) throws IOException {
         if (relatorio == null) return;
 
-        if(!nomeArquivo.endsWith(".csv")){
-            nomeArquivo+=".csv";
+        if (!nomeArquivo.endsWith(".csv")) {
+            nomeArquivo += ".csv";
         }
         File arquivo = new File(pastaRelatorios + nomeArquivo);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
