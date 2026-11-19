@@ -28,6 +28,8 @@ import org.example.serviceControllers.ColetaServiceController;
 import org.example.serviceControllers.ParametroController;
 import org.example.serviceControllers.PesquisaController;
 import org.example.serviceControllers.RelatorioController;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -253,11 +255,6 @@ public class AnaliseController implements Initializable { //implenta a interface
                 throw new CaixaPesquisaVazia("Selecione uma pesquisa antes de gerar o relatório.");
             }
 
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Salvar Relatório CSV");
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Arquivo CSV (*.csv)", "*.csv");
-
             //pega as entrevistas da pesquisa
             List<Entrevista> entrevistasDaPesquisa = new ArrayList<>();
             for (Entrevista e : coletaController.listarEntrevistas()) {
@@ -315,6 +312,19 @@ public class AnaliseController implements Initializable { //implenta a interface
             if (this.relatorioAtual == null) {
                 throw new RelatorioVazioException("Gere um relatório primeiro antes de exportar para CSV.");
             }
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Salvar Relatório CSV"); //cria uma caixa do proprio os de criar arquivo
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivo CSV (*.csv)", "*.csv"));
+            File pastaPadrao = new File("dados/relatorios");
+            if (pastaPadrao.exists()) {
+                fileChooser.setInitialDirectory(pastaPadrao);
+            }
+            fileChooser.setInitialFileName("relatorio_" + relatorioAtual.getPesquisa().getCodigo() + ".csv");
+
+            //pega a janela atual e abre a tela de salvar
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            File arquivoEscolhido = fileChooser.showSaveDialog(stage);
+
             String nomeArquivo = "relatorio_" + relatorioAtual.getPesquisa().getCodigo() + ".csv";
             relatorioController.exportaRelatorio(this.relatorioAtual, nomeArquivo);
             trataAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Relatório exportado para dados/relatorios/" + nomeArquivo);
