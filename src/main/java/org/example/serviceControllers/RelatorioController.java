@@ -281,6 +281,9 @@ public class RelatorioController {
     public void exportaRelatorio(Relatorio relatorio, String nomeArquivo) throws IOException {
         if (relatorio == null) return;
 
+        if(!nomeArquivo.endsWith(".csv")){
+            nomeArquivo+=".csv";
+        }
         File arquivo = new File(pastaRelatorios + nomeArquivo);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
             writer.write("Título;" + relatorio.getTitulo() + "\n");
