@@ -13,6 +13,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Toggle;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.example.exceptions.AmostraInvalidaException;
@@ -24,6 +27,8 @@ import org.example.models.coleta.Participante;
 import org.example.models.coleta.Resposta;
 import org.example.models.Usuario;
 import org.example.exceptions.PesquisaInvalidaException;
+import org.example.models.researchModels.OpcaoResposta;
+import org.example.models.researchModels.Pergunta;
 import org.example.models.researchModels.Pesquisa;
 import org.example.serviceControllers.ColetaServiceController;
 import org.example.serviceControllers.ParametroController;
@@ -34,8 +39,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 
 public class ColetaController implements Initializable {
 
@@ -56,23 +64,15 @@ public class ColetaController implements Initializable {
     private static final List<String> GENEROS = List.of("Masculino", "Feminino", "Outro");
 
     // Campos da tela RegistrarRespostas.fxml
-    @FXML private Label lblP1;
-    @FXML private ComboBox<String> cbP1;
-    @FXML private ToggleGroup GROUP1;
-
-    @FXML private Label lblP2;
-    @FXML private ComboBox<String> cbP2;
-    @FXML private ToggleGroup GROUP2;
-
-    @FXML private Label lblP3;
-    @FXML private ComboBox<String> cbP3;
-    @FXML private ToggleGroup GROUP3;
-
-    @FXML private Label lblP4;
-    @FXML private ComboBox<String> cbP4;
-    @FXML private ToggleGroup GROUP4;
-
+    @FXML private VBox boxPerguntas;
     @FXML private ComboBox<Pesquisa> cbPesquisaPertencente;
+
+    // Respostas especiais aceitas em qualquer pergunta (contabilizadas à parte na Análise)
+    private static final List<String> RESPOSTAS_ESPECIAIS = List.of("Não sabe", "Não respondeu", "Nenhuma das opções");
+    private static final String TIPO_RESPOSTA_LIVRE = "Resposta Livre";
+
+    // Para cada pergunta exibida, guarda como ler a resposta escolhida (null = não respondida)
+    private final Map<Pergunta, Supplier<String>> leitoresDeResposta = new LinkedHashMap<>();
     @FXML private DatePicker dpDataEntrevista;
 
     // Campos da tela FiltroEntrevistas.fxml
@@ -107,12 +107,11 @@ public class ColetaController implements Initializable {
         if (cbFiltroRegiao != null) { cbFiltroRegiao.getItems().add("Todas"); cbFiltroRegiao.getItems().addAll(parametros.listarRegioes()); }
         if (cbFiltroFaixaRenda != null) { cbFiltroFaixaRenda.getItems().add("Todas"); cbFiltroFaixaRenda.getItems().addAll(parametros.listarFaixasRenda()); }
 
-        // Popula Registro de Pesquisa
-        if (cbP1 != null) cbP1.getItems().addAll("Candidato A", "Candidato B", "Candidato C");
-        if (cbP2 != null) cbP2.getItems().addAll("Candidato A", "Candidato B", "Candidato C");
-        if (cbP3 != null) cbP3.getItems().addAll("Sim", "Não", "Parcialmente");
-        if (cbP4 != null) cbP4.getItems().addAll("Sim", "Não");
-        if (cbPesquisaPertencente != null) carregarPesquisasDisponiveis();
+        // Popula Registro de Respostas: ao escolher a pesquisa, monta as perguntas dela
+        if (cbPesquisaPertencente != null) {
+            carregarPesquisasDisponiveis();
+            cbPesquisaPertencente.valueProperty().addListener((obs, antiga, nova) -> montarPerguntas(nova));
+        }
         // Data da entrevista: começa em hoje, mas pode ser alterada (ex.: registrar entrevistas de outros dias)
         if (dpDataEntrevista != null) dpDataEntrevista.setValue(LocalDate.now());
     }
@@ -180,15 +179,70 @@ public class ColetaController implements Initializable {
         }
     }
 
-    private String obterOpcaoSelecionada(ComboBox<String> cb, ToggleGroup group) {
-        if (group != null && group.getSelectedToggle() != null) {
-            RadioButton rb = (RadioButton) group.getSelectedToggle();
-            return rb.getText();
+    // Monta na tela as perguntas cadastradas na pesquisa escolhida (módulo de Pesquisas).
+    private void montarPerguntas(Pesquisa pesquisa) {
+        boxPerguntas.getChildren().clear();
+        leitoresDeResposta.clear();
+
+        if (pesquisa == null) {
+            boxPerguntas.getChildren().add(new Label("Selecione uma pesquisa para carregar as perguntas."));
+            return;
         }
-        if (cb != null && cb.getValue() != null) {
-            return cb.getValue();
+        List<Pergunta> perguntas = pesquisa.getPerguntas();
+        if (perguntas == null || perguntas.isEmpty()) {
+            boxPerguntas.getChildren().add(new Label("Esta pesquisa ainda não possui perguntas cadastradas."));
+            return;
         }
-        return "Sem resposta";
+
+        int numero = 1;
+        for (Pergunta pergunta : perguntas) {
+            Label enunciado = new Label(numero++ + ". " + pergunta.getEnunciado());
+            enunciado.setWrapText(true);
+            enunciado.setStyle("-fx-font-weight: bold;");
+
+            // Um único ToggleGroup por pergunta: só uma resposta pode ficar marcada
+            ToggleGroup grupo = new ToggleGroup();
+            FlowPane opcoes = new FlowPane(15, 6);
+
+            TextField campoLivre = null;
+            if (TIPO_RESPOSTA_LIVRE.equalsIgnoreCase(pergunta.getTipo())) {
+                campoLivre = new TextField();
+                campoLivre.setPromptText("Digite a resposta");
+                campoLivre.setPrefWidth(250);
+                // Digitar uma resposta desmarca "Não sabe"/etc., e vice-versa
+                TextField campo = campoLivre;
+                campo.textProperty().addListener((o, a, n) -> {
+                    if (n != null && !n.isBlank()) grupo.selectToggle(null);
+                });
+                grupo.selectedToggleProperty().addListener((o, a, n) -> {
+                    if (n != null) campo.clear();
+                });
+                opcoes.getChildren().add(campo);
+            } else {
+                for (OpcaoResposta opcao : pergunta.getOpcoes()) {
+                    opcoes.getChildren().add(criarRadio(opcao.getTexto(), grupo));
+                }
+            }
+            for (String especial : RESPOSTAS_ESPECIAIS) {
+                opcoes.getChildren().add(criarRadio(especial, grupo));
+            }
+
+            TextField campoFinal = campoLivre;
+            leitoresDeResposta.put(pergunta, () -> {
+                Toggle marcado = grupo.getSelectedToggle();
+                if (marcado != null) return ((RadioButton) marcado).getText();
+                if (campoFinal != null && !campoFinal.getText().isBlank()) return campoFinal.getText().trim();
+                return null;
+            });
+
+            boxPerguntas.getChildren().add(new VBox(4, enunciado, opcoes));
+        }
+    }
+
+    private RadioButton criarRadio(String texto, ToggleGroup grupo) {
+        RadioButton rb = new RadioButton(texto);
+        rb.setToggleGroup(grupo);
+        return rb;
     }
 
     private void exibirAlerta(String titulo, String mensagem, Alert.AlertType tipo) {
@@ -296,23 +350,26 @@ public class ColetaController implements Initializable {
                 throw new AmostraInvalidaException("Configuração do participante da amostra está incompleta!");
             }
 
-            // 3. Validação das Respostas
-            List<Resposta> listaRespostas = new ArrayList<>();
-            if (lblP1 != null) listaRespostas.add(new Resposta("P1", lblP1.getText(), obterOpcaoSelecionada(cbP1, GROUP1)));
-            if (lblP2 != null) listaRespostas.add(new Resposta("P2", lblP2.getText(), obterOpcaoSelecionada(cbP2, GROUP2)));
-            if (lblP3 != null) listaRespostas.add(new Resposta("P3", lblP3.getText(), obterOpcaoSelecionada(cbP3, GROUP3)));
-            if (lblP4 != null) listaRespostas.add(new Resposta("P4", lblP4.getText(), obterOpcaoSelecionada(cbP4, GROUP4)));
-
-            for (Resposta r : listaRespostas) {
-                if ("Sem resposta".equals(r.getOpcaoEscolhida())) {
-                    throw new ColetaIncompletaException("Por favor, responda a todas as perguntas antes de finalizar!");
-                }
-            }
-
-            // Toda entrevista deve estar vinculada a uma pesquisa existente
+            // 3. Toda entrevista deve estar vinculada a uma pesquisa existente
             Pesquisa pesquisaSelecionada = (cbPesquisaPertencente != null) ? cbPesquisaPertencente.getValue() : null;
             if (pesquisaSelecionada == null) {
                 throw new ColetaIncompletaException("Selecione a pesquisa à qual esta entrevista pertence!");
+            }
+            if (leitoresDeResposta.isEmpty()) {
+                throw new ColetaIncompletaException("A pesquisa selecionada não possui perguntas cadastradas.");
+            }
+
+            // 4. Uma única resposta para cada pergunta da pesquisa
+            List<Resposta> listaRespostas = new ArrayList<>();
+            int numero = 1;
+            for (Map.Entry<Pergunta, Supplier<String>> item : leitoresDeResposta.entrySet()) {
+                Pergunta pergunta = item.getKey();
+                String escolhida = item.getValue().get();
+                if (escolhida == null) {
+                    throw new ColetaIncompletaException("Responda a pergunta " + numero + " antes de finalizar!");
+                }
+                listaRespostas.add(new Resposta(pergunta.getId(), pergunta.getEnunciado(), escolhida));
+                numero++;
             }
 
             LocalDate dataEntrevista = (dpDataEntrevista != null) ? dpDataEntrevista.getValue() : LocalDate.now();
