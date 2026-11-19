@@ -25,4 +25,15 @@ public class Resposta implements Serializable {
 
     public String getOpcaoEscolhida() { return opcaoEscolhida; }
     public void setOpcaoEscolhida(String opcaoEscolhida) { this.opcaoEscolhida = opcaoEscolhida; }
+
+    //as subclasses sobrescrevem esses dois metodos
+    //aqui fica o comportamento padrao, que tambem serve pras entrevistas antigas do arquivo
+    public String getTipo() {
+        return "Resposta";
+    }
+
+    //"nao sabe" e "nao respondeu" sao contados separado, fora do percentual
+    public boolean contaNoPercentual() {
+        return !RespostaEspecial.OPCOES.contains(opcaoEscolhida);
+    }
 }
