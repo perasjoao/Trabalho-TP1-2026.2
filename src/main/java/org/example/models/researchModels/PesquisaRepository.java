@@ -22,12 +22,12 @@ public class PesquisaRepository {
                 String dataFimStr = (p.getDataFim() != null) ? p.getDataFim().toString() : "";
                 String metodologiaLimpa = p.getMetodologia().replace("\n", " ").replace(";", ",");
 
-                // Regiões separadas por vírgula
+                // Regiões
                 String regioesStr = p.getRegioesAssociadas().stream()
                         .map(Regiao::name)
                         .collect(Collectors.joining(","));
 
-                // Números das candidaturas separados por vírgula
+                // Números
                 String candidaturasStr;
                 if (!p.getCandidaturasAssociadas().isEmpty()) {
                     candidaturasStr = p.getCandidaturasAssociadas().stream()
@@ -39,7 +39,7 @@ public class PesquisaRepository {
                             .collect(Collectors.joining(","));
                 }
 
-                // Perguntas serializadas
+                // Perguntas
                 String perguntasStr = serializarPerguntas(p.getPerguntas());
 
                 bw.write(String.join(";",
@@ -90,7 +90,7 @@ public class PesquisaRepository {
     }
 
     private Pesquisa converterLinhaParaPesquisa(String linha) {
-        String[] partes = linha.split(";", -1); // -1 mantém campos vazios no final
+        String[] partes = linha.split(";", -1);
         if (partes.length >= 10) {
             String codigo = partes[0];
             String nome = partes[1];
@@ -141,7 +141,20 @@ public class PesquisaRepository {
                     .map(o -> o.getNumero() + ":" + o.getTexto().replace(":", " ").replace(",", " "))
                     .collect(Collectors.joining(","));
             String enunciadoLimpo = q.getEnunciado().replace("~", " ").replace("|", " ").replace(";", " ");
-            blocos.add(q.getId() + "~" + enunciadoLimpo + "~" + q.getTipo() + "~" + opcoesStr);
+            String todosFlag = q.isParaTodosCandidatos() ? "1" : "0";
+
+            String candsStr;
+            if (!q.getCandidaturasAssociadas().isEmpty()) {
+                candsStr = q.getCandidaturasAssociadas().stream()
+                        .map(c -> String.valueOf(c.getNumero()))
+                        .collect(Collectors.joining(","));
+            } else {
+                candsStr = q.getNumerosCandidaturasSalvas().stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","));
+            }
+
+            blocos.add(q.getId() + "~" + enunciadoLimpo + "~" + q.getTipo() + "~" + opcoesStr + "~" + todosFlag + "~" + candsStr);
         }
         return String.join("|", blocos);
     }
@@ -162,7 +175,21 @@ public class PesquisaRepository {
                         }
                     }
                 }
-                lista.add(new Pergunta(campos[0], campos[1], campos[2], opcoes));
+                Pergunta q = new Pergunta(campos[0], campos[1], campos[2], opcoes);
+
+                if (campos.length >= 5 && "1".equals(campos[4])) {
+                    q.setParaTodosCandidatos(true);
+                }
+
+                if (campos.length >= 6 && !campos[5].isEmpty()) {
+                    List<Integer> nums = new ArrayList<>();
+                    for (String n : campos[5].split(",")) {
+                        if (!n.isEmpty()) nums.add(Integer.parseInt(n));
+                    }
+                    q.setNumerosCandidaturasSalvas(nums);
+                }
+
+                lista.add(q);
             }
         }
         return lista;

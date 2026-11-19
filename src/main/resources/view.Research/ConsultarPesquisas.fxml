@@ -108,7 +108,7 @@
                         <!-- Painel Principal: Tabela de Acompanhamento -->
                         <VBox spacing="12.0" styleClass="card-painel" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label styleClass="titulo-secao" text="Acompanhamento de Pesquisas (Previsto x Realizado)" />
+                                <Label styleClass="titulo-secao" text="Acompanhamento de Pesquisas" />
 
                                 <TableView fx:id="tblPesquisas" VBox.vgrow="ALWAYS">
                                     <columnResizePolicy>

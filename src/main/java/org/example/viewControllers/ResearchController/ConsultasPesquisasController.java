@@ -15,6 +15,7 @@ import org.example.models.Entrevista;
 import org.example.models.comum.Cargo;
 import org.example.models.comum.Regiao;
 import org.example.models.researchModels.Pesquisa;
+import org.example.serviceControllers.ColetaServiceController;
 import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.IOException;
@@ -35,6 +36,12 @@ public class ConsultasPesquisasController {
 
     public static List<Entrevista> getEntrevistasDoSistema() {
         return entrevistasDoSistema;
+    }
+
+    public static void recarregarEntrevistasDoSistema() {
+        List<Entrevista> carregadas = new ColetaServiceController().listarEntrevistas();
+        entrevistasDoSistema = (carregadas != null) ? carregadas : new ArrayList<>();
+        GerenciarPesquisasController.getPesquisaController().sincronizarEntrevistasRealizadas(entrevistasDoSistema);
     }
 
     @FXML private TextField txtCodigo;
@@ -132,7 +139,7 @@ public class ConsultasPesquisasController {
             return new SimpleStringProperty(String.format("%.1f%%", pct));
         });
 
-        GerenciarPesquisasController.getPesquisaController().sincronizarEntrevistasRealizadas(entrevistasDoSistema);
+        recarregarEntrevistasDoSistema();
         GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(new CandidatoController().listar());
         carregarTabela(GerenciarPesquisasController.getPesquisaController().getPesquisas());
     }
@@ -211,6 +218,8 @@ public class ConsultasPesquisasController {
 
     @FXML
     public void filtrarPesquisas(ActionEvent event) {
+        recarregarEntrevistasDoSistema();
+
         String codigo = txtCodigo.getText();
         String candidato = txtNomeCandidato.getText();
         LocalDate inicio = dpDataInicio.getValue();
@@ -278,7 +287,7 @@ public class ConsultasPesquisasController {
         txtQtdEntrevistados.clear();
         chkAbaixoMeta.setSelected(false);
 
-        GerenciarPesquisasController.getPesquisaController().sincronizarEntrevistasRealizadas(entrevistasDoSistema);
+        recarregarEntrevistasDoSistema();
         carregarTabela(GerenciarPesquisasController.getPesquisaController().getPesquisas());
     }
 

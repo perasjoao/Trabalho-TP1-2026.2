@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.exceptions.PersistenciaException;
 import org.example.exceptions.PesquisaInvalidaException;
@@ -21,7 +22,9 @@ import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ConfigurarPesquisaController {
@@ -35,11 +38,14 @@ public class ConfigurarPesquisaController {
     @FXML private ComboBox<String> cbTipoPergunta;
     @FXML private TextField txtNovaOpcao;
     @FXML private ListView<OpcaoResposta> listOpcoes;
+    @FXML private CheckBox chkTodosCandidatos;
+    @FXML private VBox boxCheckboxesCandidatos;
     @FXML private TableView<Pergunta> tblPerguntas;
     @FXML private TableColumn<Pergunta, String> colNumPergunta;
     @FXML private TableColumn<Pergunta, String> colTextoPergunta;
     @FXML private TableColumn<Pergunta, String> colTipoPergunta;
     @FXML private TableColumn<Pergunta, String> colOpcoesPergunta;
+    @FXML private TableColumn<Pergunta, String> colCandidatosPergunta;
 
     // Aba 2: Candidatos
     @FXML private ListView<Candidatura> listCandidatosDisponiveis;
@@ -47,6 +53,8 @@ public class ConfigurarPesquisaController {
 
     private Pesquisa pesquisaAtual;
     private final ObservableList<OpcaoResposta> opcoesEmEdicao = FXCollections.observableArrayList();
+    private final Map<Candidatura, CheckBox> mapaCheckboxesCandidatos = new LinkedHashMap<>();
+    private boolean atualizandoCheckboxesCandidatos = false;
 
     @FXML
     public void initialize() {
@@ -60,7 +68,6 @@ public class ConfigurarPesquisaController {
 
         listOpcoes.setItems(opcoesEmEdicao);
 
-        // Formata a exibição das candidaturas nas duas ListViews usando getDescricao()
         configurarCellFactoryCandidatura(listCandidatosDisponiveis);
         configurarCellFactoryCandidatura(listCandidatosAssociados);
 
@@ -77,12 +84,15 @@ public class ConfigurarPesquisaController {
                     .collect(Collectors.joining(", "));
             return new SimpleStringProperty(resumo);
         });
+        colCandidatosPergunta.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getResumoCandidatos()));
 
         tblPerguntas.getSelectionModel().selectedItemProperty().addListener((obs, antiga, selecionada) -> {
             if (selecionada != null) {
                 txtEnunciadoPergunta.setText(selecionada.getEnunciado());
                 cbTipoPergunta.setValue(selecionada.getTipo());
                 opcoesEmEdicao.setAll(selecionada.getOpcoes() != null ? selecionada.getOpcoes() : new ArrayList<>());
+                preencherCheckboxesCandidatosDaPergunta(selecionada);
             }
         });
     }
@@ -117,14 +127,18 @@ public class ConfigurarPesquisaController {
     private void atualizarTodasAsAbas() {
         if (pesquisaAtual == null) return;
 
-        // 1. Atualiza tabela de perguntas
-        tblPerguntas.setItems(FXCollections.observableArrayList(pesquisaAtual.getPerguntas()));
-        limparFormularioPergunta();
-
-        // 2. Busca as candidaturas reais do sistema e vincula as já salvas no TXT
+        // 1. Vincula candidaturas reais às pesquisas e perguntas carregadas do TXT
         List<Candidatura> todasCandidaturas = candidatoController.listar();
         GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(todasCandidaturas);
 
+        // 2. Reconstrói checkboxes de candidatos na aba de Perguntas
+        reconstruirCheckboxesCandidatos();
+
+        // 3. Atualiza tabela de perguntas e limpa formulário
+        tblPerguntas.setItems(FXCollections.observableArrayList(pesquisaAtual.getPerguntas()));
+        limparFormularioPergunta();
+
+        // 4. Atualiza listas da aba Candidatos
         List<Candidatura> candAssociadas = pesquisaAtual.getCandidaturasAssociadas();
         List<Candidatura> candDisponiveis = todasCandidaturas.stream()
                 .filter(c -> c.getCargo() == pesquisaAtual.getCargo())
@@ -133,6 +147,71 @@ public class ConfigurarPesquisaController {
 
         listCandidatosDisponiveis.setItems(FXCollections.observableArrayList(candDisponiveis));
         listCandidatosAssociados.setItems(FXCollections.observableArrayList(candAssociadas));
+    }
+
+    private void reconstruirCheckboxesCandidatos() {
+        boxCheckboxesCandidatos.getChildren().clear();
+        mapaCheckboxesCandidatos.clear();
+
+        List<Candidatura> associadas = pesquisaAtual.getCandidaturasAssociadas();
+        if (associadas == null || associadas.isEmpty()) {
+            Label aviso = new Label("Associe candidatos na aba 'Candidatos'.");
+            aviso.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
+            boxCheckboxesCandidatos.getChildren().add(aviso);
+            return;
+        }
+
+        for (Candidatura c : associadas) {
+            CheckBox chk = new CheckBox(c.getDescricao());
+            chk.selectedProperty().addListener((obs, antes, agora) -> {
+                if (atualizandoCheckboxesCandidatos) return;
+                atualizandoCheckboxesCandidatos = true;
+                boolean todosMarcados = !mapaCheckboxesCandidatos.isEmpty()
+                        && mapaCheckboxesCandidatos.values().stream().allMatch(CheckBox::isSelected);
+                chkTodosCandidatos.setSelected(todosMarcados);
+                atualizandoCheckboxesCandidatos = false;
+            });
+            mapaCheckboxesCandidatos.put(c, chk);
+            boxCheckboxesCandidatos.getChildren().add(chk);
+        }
+    }
+
+    @FXML
+    public void aoAlterarTodosCandidatos(ActionEvent event) {
+        if (atualizandoCheckboxesCandidatos) return;
+        atualizandoCheckboxesCandidatos = true;
+        boolean marcar = chkTodosCandidatos.isSelected();
+        for (CheckBox chk : mapaCheckboxesCandidatos.values()) {
+            chk.setSelected(marcar);
+        }
+        atualizandoCheckboxesCandidatos = false;
+    }
+
+    private void preencherCheckboxesCandidatosDaPergunta(Pergunta pergunta) {
+        atualizandoCheckboxesCandidatos = true;
+        if (pergunta.isParaTodosCandidatos()) {
+            chkTodosCandidatos.setSelected(true);
+            for (CheckBox chk : mapaCheckboxesCandidatos.values()) {
+                chk.setSelected(true);
+            }
+        } else {
+            chkTodosCandidatos.setSelected(false);
+            for (Map.Entry<Candidatura, CheckBox> entry : mapaCheckboxesCandidatos.entrySet()) {
+                boolean marcado = pergunta.refereSeAoCandidato(entry.getKey());
+                entry.getValue().setSelected(marcado);
+            }
+        }
+        atualizandoCheckboxesCandidatos = false;
+    }
+
+    private List<Candidatura> obterCandidaturasSelecionadasNaPergunta() {
+        List<Candidatura> selecionadas = new ArrayList<>();
+        for (Map.Entry<Candidatura, CheckBox> entry : mapaCheckboxesCandidatos.entrySet()) {
+            if (entry.getValue().isSelected()) {
+                selecionadas.add(entry.getKey());
+            }
+        }
+        return selecionadas;
     }
 
     // ==================== ABA 1: PERGUNTAS ====================
@@ -173,8 +252,10 @@ public class ConfigurarPesquisaController {
             }
 
             Pergunta nova = new Pergunta(id, enunciado, tipo, new ArrayList<>(opcoesEmEdicao));
-            GerenciarPesquisasController.getPesquisaController().adicionarPergunta(pesquisaAtual.getCodigo(), nova);
+            nova.setParaTodosCandidatos(chkTodosCandidatos.isSelected());
+            nova.setCandidaturasAssociadas(obterCandidaturasSelecionadasNaPergunta());
 
+            GerenciarPesquisasController.getPesquisaController().adicionarPergunta(pesquisaAtual.getCodigo(), nova);
             atualizarTodasAsAbas();
         } catch (PesquisaInvalidaException | PersistenciaException e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
@@ -195,7 +276,9 @@ public class ConfigurarPesquisaController {
                     selecionada.getId(),
                     txtEnunciadoPergunta.getText(),
                     cbTipoPergunta.getValue(),
-                    new ArrayList<>(opcoesEmEdicao)
+                    new ArrayList<>(opcoesEmEdicao),
+                    chkTodosCandidatos.isSelected(),
+                    obterCandidaturasSelecionadasNaPergunta()
             );
             atualizarTodasAsAbas();
         } catch (PesquisaInvalidaException | PersistenciaException e) {
@@ -228,6 +311,13 @@ public class ConfigurarPesquisaController {
         cbTipoPergunta.setValue(null);
         txtNovaOpcao.clear();
         opcoesEmEdicao.clear();
+
+        atualizandoCheckboxesCandidatos = true;
+        chkTodosCandidatos.setSelected(false);
+        for (CheckBox chk : mapaCheckboxesCandidatos.values()) {
+            chk.setSelected(false);
+        }
+        atualizandoCheckboxesCandidatos = false;
     }
 
     // ==================== ABA 2: CANDIDATOS ====================
