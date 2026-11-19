@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.exceptions.CaixaPesquisaVazia;
 import org.example.exceptions.PesquisaInvalidaException;
@@ -251,6 +252,12 @@ public class AnaliseController implements Initializable { //implenta a interface
             if (pesquisa == null) {
                 throw new CaixaPesquisaVazia("Selecione uma pesquisa antes de gerar o relatório.");
             }
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Salvar Relatório CSV");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Arquivo CSV (*.csv)", "*.csv");
+
             //pega as entrevistas da pesquisa
             List<Entrevista> entrevistasDaPesquisa = new ArrayList<>();
             for (Entrevista e : coletaController.listarEntrevistas()) {
