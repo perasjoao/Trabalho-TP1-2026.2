@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -22,26 +23,27 @@ import org.example.models.ComparaPesquisa;
 import org.example.models.Entrevista;
 import org.example.models.Estatisticas;
 import org.example.models.Relatorio;
-import org.example.models.coleta.Resposta;
+import org.example.models.candidatos.Candidatura;
+import org.example.models.researchModels.Pergunta;
 import org.example.models.researchModels.Pesquisa;
 import org.example.serviceControllers.ColetaServiceController;
 import org.example.serviceControllers.ParametroController;
 import org.example.serviceControllers.PesquisaController;
 import org.example.serviceControllers.RelatorioController;
+import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
 
 public class AnaliseController implements Initializable { //implenta a interface que executa o codigo assim q a pagina carrega
     private final RelatorioController relatorioController = new RelatorioController();
     private final PesquisaController pesquisaController = new PesquisaController();
     private final ColetaServiceController coletaController = new ColetaServiceController();
     private final ParametroController parametroController = new ParametroController();
+    private final CandidatoController candidatoController = new CandidatoController();
     private Relatorio relatorioAtual;
 
     @FXML private ComboBox<Pesquisa> caixaPesquisa;
@@ -80,6 +82,7 @@ public class AnaliseController implements Initializable { //implenta a interface
 
     private void carregarPesquisas() {
         try {
+            pesquisaController.vincularCandidaturasCarregadas(candidatoController.listar());
             List<Pesquisa> lista = pesquisaController.listarTodas();
             caixaPesquisa.setItems(FXCollections.observableArrayList(lista));
         } catch (PesquisaInvalidaException e) {
@@ -110,6 +113,7 @@ public class AnaliseController implements Initializable { //implenta a interface
 
     private void carregarPesquisasComparacao() {
         try {
+            pesquisaController.vincularCandidaturasCarregadas(candidatoController.listar());
             List<Pesquisa> lista = pesquisaController.listarTodas();
             ObservableList<Pesquisa> obs = FXCollections.observableArrayList(lista);
             caixaPesquisaA.setItems(obs);
@@ -183,26 +187,37 @@ public class AnaliseController implements Initializable { //implenta a interface
         Pesquisa selecionada = caixaPesquisa.getValue();
         if (selecionada == null) return;
         //pega as informacoes da pesquisa selecionada
+        pesquisaController.vincularCandidaturasCarregadas(candidatoController.listar());
+
         Set<String> opcoesEncontradas = new LinkedHashSet<>(); //para n ter duplicata
         opcoesEncontradas.add("Todos");
 
-        List<Entrevista> todas = coletaController.listarEntrevistas();
-        for (Entrevista e : todas) {
-            if (e.getCodigoPesquisa() != null && e.getCodigoPesquisa().equalsIgnoreCase(selecionada.getCodigo())) {
-                if (e.getRespostas() != null) {
-                    for (Resposta r : e.getRespostas()) {
-                        if (r.getOpcaoEscolhida() != null) {
-                            opcoesEncontradas.add(r.getOpcaoEscolhida());
+        if (selecionada.getCandidaturasAssociadas() != null) {
+            for (Candidatura c : selecionada.getCandidaturasAssociadas()) {
+                if (c != null && c.getCandidato() != null) {
+                    opcoesEncontradas.add(c.getCandidato().getNome() + " (" + c.getNumero() + ")");
+                }
+            }
+        }
+
+        if (selecionada.getPerguntas() != null) {
+            for (Pergunta q : selecionada.getPerguntas()) {
+                if (q.getCandidaturasAssociadas() != null) {
+                    for (Candidatura c : q.getCandidaturasAssociadas()) {
+                        if (c != null && c.getCandidato() != null) {
+                            opcoesEncontradas.add(c.getCandidato().getNome() + " (" + c.getNumero() + ")");
                         }
                     }
                 }
             }
         }
+
         caixaCandidato.setItems(FXCollections.observableArrayList(opcoesEncontradas));
+        caixaCandidato.setValue("Todos");
     }
 
     private String limparFiltro(String valor) {
-        if (valor == null || valor.trim().isEmpty() || valor.equalsIgnoreCase("Todos")|| valor.equalsIgnoreCase("Todas")) {
+        if (valor == null || valor.trim().isEmpty() || valor.equalsIgnoreCase("Todos") || valor.equalsIgnoreCase("Todas")) {
             return null;
         }
         return valor.trim();
@@ -246,6 +261,15 @@ public class AnaliseController implements Initializable { //implenta a interface
         alert.showAndWait();
     }
 
+    private boolean pertenceAPesquisa(Entrevista e, Pesquisa pesquisa) {
+        if (e == null || e.getCodigoPesquisa() == null || pesquisa == null || pesquisa.getCodigo() == null) {
+            return false;
+        }
+        String codEntrevista = e.getCodigoPesquisa().trim();
+        String codPesquisa = pesquisa.getCodigo().trim();
+        return codEntrevista.equalsIgnoreCase(codPesquisa)
+                || codEntrevista.toLowerCase().startsWith(codPesquisa.toLowerCase() + " - ");
+    }
 
     @FXML
     public void acaoGerarRelatorio(ActionEvent event) {
@@ -255,10 +279,12 @@ public class AnaliseController implements Initializable { //implenta a interface
                 throw new CaixaPesquisaVazia("Selecione uma pesquisa antes de gerar o relatório.");
             }
 
+            pesquisaController.vincularCandidaturasCarregadas(candidatoController.listar());
+
             //pega as entrevistas da pesquisa
             List<Entrevista> entrevistasDaPesquisa = new ArrayList<>();
             for (Entrevista e : coletaController.listarEntrevistas()) {
-                if (e.getCodigoPesquisa() != null && e.getCodigoPesquisa().equalsIgnoreCase(pesquisa.getCodigo())) {
+                if (pertenceAPesquisa(e, pesquisa)) {
                     entrevistasDaPesquisa.add(e);
                 }
             }
@@ -298,7 +324,7 @@ public class AnaliseController implements Initializable { //implenta a interface
                     pesquisa, titulo, entrevistasFiltradasAmostra, regiao, dataInicio, dataFim, candidato
             );
             preencherTabela(this.relatorioAtual);
-        } catch (CaixaPesquisaVazia| PesquisaInvalidaException | RelatorioException e) {
+        } catch (CaixaPesquisaVazia | PesquisaInvalidaException | RelatorioException e) {
             trataAlerta(Alert.AlertType.WARNING, "Aviso", e.getMessage()); //cria um alerta na tela
             idTabelaRelatorio.getItems().clear();
         } catch (IOException e) {
@@ -358,12 +384,10 @@ public class AnaliseController implements Initializable { //implenta a interface
             List<Entrevista> entA = new ArrayList<>();
             List<Entrevista> entB = new ArrayList<>();
             for (Entrevista e : coletaController.listarEntrevistas()) {
-                if (e.getCodigoPesquisa() != null) {
-                    if (e.getCodigoPesquisa().equalsIgnoreCase(pA.getCodigo())) {
-                        entA.add(e);
-                    } else if (e.getCodigoPesquisa().equalsIgnoreCase(pB.getCodigo())) {
-                        entB.add(e);
-                    }
+                if (pertenceAPesquisa(e, pA)) {
+                    entA.add(e);
+                } else if (pertenceAPesquisa(e, pB)) {
+                    entB.add(e);
                 }
             }
             Relatorio rA = relatorioController.gerarRelatorio(pA, pA.getNome(), entA, null, null, null, null);
@@ -396,13 +420,13 @@ public class AnaliseController implements Initializable { //implenta a interface
         //muda cada pergunta para um codigo referente a ela
         Map<String, String> codigosPerguntas = new LinkedHashMap<>();
         int contadorPergunta = 1;
-        int contadorPerguntaTabela=1;
+        int contadorPerguntaTabela = 1;
 
         for (String opcaoCompleta : todasOpcoes) {
             float pctA = mapA.getOrDefault(opcaoCompleta, 0.0f);
             float pctB = mapB.getOrDefault(opcaoCompleta, 0.0f);
 
-            linhas.add(new LinhaTabelaRelatorio("P"+ contadorPerguntaTabela+": "+opcaoCompleta, pctA + "%", pctB + "%"));
+            linhas.add(new LinhaTabelaRelatorio("P" + contadorPerguntaTabela + ": " + opcaoCompleta, pctA + "%", pctB + "%"));
             String rotuloGrafico = opcaoCompleta;
             if (opcaoCompleta.contains(" -> ")) {
                 String[] partes = opcaoCompleta.split(" -> ", 2);
@@ -415,7 +439,7 @@ public class AnaliseController implements Initializable { //implenta a interface
             }
             serieA.getData().add(new XYChart.Data<>(rotuloGrafico, pctA));
             serieB.getData().add(new XYChart.Data<>(rotuloGrafico, pctB));
-            if(contadorPergunta%2==0){
+            if (contadorPergunta % 2 == 0) {
                 contadorPerguntaTabela++;
             }
             contadorPergunta++;
@@ -444,10 +468,11 @@ public class AnaliseController implements Initializable { //implenta a interface
     }
 
 }
+
 class LinhaTabelaRelatorio {
     final String opcao;
     final String quantidade;
-     final String percentual;
+    final String percentual;
 
     public LinhaTabelaRelatorio(String opcao, String quantidade, String percentual) {
         this.opcao = opcao;

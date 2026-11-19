@@ -7,6 +7,7 @@ import org.example.models.coleta.Entrevistador;
 import org.example.models.coleta.Participante;
 import org.example.models.researchModels.Pesquisa;
 import org.example.utils.GerenciadorArquivo;
+import org.example.viewControllers.ResearchController.ConsultasPesquisasController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,24 @@ public class ColetaServiceController {
 
     public boolean temAmostraConfigurada() {
         return entrevistadorAtual != null && participanteAtual != null;
+    }
+
+    public List<Entrevista> listarEntrevistasPorPesquisa(String codigoPesquisa) {
+        List<Entrevista> filtradas = new ArrayList<>();
+        if (codigoPesquisa == null || codigoPesquisa.trim().isEmpty()) {
+            return filtradas;
+        }
+        String codAlvo = codigoPesquisa.trim();
+        for (Entrevista e : entrevistas) {
+            if (e != null && e.getCodigoPesquisa() != null) {
+                String codEntrevista = e.getCodigoPesquisa().trim();
+                if (codEntrevista.equalsIgnoreCase(codAlvo)
+                        || codEntrevista.toLowerCase().startsWith(codAlvo.toLowerCase() + " - ")) {
+                    filtradas.add(e);
+                }
+            }
+        }
+        return filtradas;
     }
 
     public Entrevistador getEntrevistadorAtual() {
@@ -96,6 +115,8 @@ public class ColetaServiceController {
 
         entrevistas.add(entrevista);
         gerenciadorArquivo.salvar(CAMINHO_ARQUIVO, entrevistas);
+        //atualiza na hora o realizado/percentual da tela de consulta de pesquisas
+        ConsultasPesquisasController.setEntrevistasDoSistema(entrevistas);
 
         //cada participante responde uma entrevista so; o entrevistador continua o mesmo
         participanteAtual = null;

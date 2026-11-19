@@ -276,6 +276,20 @@ public class PesquisaController {
                             .ifPresent(c -> p.getCandidaturasAssociadas().add(c));
                 }
             }
+
+            // Reconstrói também as candidaturas vinculadas a cada pergunta
+            for (Pergunta q : p.getPerguntas()) {
+                if (q.getCandidaturasAssociadas().isEmpty() && !q.getNumerosCandidaturasSalvas().isEmpty()) {
+                    List<Candidatura> vinculadas = new ArrayList<>();
+                    for (Integer numero : q.getNumerosCandidaturasSalvas()) {
+                        todasCandidaturasDoSistema.stream()
+                                .filter(c -> c.getNumero() == numero)
+                                .findFirst()
+                                .ifPresent(vinculadas::add);
+                    }
+                    q.setCandidaturasAssociadas(vinculadas);
+                }
+            }
         }
     }
 
@@ -302,6 +316,12 @@ public class PesquisaController {
 
     public void editarPergunta(String codigoPesquisa, String idPergunta, String novoEnunciado, String novoTipo, List<OpcaoResposta> novasOpcoes)
             throws PesquisaInvalidaException, PersistenciaException {
+        editarPergunta(codigoPesquisa, idPergunta, novoEnunciado, novoTipo, novasOpcoes, null, null);
+    }
+
+    public void editarPergunta(String codigoPesquisa, String idPergunta, String novoEnunciado, String novoTipo,
+                               List<OpcaoResposta> novasOpcoes, Boolean paraTodosCandidatos, List<Candidatura> candidaturasAssociadas)
+            throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
 
@@ -322,6 +342,12 @@ public class PesquisaController {
         if (novasOpcoes != null) {
             alvo.setOpcoes(novasOpcoes);
         }
+        if (paraTodosCandidatos != null) {
+            alvo.setParaTodosCandidatos(paraTodosCandidatos);
+        }
+        if (candidaturasAssociadas != null) {
+            alvo.setCandidaturasAssociadas(candidaturasAssociadas);
+        }
         repository.salvarTodas(pesquisas);
     }
 
@@ -340,8 +366,12 @@ public class PesquisaController {
     public void sincronizarEntrevistasRealizadas(List<Entrevista> todasEntrevistas) {
         if (todasEntrevistas == null) return;
         for (Pesquisa p : pesquisas) {
+            String codPesquisa = p.getCodigo().trim();
             int count = (int) todasEntrevistas.stream()
-                    .filter(e -> p.getCodigo().equalsIgnoreCase(e.getCodigoPesquisa()))
+                    .filter(e -> e != null && e.getCodigoPesquisa() != null && (
+                            codPesquisa.equalsIgnoreCase(e.getCodigoPesquisa().trim()) ||
+                                    e.getCodigoPesquisa().trim().toLowerCase().startsWith(codPesquisa.toLowerCase() + " - ")
+                    ))
                     .count();
             p.setEntrevistasRealizadas(count);
         }
@@ -398,7 +428,25 @@ public class PesquisaController {
         }
         validarCamposEditaveis(pesquisa);
     }
+    public List<Pergunta> buscarPerguntasPorCandidato(String codigoPesquisa, Candidatura candidato)
+            throws PesquisaInvalidaException {
+        if (candidato == null) {
+            return buscarPorCodigo(codigoPesquisa).getPerguntas();
+        }
+        return buscarPerguntasPorCandidatos(codigoPesquisa, Collections.singletonList(candidato));
+    }
 
+    public List<Pergunta> buscarPerguntasPorCandidatos(String codigoPesquisa, List<Candidatura> candidatosFiltro)
+            throws PesquisaInvalidaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        if (candidatosFiltro == null || candidatosFiltro.isEmpty()) {
+            return new ArrayList<>(p.getPerguntas());
+        }
+        return p.getPerguntas().stream()
+                .filter(q -> q.isParaTodosCandidatos() ||
+                        candidatosFiltro.stream().anyMatch(q::refereSeAoCandidato))
+                .collect(Collectors.toList());
+    }
     private void verificarBloqueioProcessada(Pesquisa p) throws PesquisaInvalidaException {
         if ("Processada".equalsIgnoreCase(p.getSituacao())) {
             throw new PesquisaInvalidaException("Esta pesquisa está 'Processada' e seus dados não podem ser modificados.");
