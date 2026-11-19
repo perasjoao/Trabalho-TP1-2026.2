@@ -21,9 +21,9 @@
                   <Insets bottom="30.0" left="20.0" right="20.0" top="10.0" />
                </padding>
                <children>
-                  <Button mnemonicParsing="false" onAction="#ConfigAm" styleClass="botao" text="Configurar Amostra" />
-                  <Button mnemonicParsing="false" onAction="#ProxPesquisa" styleClass="botao" text="Registrar Respostas" />
-                  <Button mnemonicParsing="false" onAction="#abrirFiltroEntrevistas" styleClass="botao" text="Consultar Entrevistas" />
+                  <Button mnemonicParsing="false" onAction="#abrirConfigAmostra" styleClass="botao" text="Configurar Amostra" />
+                  <Button mnemonicParsing="false" onAction="#abrirRegistroRespostas" styleClass="botao" text="Registrar Respostas" />
+                  <Button mnemonicParsing="false" onAction="#abrirConsultaEntrevistas" styleClass="botao" text="Consultar Entrevistas" />
                   <Button mnemonicParsing="false" onAction="#voltarMenuPrincipal" styleClass="botao" text="Voltar" />
                </children>
             </VBox>
