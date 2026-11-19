@@ -1,59 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="439.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.viewControllers.ColetaController.ColetaController">
+<AnchorPane prefHeight="620.0" prefWidth="880.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.viewControllers.ColetaController.RegistroRespostasController">
+    <stylesheets>
+        <URL value="@/styles/style.css" />
+        <URL value="@/styles/Login-style.css" />
+        <URL value="@/styles/ComparaPesquisa-style.css" />
+        <URL value="@/styles/Relatorio-style.css" />
+        <URL value="@/styles/Admin-style.css" />
+    </stylesheets>
     <children>
-        <Text layoutX="105.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Registro de Respostas" textAlignment="CENTER" wrappingWidth="390.0">
-            <font>
-                <Font size="29.0" />
-            </font>
-        </Text>
+        <VBox spacing="14.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Label maxWidth="1.7976931348623157E308" styleClass="titulo-topo" text="Registro de Respostas" />
 
-        <!-- 1. Escolhe a pesquisa; as perguntas abaixo são montadas a partir dela -->
-        <Label layoutX="22.0" layoutY="64.0" text="Pesquisa:" />
-        <ComboBox fx:id="cbPesquisaPertencente" layoutX="85.0" layoutY="60.0" prefWidth="300.0" promptText="Selecione a pesquisa" />
-
-        <!-- 2. Perguntas da pesquisa selecionada (geradas pelo ColetaController) -->
-        <ScrollPane fitToWidth="true" layoutX="22.0" layoutY="95.0" prefHeight="200.0" prefWidth="556.0">
-            <content>
-                <VBox fx:id="boxPerguntas" spacing="12.0">
+                <VBox spacing="12.0" VBox.vgrow="ALWAYS">
                     <padding>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                        <Insets bottom="16.0" left="28.0" right="28.0" top="4.0" />
                     </padding>
                     <children>
-                        <Label text="Selecione uma pesquisa para carregar as perguntas." />
+                        <VBox spacing="10.0" styleClass="card-painel">
+                            <children>
+                                <Label styleClass="titulo-secao" text="Identificação da entrevista" />
+                                <GridPane hgap="14.0" vgap="10.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints prefWidth="120.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" />
+                                        <ColumnConstraints prefWidth="80.0" />
+                                        <ColumnConstraints prefWidth="170.0" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Label styleClass="label-campo" text="Pesquisa:" />
+                                        <ComboBox fx:id="cbPesquisa" maxWidth="1.7976931348623157E308" prefHeight="38.0" promptText="Selecione a pesquisa" GridPane.columnIndex="1" />
+                                        <Label styleClass="label-campo" text="Data:" GridPane.columnIndex="2" />
+                                        <DatePicker fx:id="dpDataEntrevista" maxWidth="1.7976931348623157E308" prefHeight="38.0" GridPane.columnIndex="3" />
+
+                                        <Label styleClass="label-campo" text="Código:" GridPane.rowIndex="1" />
+                                        <TextField fx:id="txtCodigoEntrevista" promptText="Gerado ao escolher a pesquisa" styleClass="campo-texto" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                        <Label styleClass="label-campo" text="Entrevistador:" GridPane.rowIndex="2" />
+                                        <Label fx:id="lblEntrevistador" styleClass="texto-detalhe" text="-" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2" />
+
+                                        <Label styleClass="label-campo" text="Participante:" GridPane.rowIndex="3" />
+                                        <HBox alignment="CENTER_LEFT" spacing="12.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3">
+                                            <children>
+                                                <Label fx:id="lblParticipante" styleClass="texto-detalhe" text="-" HBox.hgrow="ALWAYS" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Button mnemonicParsing="false" onAction="#alterarAmostra" styleClass="botao-secundario" text="Alterar amostra" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="8.0" styleClass="card-painel" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="titulo-secao" text="Perguntas" />
+                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: #f8fafc;" VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <VBox fx:id="boxPerguntas" spacing="16.0">
+                                            <padding>
+                                                <Insets bottom="6.0" left="4.0" right="8.0" top="4.0" />
+                                            </padding>
+                                            <children>
+                                                <Label text="Selecione uma pesquisa para carregar as perguntas." />
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </ScrollPane>
+                            </children>
+                        </VBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#voltarParaMenu" styleClass="botao-secundario" text="Voltar" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#salvarEntrevista" styleClass="botao-acao" text="Salvar entrevista" />
+                            </children>
+                        </HBox>
                     </children>
                 </VBox>
-            </content>
-        </ScrollPane>
-
-        <Separator layoutX="6.0" layoutY="298.0" prefHeight="17.0" prefWidth="589.0" />
-
-        <Label layoutX="22.0" layoutY="315.0" text="Identificação da entrevista">
-            <font>
-                <Font name="Calibri" size="20.0" />
-            </font>
-        </Label>
-        <TextField fx:id="txtCodigoEntrevista" layoutX="22.0" layoutY="345.0" prefWidth="170.0" promptText="Código da entrevista" />
-        <TextField fx:id="txtCodigoParticipanteEntrevista" layoutX="212.0" layoutY="345.0" prefWidth="170.0" promptText="Código do participante" />
-
-        <Label layoutX="100.0" layoutY="395.0" text="Data da entrevista:" />
-        <DatePicker fx:id="dpDataEntrevista" layoutX="212.0" layoutY="391.0" prefWidth="170.0" promptText="dd/mm/aaaa" />
-
-        <Button layoutX="22.0" layoutY="391.0" mnemonicParsing="false" onAction="#voltarParaMenu" text="Voltar" />
-        <!-- Botão Salvar chama #finalizarEntrevista -->
-        <Button layoutX="479.0" layoutY="391.0" mnemonicParsing="false" onAction="#finalizarEntrevista" text="Salvar Registro" />
+            </children>
+        </VBox>
     </children>
 </AnchorPane>
