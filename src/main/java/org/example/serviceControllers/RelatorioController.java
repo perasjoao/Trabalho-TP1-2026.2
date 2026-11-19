@@ -37,24 +37,24 @@ public class RelatorioController {
 
         List<Entrevista> entrevistasFiltradas = new ArrayList<>();
         for (Entrevista e : entrevistas) {
-            // Filtro por Região
+            //por regiao
             if (regiao != null && !regiao.trim().isEmpty()) {
                 if (e.getRegiao() == null || !e.getRegiao().equalsIgnoreCase(regiao.trim())) {
                     continue; // Pula se não for da região
                 }
             }
 
-            // Filtro por Data Inicial
+            //por data
             if (dataInicio != null && e.getData() != null) {
                 if (e.getData().isBefore(dataInicio)) {
                     continue; // Pula se anterior à data inicial
                 }
             }
 
-            // Filtro por Data Final
+            //por data final
             if (dataFim != null && e.getData() != null) {
                 if (e.getData().isAfter(dataFim)) {
-                    continue; // Pula se posterior à data final
+                    continue;
                 }
             }
 
@@ -73,15 +73,12 @@ public class RelatorioController {
                     continue; //se n votou no candidato pula
                 }
             }
-            // Se passou por todos os filtros, adiciona na lista
             entrevistasFiltradas.add(e);
         }
         if (entrevistasFiltradas.isEmpty()) {
             throw new RelatorioException("Nenhuma entrevista encontrada para os filtros selecionados.");
         }
-
         List<Estatisticas> listaEstatisticas = new ArrayList<>();
-
         //estatisticas gerais
         List<Estatisticas> estatisticasGerais = processarEstatisticas(entrevistasFiltradas, "Geral");
         for (Estatisticas est : estatisticasGerais) {
@@ -271,7 +268,6 @@ public class RelatorioController {
         }
         return new ComparaPesquisa(r1, r2, listaComparacoes);
     }
-
     public void salvarRelatorio(Relatorio relatorio) {
         if (relatorio != null && !relatorios.contains(relatorio)) {
             relatorios.add(relatorio);
@@ -290,7 +286,6 @@ public class RelatorioController {
             writer.write("Título;" + relatorio.getTitulo() + "\n");
             writer.write("Pesquisa;" + relatorio.getPesquisa().getNome() + "\n");
             writer.write("Cargo;" + relatorio.getPesquisa().getCargo() + "\n\n");
-
             if (relatorio.getEstatisticas() != null) {
                 for (Estatisticas est : relatorio.getEstatisticas()) {
                     writer.write("Parâmetro: " + est.getParametro() + "\n");
