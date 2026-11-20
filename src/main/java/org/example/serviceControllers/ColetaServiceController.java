@@ -27,7 +27,8 @@ public class ColetaServiceController {
     private Entrevistador entrevistadorAtual;
     private Participante participanteAtual;
 
-    public ColetaServiceController() {
+    //construtor privado: as outras classes usam getInstancia() (padrao Singleton)
+    private ColetaServiceController() {
         this.entrevistas = gerenciadorArquivo.ler(CAMINHO_ARQUIVO);
         if (this.entrevistas == null) {
             this.entrevistas = new ArrayList<>();

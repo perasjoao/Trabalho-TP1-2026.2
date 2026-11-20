@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -16,6 +17,7 @@ import org.example.serviceControllers.ParametroController;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class ConfigurarParametrosController {
 
@@ -81,6 +83,14 @@ public class ConfigurarParametrosController {
 
         Tab abaAtual = tabPaneCategorias.getSelectionModel().getSelectedItem();
         if (abaAtual == null) return;
+
+        // pede confirmacao antes de excluir (RNF-2)
+        Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacao.setTitle("Confirmar Exclusão");
+        confirmacao.setHeaderText("Remover \"" + selecionado + "\" de " + abaAtual.getText() + "?");
+        confirmacao.setContentText("Esta ação não poderá ser desfeita.");
+        Optional<ButtonType> resultado = confirmacao.showAndWait();
+        if (resultado.isEmpty() || resultado.get() != ButtonType.OK) return;
 
         switch (abaAtual.getText()) {
             case "Faixa etária":

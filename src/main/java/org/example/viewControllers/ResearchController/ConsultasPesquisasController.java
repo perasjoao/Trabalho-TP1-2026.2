@@ -39,7 +39,7 @@ public class ConsultasPesquisasController {
     }
 
     public static void recarregarEntrevistasDoSistema() {
-        List<Entrevista> carregadas = new ColetaServiceController().listarEntrevistas();
+        List<Entrevista> carregadas = ColetaServiceController.getInstancia().listarEntrevistas();
         entrevistasDoSistema = (carregadas != null) ? carregadas : new ArrayList<>();
         GerenciarPesquisasController.getPesquisaController().sincronizarEntrevistasRealizadas(entrevistasDoSistema);
     }

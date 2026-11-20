@@ -41,7 +41,7 @@ import java.util.*;
 public class AnaliseController implements Initializable { //implenta a interface que executa o codigo assim q a pagina carrega
     private final RelatorioController relatorioController = new RelatorioController();
     private final PesquisaController pesquisaController = new PesquisaController();
-    private final ColetaServiceController coletaController = new ColetaServiceController();
+    private final ColetaServiceController coletaController = ColetaServiceController.getInstancia();
     private final ParametroController parametroController = new ParametroController();
     private final CandidatoController candidatoController = new CandidatoController();
     private Relatorio relatorioAtual;
