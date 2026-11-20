@@ -7,7 +7,6 @@ import org.example.models.researchModels.Pergunta;
 
 public final class FabricResp {// é o mestre de obra da bagaca, que escolhe qual operario vai montar a casa de acordo com o tipo da pergunta
 
-
     private FabricResp() {
     }
 
