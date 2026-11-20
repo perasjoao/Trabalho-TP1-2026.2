@@ -7,7 +7,7 @@ import org.example.models.coleta.RespostaOpcao;
 import org.example.models.researchModels.OpcaoResposta;
 import org.example.models.researchModels.Pergunta;
 
-//perguntas com opcoes cadastradas (unica escolha, multipla escolha, escala)
+//perguntas com opcoes cadastradas em que so pode uma (unica escolha, escala)
 public class CampoEscolha extends CampoResposta {
 
     public CampoEscolha(Pergunta pergunta) {
