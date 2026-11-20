@@ -15,7 +15,7 @@ public class ColetaController extends TelaColeta {
 
     //sem participante configurado nao tem como registrar, entao manda configurar primeiro
     @FXML
-    public void abrirRegistroRespostas(ActionEvent event) throws IOException {
+    public void abrirRegistroRespostas(ActionEvent event) throws IOException {//só permite fazer se ja tiver passado pela primeira tela que configura o entrevistador e o participante da entrevista
         if (!coleta.temAmostraConfigurada()) {
             mostrarAviso("Antes de registrar as respostas, configure a amostra (entrevistador e participante).");
             trocarTela(event, CONFIG_AMOSTRA);

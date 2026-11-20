@@ -72,7 +72,7 @@ public class RegistroRespostasController extends TelaColeta implements Initializ
     }
 
     private void trocarPesquisa(Pesquisa pesquisa) {
-        boxPerguntas.getChildren().clear();
+        boxPerguntas.getChildren().clear();//toda vez que troca de pesquisa, limpa a tela e monta de novo com as perguntas da pesquisa selecionada (clear)
         campos.clear();
 
         if (pesquisa == null) {

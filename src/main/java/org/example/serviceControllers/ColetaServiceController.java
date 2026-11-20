@@ -35,7 +35,7 @@ public class ColetaServiceController {
     }
 
     public static ColetaServiceController getInstancia() {
-        if (instancia == null) {
+        if (instancia == null) {//primeiro cria se nao tiver, depois devolve a mesma pra geral
             instancia = new ColetaServiceController();
         }
         return instancia;
@@ -81,7 +81,7 @@ public class ColetaServiceController {
     // ---------- entrevistas ----------
 
     //aplica as regras da coleta antes de gravar no arquivo
-    public void registrarEntrevista(Entrevista entrevista, Pesquisa pesquisa)
+    public void registrarEntrevista(Entrevista entrevista, Pesquisa pesquisa)//faz todas as verificacoes... pesquisas que ja foram encerradas,codigo de entrevista igual,quantidade prevista etc
             throws ColetaIncompletaException, AmostraInvalidaException {
         if (pesquisa == null) {
             throw new ColetaIncompletaException("Selecione a pesquisa da entrevista.");
@@ -128,7 +128,7 @@ public class ColetaServiceController {
     }
 
     //sugere E001, E002... pulando os codigos que ja existem na pesquisa
-    public String proximoCodigoEntrevista(String codigoPesquisa) {
+    public String proximoCodigoEntrevista(String codigoPesquisa) {//nao pode repetir, e testa no while se ja existe, pra pular os repetidos
         int numero = entrevistasDaPesquisa(codigoPesquisa).size() + 1;
         String codigo = String.format("E%03d", numero);
         while (existeEntrevista(codigoPesquisa, codigo)) {

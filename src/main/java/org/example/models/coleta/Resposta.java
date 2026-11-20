@@ -28,9 +28,9 @@ public class Resposta implements Serializable {
 
     //as subclasses sobrescrevem esses dois metodos
     //aqui fica o comportamento padrao, que tambem serve pras entrevistas antigas do arquivo
-    public String getTipo() {
+    public String getTipo() { 
         return "Resposta";
-    }
+    } //comportamento padrao, é usado como base em outras classes
 
     //"nao sabe" e "nao respondeu" sao contados separado, fora do percentual
     public boolean contaNoPercentual() {
