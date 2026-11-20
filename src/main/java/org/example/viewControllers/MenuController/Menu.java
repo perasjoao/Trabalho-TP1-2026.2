@@ -62,15 +62,15 @@ public class Menu implements Initializable {
     }
 
     public void AbrirCandidatos(ActionEvent event) throws IOException {
-        //candidatos e partidos: so administrador e pesquisador (o analista nao mantem cadastros)
+        //candidatos e partidos: so o administrador (o pesquisador cuida de pesquisas e coleta,
+        //o analista de resultados), igual ao que o menu mostra e a tela de permissoes descreve
         Usuario usuario = Sessao.getUsuarioLogado();
-        boolean permitido = usuario != null
-                && (usuario.getPerfil() == Perfil.ADMINISTRADOR || usuario.getPerfil() == Perfil.PESQUISADOR);
+        boolean permitido = usuario != null && usuario.getPerfil() == Perfil.ADMINISTRADOR;
         if (!permitido) {
             Alert alerta = new Alert(Alert.AlertType.WARNING);
             alerta.setTitle("Acesso negado");
             alerta.setHeaderText(null);
-            alerta.setContentText("Apenas administradores e pesquisadores podem acessar este módulo.");
+            alerta.setContentText("Apenas administradores podem acessar este módulo.");
             alerta.showAndWait();
             return;
         }

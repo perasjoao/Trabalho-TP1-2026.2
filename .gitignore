@@ -34,3 +34,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Dados gerados ao usar o sistema (cada um tem os seus) ###
+*.dat
+pesquisas_data.txt
+dados/
+
+### Copia do repositorio que entrou por engano ###
+Trabalho-TP1-2026.2/

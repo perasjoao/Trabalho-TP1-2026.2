@@ -1,4 +1,0 @@
-1;PesquisaTeste;PRESIDENTE;Intenção de voto;Planejada;Nacional;2026-10-12;2026-11-12;20;;0;;;
-2;PesquisaBtata;PRESIDENTE;Conhecimento;Em coleta;Nacional;2026-10-12;2026-11-12;23;;0;;;
-3;Pesquisa Permissao;PRESIDENTE;Conhecimento;Planejada;Nacional;2026-11-03;2026-12-03;2;;0;;13,15;Q2~Você conhece o polvo?~Única Escolha~1:Sim,2:Não
-67;PesquisaTestaRegiao;GOVERNADOR;Intenção de voto;Planejada;Norte, Sul;2026-11-18;2026-11-23;67;algum;0;NORTE,SUL;;
