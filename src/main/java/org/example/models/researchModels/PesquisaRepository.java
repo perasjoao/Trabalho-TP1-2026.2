@@ -1,14 +1,13 @@
 package org.example.models.researchModels;
 
 import org.example.exceptions.PersistenciaException;
-import org.example.models.candidatos.Candidatura;
 import org.example.models.comum.Cargo;
-import org.example.models.comum.Regiao;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PesquisaRepository {
@@ -21,13 +20,15 @@ public class PesquisaRepository {
                 String dataInicioStr = (p.getDataInicio() != null) ? p.getDataInicio().toString() : "";
                 String dataFimStr = (p.getDataFim() != null) ? p.getDataFim().toString() : "";
                 String metodologiaLimpa = p.getMetodologia().replace("\n", " ").replace(";", ",");
+                String abrangenciaLimpa = (p.getAbrangencia() != null) ? p.getAbrangencia().replace(";", ",") : "";
 
                 // Regiões
                 String regioesStr = p.getRegioesAssociadas().stream()
-                        .map(Regiao::name)
+                        .map(r -> r.replace(";", " ").replace(",", " ").trim())
+                        .filter(r -> !r.isEmpty())
                         .collect(Collectors.joining(","));
 
-                // Números
+                // Números de candidaturas
                 String candidaturasStr;
                 if (!p.getCandidaturasAssociadas().isEmpty()) {
                     candidaturasStr = p.getCandidaturasAssociadas().stream()
@@ -42,13 +43,16 @@ public class PesquisaRepository {
                 // Perguntas
                 String perguntasStr = serializarPerguntas(p.getPerguntas());
 
+                // Metas do Plano Amostral
+                String planoAmostralStr = serializarPlanoAmostral(p.getPlanoAmostral());
+
                 bw.write(String.join(";",
                         p.getCodigo(),
                         p.getNome(),
                         cargoStr,
                         p.getTipo(),
                         p.getSituacao(),
-                        p.getAbrangencia(),
+                        abrangenciaLimpa,
                         dataInicioStr,
                         dataFimStr,
                         String.valueOf(p.getEntrevistasPrevistas()),
@@ -56,7 +60,8 @@ public class PesquisaRepository {
                         String.valueOf(p.getEntrevistasRealizadas()),
                         regioesStr,
                         candidaturasStr,
-                        perguntasStr
+                        perguntasStr,
+                        planoAmostralStr
                 ));
                 bw.newLine();
             }
@@ -113,9 +118,12 @@ public class PesquisaRepository {
             }
 
             if (partes.length >= 12 && !partes[11].isEmpty()) {
-                List<Regiao> regioes = new ArrayList<>();
+                List<String> regioes = new ArrayList<>();
                 for (String reg : partes[11].split(",")) {
-                    if (!reg.isEmpty()) regioes.add(Regiao.valueOf(reg));
+                    String regNormalizada = normalizarRegiaoLegada(reg);
+                    if (!regNormalizada.isEmpty() && !regioes.contains(regNormalizada)) {
+                        regioes.add(regNormalizada);
+                    }
                 }
                 p.setRegioesAssociadas(regioes);
             }
@@ -128,9 +136,49 @@ public class PesquisaRepository {
                 p.setNumerosCandidaturasSalvas(numeros);
             }
 
+            if (partes.length >= 15 && !partes[14].isEmpty()) {
+                desserializarPlanoAmostral(partes[14], p.getPlanoAmostral());
+            }
+
             return p;
         }
         return null;
+    }
+
+    private String normalizarRegiaoLegada(String reg) {
+        if (reg == null) return "";
+        switch (reg.trim().toUpperCase()) {
+            case "NORTE": return "Norte";
+            case "NORDESTE": return "Nordeste";
+            case "CENTRO_OESTE": return "Centro-Oeste";
+            case "SUDESTE": return "Sudeste";
+            case "SUL": return "Sul";
+            case "NACIONAL": return "Todas";
+            default: return reg.trim();
+        }
+    }
+
+    private String serializarPlanoAmostral(PlanoAmostral plano) {
+        if (plano == null || plano.getMetasPorCategoria().isEmpty()) return "";
+        List<String> blocos = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Integer>> catEntry : plano.getMetasPorCategoria().entrySet()) {
+            String catLimpa = catEntry.getKey().replace("~", " ").replace("|", " ").replace(";", " ");
+            for (Map.Entry<String, Integer> grpEntry : catEntry.getValue().entrySet()) {
+                String grpLimpo = grpEntry.getKey().replace("~", " ").replace("|", " ").replace(";", " ");
+                blocos.add(catLimpa + "~" + grpLimpo + "~" + grpEntry.getValue());
+            }
+        }
+        return String.join("|", blocos);
+    }
+
+    private void desserializarPlanoAmostral(String texto, PlanoAmostral plano) {
+        if (texto == null || texto.isEmpty() || plano == null) return;
+        for (String bloco : texto.split("\\|")) {
+            String[] campos = bloco.split("~", -1);
+            if (campos.length == 3) {
+                plano.definirMeta(campos[0], campos[1], Integer.parseInt(campos[2]));
+            }
+        }
     }
 
     private String serializarPerguntas(List<Pergunta> perguntas) {

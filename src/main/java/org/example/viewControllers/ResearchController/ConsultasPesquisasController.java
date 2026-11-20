@@ -10,12 +10,15 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.models.Entrevista;
 import org.example.models.comum.Cargo;
-import org.example.models.comum.Regiao;
 import org.example.models.researchModels.Pesquisa;
+import org.example.models.researchModels.PlanoAmostral;
 import org.example.serviceControllers.ColetaServiceController;
+import org.example.serviceControllers.ParametroController;
+import org.example.serviceControllers.PesquisaController;
 import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.IOException;
@@ -52,12 +55,7 @@ public class ConsultasPesquisasController {
     @FXML private CheckBox chkTipoRejeicao;
     @FXML private CheckBox chkTipoSegundoTurno;
 
-    @FXML private CheckBox chkRegiaoNorte;
-    @FXML private CheckBox chkRegiaoNordeste;
-    @FXML private CheckBox chkRegiaoCentroOeste;
-    @FXML private CheckBox chkRegiaoSudeste;
-    @FXML private CheckBox chkRegiaoSul;
-    @FXML private CheckBox chkRegiaoNacional;
+    @FXML private VBox vboxFiltroRegioes;
 
     @FXML private CheckBox chkCargoPresidente;
     @FXML private CheckBox chkCargoGovernador;
@@ -75,6 +73,11 @@ public class ConsultasPesquisasController {
     @FXML private TextField txtQtdEntrevistados;
     @FXML private CheckBox chkAbaixoMeta;
 
+    @FXML private Label lblAlertaMetas;
+    @FXML private VBox vboxDetalheMeta;
+    @FXML private Label lblDetalheMetaTitulo;
+    @FXML private Label lblDetalheMetaConteudo;
+
     @FXML private TableView<Pesquisa> tblPesquisas;
     @FXML private TableColumn<Pesquisa, String> colCodigo;
     @FXML private TableColumn<Pesquisa, String> colNome;
@@ -86,8 +89,11 @@ public class ConsultasPesquisasController {
     @FXML private TableColumn<Pesquisa, Number> colPrevisto;
     @FXML private TableColumn<Pesquisa, Number> colRealizado;
     @FXML private TableColumn<Pesquisa, String> colPercentual;
+    @FXML private TableColumn<Pesquisa, String> colMetaAmostral;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private CheckBox chkTodasRegioes;
+    private final List<CheckBox> checkBoxesRegioes = new ArrayList<>();
     private boolean atualizandoCheckBoxesRegiao = false;
 
     @FXML
@@ -106,14 +112,8 @@ public class ConsultasPesquisasController {
 
         colRegiao.setCellValueFactory(cellData -> {
             Pesquisa p = cellData.getValue();
-            if ("Nacional".equalsIgnoreCase(p.getAbrangencia())) {
-                return new SimpleStringProperty("Nacional");
-            }
             if (p.getRegioesAssociadas() != null && !p.getRegioesAssociadas().isEmpty()) {
-                String regioes = p.getRegioesAssociadas().stream()
-                        .map(Regiao::toString)
-                        .collect(Collectors.joining(", "));
-                return new SimpleStringProperty(regioes);
+                return new SimpleStringProperty(String.join(", ", p.getRegioesAssociadas()));
             }
             return new SimpleStringProperty(p.getAbrangencia() != null ? p.getAbrangencia() : "");
         });
@@ -139,42 +139,139 @@ public class ConsultasPesquisasController {
             return new SimpleStringProperty(String.format("%.1f%%", pct));
         });
 
+        colMetaAmostral.setCellValueFactory(cellData -> {
+            Pesquisa p = cellData.getValue();
+            PlanoAmostral plano = p.getPlanoAmostral();
+            boolean semMetas = (plano == null)
+                    || (plano.getMetasPorCategoria().isEmpty() && plano.getMetasPorGrupo().isEmpty());
+            if (semMetas) {
+                return new SimpleStringProperty("Sem metas");
+            }
+            boolean abaixo = GerenciarPesquisasController.getPesquisaController()
+                    .estaAbaixoDaMetaAmostral(p, entrevistasDoSistema);
+            return new SimpleStringProperty(abaixo ? "Abaixo da meta" : "Atingida");
+        });
+
+        colMetaAmostral.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    if ("Abaixo da meta".equals(item)) {
+                        setStyle("-fx-text-fill: #c0392b; -fx-font-weight: bold;");
+                    } else if ("Atingida".equals(item)) {
+                        setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-text-fill: #7f8c8d;");
+                    }
+                }
+            }
+        });
+
+        tblPesquisas.getSelectionModel().selectedItemProperty().addListener((obs, antiga, selecionada) ->
+                atualizarPainelDetalheMeta(selecionada)
+        );
+
         recarregarEntrevistasDoSistema();
         GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(new CandidatoController().listar());
         carregarTabela(GerenciarPesquisasController.getPesquisaController().getPesquisas());
     }
 
-    private void configurarCheckBoxesRegiao() {
-        CheckBox[] regionais = {
-                chkRegiaoNorte, chkRegiaoNordeste, chkRegiaoCentroOeste, chkRegiaoSudeste, chkRegiaoSul
-        };
+    private void atualizarPainelDetalheMeta(Pesquisa p) {
+        if (p == null) {
+            lblDetalheMetaTitulo.setText("Detalhamento das Metas do Plano Amostral");
+            lblDetalheMetaConteudo.setText("Selecione uma pesquisa na tabela acima para visualizar o progresso de cada grupo da amostra.");
+            lblDetalheMetaConteudo.setStyle("-fx-text-fill: #495057;");
+            vboxDetalheMeta.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12 8 12;");
+            return;
+        }
 
-        chkRegiaoNacional.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
+        PesquisaController controller = GerenciarPesquisasController.getPesquisaController();
+        List<String> statusGrupos = controller.obterStatusGruposPlanoAmostral(p, entrevistasDoSistema);
+        lblDetalheMetaTitulo.setText("Plano Amostral — " + p.getCodigo() + " (" + p.getNome() + "):");
+
+        if (statusGrupos.isEmpty()) {
+            lblDetalheMetaConteudo.setText("Esta pesquisa não possui metas mínimas por grupo configuradas no Plano Amostral.");
+            lblDetalheMetaConteudo.setStyle("-fx-text-fill: #6c757d;");
+            vboxDetalheMeta.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12 8 12;");
+            return;
+        }
+
+        boolean abaixo = controller.estaAbaixoDaMetaAmostral(p, entrevistasDoSistema);
+        lblDetalheMetaConteudo.setText(String.join("   |   ", statusGrupos));
+        if (abaixo) {
+            lblDetalheMetaConteudo.setStyle("-fx-text-fill: #a93226; -fx-font-weight: bold;");
+            vboxDetalheMeta.setStyle("-fx-background-color: #fdedec; -fx-border-color: #f5b7b1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12 8 12;");
+        } else {
+            lblDetalheMetaConteudo.setStyle("-fx-text-fill: #1e8449; -fx-font-weight: bold;");
+            vboxDetalheMeta.setStyle("-fx-background-color: #eafaf1; -fx-border-color: #a9dfbf; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12 8 12;");
+        }
+    }
+
+    private void configurarCheckBoxesRegiao() {
+        vboxFiltroRegioes.getChildren().clear();
+        checkBoxesRegioes.clear();
+
+        List<String> regioesCadastradas = new ParametroController().listarRegioes();
+
+        chkTodasRegioes = new CheckBox("Selecionar todas");
+        chkTodasRegioes.setStyle("-fx-font-weight: bold;");
+        chkTodasRegioes.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
             if (atualizandoCheckBoxesRegiao) return;
             atualizandoCheckBoxesRegiao = true;
-            for (CheckBox chk : regionais) {
+            for (CheckBox chk : checkBoxesRegioes) {
                 chk.setSelected(marcadoAgora);
             }
             atualizandoCheckBoxesRegiao = false;
         });
 
-        for (CheckBox chk : regionais) {
+        for (String regiao : regioesCadastradas) {
+            CheckBox chk = new CheckBox(regiao);
             chk.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
                 if (atualizandoCheckBoxesRegiao) return;
                 atualizandoCheckBoxesRegiao = true;
-                boolean todasMarcadas = chkRegiaoNorte.isSelected()
-                        && chkRegiaoNordeste.isSelected()
-                        && chkRegiaoCentroOeste.isSelected()
-                        && chkRegiaoSudeste.isSelected()
-                        && chkRegiaoSul.isSelected();
-                chkRegiaoNacional.setSelected(todasMarcadas);
+                boolean todasMarcadas = !checkBoxesRegioes.isEmpty()
+                        && checkBoxesRegioes.stream().allMatch(CheckBox::isSelected);
+                chkTodasRegioes.setSelected(todasMarcadas);
                 atualizandoCheckBoxesRegiao = false;
             });
+            checkBoxesRegioes.add(chk);
+            vboxFiltroRegioes.getChildren().add(chk);
         }
+
+        vboxFiltroRegioes.getChildren().add(chkTodasRegioes);
     }
 
     private void carregarTabela(List<Pesquisa> lista) {
         tblPesquisas.setItems(FXCollections.observableArrayList(lista));
+
+        PesquisaController controller = GerenciarPesquisasController.getPesquisaController();
+        long qtdAbaixoMeta = lista.stream()
+                .filter(p -> controller.estaAbaixoDaMetaAmostral(p, entrevistasDoSistema))
+                .count();
+
+        if (qtdAbaixoMeta > 0) {
+            lblAlertaMetas.setText(qtdAbaixoMeta + " pesquisa(s) abaixo da meta amostral");
+            lblAlertaMetas.setStyle("-fx-background-color: #fdedec; -fx-text-fill: #c0392b; -fx-padding: 4 10 4 10; -fx-background-radius: 6; -fx-font-weight: bold;");
+        } else {
+            lblAlertaMetas.setText("Nenhuma pesquisa abaixo da meta");
+            lblAlertaMetas.setStyle("-fx-background-color: #eafaf1; -fx-text-fill: #27ae60; -fx-padding: 4 10 4 10; -fx-background-radius: 6; -fx-font-weight: bold;");
+        }
+
+        // seleciona primeira pesquisa abaixo da meta
+        Pesquisa primeiraAbaixo = lista.stream()
+                .filter(p -> controller.estaAbaixoDaMetaAmostral(p, entrevistasDoSistema))
+                .findFirst()
+                .orElse(null);
+        if (primeiraAbaixo != null) {
+            tblPesquisas.getSelectionModel().select(primeiraAbaixo);
+        } else {
+            atualizarPainelDetalheMeta(tblPesquisas.getSelectionModel().getSelectedItem());
+        }
     }
 
     private List<String> obterTiposMarcados() {
@@ -186,15 +283,11 @@ public class ConsultasPesquisasController {
         return lista;
     }
 
-    private List<Regiao> obterRegioesMarcadas() {
-        List<Regiao> lista = new ArrayList<>();
-        if (chkRegiaoNorte.isSelected()) lista.add(Regiao.NORTE);
-        if (chkRegiaoNordeste.isSelected()) lista.add(Regiao.NORDESTE);
-        if (chkRegiaoCentroOeste.isSelected()) lista.add(Regiao.CENTRO_OESTE);
-        if (chkRegiaoSudeste.isSelected()) lista.add(Regiao.SUDESTE);
-        if (chkRegiaoSul.isSelected()) lista.add(Regiao.SUL);
-        if (chkRegiaoNacional.isSelected()) lista.add(Regiao.NACIONAL);
-        return lista;
+    private List<String> obterRegioesMarcadas() {
+        return checkBoxesRegioes.stream()
+                .filter(CheckBox::isSelected)
+                .map(CheckBox::getText)
+                .collect(Collectors.toList());
     }
 
     private List<Cargo> obterCargosMarcados() {
@@ -264,12 +357,12 @@ public class ConsultasPesquisasController {
         chkTipoRejeicao.setSelected(false);
         chkTipoSegundoTurno.setSelected(false);
 
-        chkRegiaoNorte.setSelected(false);
-        chkRegiaoNordeste.setSelected(false);
-        chkRegiaoCentroOeste.setSelected(false);
-        chkRegiaoSudeste.setSelected(false);
-        chkRegiaoSul.setSelected(false);
-        chkRegiaoNacional.setSelected(false);
+        atualizandoCheckBoxesRegiao = true;
+        if (chkTodasRegioes != null) chkTodasRegioes.setSelected(false);
+        for (CheckBox chk : checkBoxesRegioes) {
+            chk.setSelected(false);
+        }
+        atualizandoCheckBoxesRegiao = false;
 
         chkCargoPresidente.setSelected(false);
         chkCargoGovernador.setSelected(false);

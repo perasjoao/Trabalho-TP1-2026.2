@@ -9,12 +9,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.exceptions.PersistenciaException;
 import org.example.exceptions.PesquisaInvalidaException;
 import org.example.models.comum.Cargo;
-import org.example.models.comum.Regiao;
 import org.example.models.researchModels.Pesquisa;
+import org.example.serviceControllers.ParametroController;
 import org.example.serviceControllers.PesquisaController;
 import org.example.serviceControllers.candidatos.CandidatoController;
 
@@ -49,12 +50,7 @@ public class GerenciarPesquisasController {
     @FXML private CheckBox chkTipoRejeicao;
     @FXML private CheckBox chkTipoSegundoTurno;
 
-    @FXML private CheckBox chkRegiaoNorte;
-    @FXML private CheckBox chkRegiaoNordeste;
-    @FXML private CheckBox chkRegiaoCentroOeste;
-    @FXML private CheckBox chkRegiaoSudeste;
-    @FXML private CheckBox chkRegiaoSul;
-    @FXML private CheckBox chkRegiaoNacional;
+    @FXML private VBox vboxFiltroRegioes;
 
     @FXML private CheckBox chkCargoPresidente;
     @FXML private CheckBox chkCargoGovernador;
@@ -80,6 +76,8 @@ public class GerenciarPesquisasController {
     @FXML private TableColumn<Pesquisa, String> colPeriodo;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private CheckBox chkTodasRegioes;
+    private final List<CheckBox> checkBoxesRegioes = new ArrayList<>();
     private boolean atualizandoCheckBoxesRegiao = false;
 
     @FXML
@@ -98,14 +96,8 @@ public class GerenciarPesquisasController {
 
         colRegiao.setCellValueFactory(cellData -> {
             Pesquisa p = cellData.getValue();
-            if ("Nacional".equalsIgnoreCase(p.getAbrangencia())) {
-                return new SimpleStringProperty("Nacional");
-            }
             if (p.getRegioesAssociadas() != null && !p.getRegioesAssociadas().isEmpty()) {
-                String regioes = p.getRegioesAssociadas().stream()
-                        .map(Regiao::toString)
-                        .collect(Collectors.joining(", "));
-                return new SimpleStringProperty(regioes);
+                return new SimpleStringProperty(String.join(", ", p.getRegioesAssociadas()));
             }
             return new SimpleStringProperty(p.getAbrangencia() != null ? p.getAbrangencia() : "");
         });
@@ -122,32 +114,37 @@ public class GerenciarPesquisasController {
     }
 
     private void configurarCheckBoxesRegiao() {
-        CheckBox[] regionais = {
-                chkRegiaoNorte, chkRegiaoNordeste, chkRegiaoCentroOeste, chkRegiaoSudeste, chkRegiaoSul
-        };
+        vboxFiltroRegioes.getChildren().clear();
+        checkBoxesRegioes.clear();
 
-        chkRegiaoNacional.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
+        List<String> regioesCadastradas = new ParametroController().listarRegioes();
+
+        chkTodasRegioes = new CheckBox("Selecionar todas");
+        chkTodasRegioes.setStyle("-fx-font-weight: bold;");
+        chkTodasRegioes.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
             if (atualizandoCheckBoxesRegiao) return;
             atualizandoCheckBoxesRegiao = true;
-            for (CheckBox chk : regionais) {
+            for (CheckBox chk : checkBoxesRegioes) {
                 chk.setSelected(marcadoAgora);
             }
             atualizandoCheckBoxesRegiao = false;
         });
 
-        for (CheckBox chk : regionais) {
+        for (String regiao : regioesCadastradas) {
+            CheckBox chk = new CheckBox(regiao);
             chk.selectedProperty().addListener((obs, estavaMarcado, marcadoAgora) -> {
                 if (atualizandoCheckBoxesRegiao) return;
                 atualizandoCheckBoxesRegiao = true;
-                boolean todasMarcadas = chkRegiaoNorte.isSelected()
-                        && chkRegiaoNordeste.isSelected()
-                        && chkRegiaoCentroOeste.isSelected()
-                        && chkRegiaoSudeste.isSelected()
-                        && chkRegiaoSul.isSelected();
-                chkRegiaoNacional.setSelected(todasMarcadas);
+                boolean todasMarcadas = !checkBoxesRegioes.isEmpty()
+                        && checkBoxesRegioes.stream().allMatch(CheckBox::isSelected);
+                chkTodasRegioes.setSelected(todasMarcadas);
                 atualizandoCheckBoxesRegiao = false;
             });
+            checkBoxesRegioes.add(chk);
+            vboxFiltroRegioes.getChildren().add(chk);
         }
+
+        vboxFiltroRegioes.getChildren().add(chkTodasRegioes);
     }
 
     private void carregarTabela(List<Pesquisa> lista) {
@@ -163,15 +160,11 @@ public class GerenciarPesquisasController {
         return lista;
     }
 
-    private List<Regiao> obterRegioesMarcadas() {
-        List<Regiao> lista = new ArrayList<>();
-        if (chkRegiaoNorte.isSelected()) lista.add(Regiao.NORTE);
-        if (chkRegiaoNordeste.isSelected()) lista.add(Regiao.NORDESTE);
-        if (chkRegiaoCentroOeste.isSelected()) lista.add(Regiao.CENTRO_OESTE);
-        if (chkRegiaoSudeste.isSelected()) lista.add(Regiao.SUDESTE);
-        if (chkRegiaoSul.isSelected()) lista.add(Regiao.SUL);
-        if (chkRegiaoNacional.isSelected()) lista.add(Regiao.NACIONAL);
-        return lista;
+    private List<String> obterRegioesMarcadas() {
+        return checkBoxesRegioes.stream()
+                .filter(CheckBox::isSelected)
+                .map(CheckBox::getText)
+                .collect(Collectors.toList());
     }
 
     private List<Cargo> obterCargosMarcados() {
@@ -226,12 +219,12 @@ public class GerenciarPesquisasController {
         chkTipoRejeicao.setSelected(false);
         chkTipoSegundoTurno.setSelected(false);
 
-        chkRegiaoNorte.setSelected(false);
-        chkRegiaoNordeste.setSelected(false);
-        chkRegiaoCentroOeste.setSelected(false);
-        chkRegiaoSudeste.setSelected(false);
-        chkRegiaoSul.setSelected(false);
-        chkRegiaoNacional.setSelected(false);
+        atualizandoCheckBoxesRegiao = true;
+        if (chkTodasRegioes != null) chkTodasRegioes.setSelected(false);
+        for (CheckBox chk : checkBoxesRegioes) {
+            chk.setSelected(false);
+        }
+        atualizandoCheckBoxesRegiao = false;
 
         chkCargoPresidente.setSelected(false);
         chkCargoGovernador.setSelected(false);

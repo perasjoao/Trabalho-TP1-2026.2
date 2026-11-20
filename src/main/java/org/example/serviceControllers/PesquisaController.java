@@ -6,7 +6,6 @@ import org.example.models.Entrevista;
 import org.example.models.candidatos.Candidatura;
 import org.example.models.coleta.Participante;
 import org.example.models.comum.Cargo;
-import org.example.models.comum.Regiao;
 import org.example.models.researchModels.OpcaoResposta;
 import org.example.models.researchModels.Pergunta;
 import org.example.models.researchModels.Pesquisa;
@@ -16,18 +15,22 @@ import org.example.models.researchModels.PlanoAmostral;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.Collections;
 
 public class PesquisaController {
     private List<Pesquisa> pesquisas;
     private final PesquisaRepository repository;
 
-    private static final List<String> TIPOS_VALIDOS = Arrays.asList("Intenção de voto", "Conhecimento", "Rejeição", "Segundo turno simulado");
-    private static final List<String> SITUACOES_VALIDAS = Arrays.asList("Planejada", "Em coleta", "Encerrada", "Processada");
+    private static final List<String> TIPOS_VALIDOS = Arrays.asList(
+            "Intenção de voto", "Conhecimento", "Rejeição", "Segundo turno simulado"
+    );
+    private static final List<String> SITUACOES_VALIDAS = Arrays.asList(
+            "Planejada", "Em coleta", "Encerrada", "Processada"
+    );
 
     public PesquisaController() {
         this.repository = new PesquisaRepository();
@@ -39,7 +42,7 @@ public class PesquisaController {
         }
     }
 
-    // --- 1. SALVAR / CADASTRAR ---
+    //ssalvar/cadastrar
     public void salvar(Pesquisa pesquisa) throws PesquisaInvalidaException, PersistenciaException {
         validarPesquisa(pesquisa);
         try {
@@ -60,7 +63,7 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- 2. EDITAR / ATUALIZAR ---
+    // atualiza
     public void atualizar(String codigo, Pesquisa pesquisaAtualizada) throws PesquisaInvalidaException, PersistenciaException {
         if (codigo == null || codigo.trim().isEmpty()) {
             throw new PesquisaInvalidaException("Código é obrigatório para atualização.");
@@ -74,11 +77,38 @@ public class PesquisaController {
         }
 
         validarCamposEditaveis(pesquisaAtualizada);
+
         boolean temCandidatos = !pesquisaExistente.getCandidaturasAssociadas().isEmpty()
                 || !pesquisaExistente.getNumerosCandidaturasSalvas().isEmpty();
         if (temCandidatos && pesquisaExistente.getCargo() != pesquisaAtualizada.getCargo()) {
             throw new PesquisaInvalidaException("Não é possível alterar o cargo da pesquisa enquanto houver candidatos associados. Remova-os primeiro.");
         }
+        if (pesquisaExistente.getPlanoAmostral() != null
+                && pesquisaExistente.getPlanoAmostral().getMetasPorCategoria().containsKey("Região")
+                && pesquisaAtualizada.getRegioesAssociadas() != null
+                && !pesquisaAtualizada.getRegioesAssociadas().isEmpty()) {
+            Map<String, Integer> metasRegiao = pesquisaExistente.getPlanoAmostral().getMetasPorCategoria().get("Região");
+            for (String regiaoComMeta : metasRegiao.keySet()) {
+                boolean aindaAssociada = pesquisaAtualizada.getRegioesAssociadas().stream()
+                        .anyMatch(r -> r.equalsIgnoreCase(regiaoComMeta));
+                if (!aindaAssociada) {
+                    throw new PesquisaInvalidaException(
+                            "Não é possível remover a região '" + regiaoComMeta +
+                                    "' enquanto houver uma meta amostral definida para ela. Remova a meta primeiro."
+                    );
+                }
+            }
+        }
+
+        if (pesquisaAtualizada.getEntrevistasPrevistas() < pesquisaExistente.getEntrevistasRealizadas()) {
+            throw new PesquisaInvalidaException("A quantidade prevista não pode ser menor que o total de entrevistas já realizadas ("
+                    + pesquisaExistente.getEntrevistasRealizadas() + ").");
+        }
+
+        if (pesquisaExistente.getPlanoAmostral() != null) {
+            pesquisaExistente.getPlanoAmostral().validarSomasPorCategoria(pesquisaAtualizada.getEntrevistasPrevistas());
+        }
+
         validarTransicaoSituacao(pesquisaExistente, pesquisaAtualizada.getSituacao());
 
         pesquisaExistente.setNome(pesquisaAtualizada.getNome());
@@ -86,6 +116,9 @@ public class PesquisaController {
         pesquisaExistente.setTipo(pesquisaAtualizada.getTipo());
         pesquisaExistente.setSituacao(pesquisaAtualizada.getSituacao());
         pesquisaExistente.setAbrangencia(pesquisaAtualizada.getAbrangencia());
+        if (pesquisaAtualizada.getRegioesAssociadas() != null && !pesquisaAtualizada.getRegioesAssociadas().isEmpty()) {
+            pesquisaExistente.setRegioesAssociadas(new ArrayList<>(pesquisaAtualizada.getRegioesAssociadas()));
+        }
         pesquisaExistente.setDataInicio(pesquisaAtualizada.getDataInicio());
         pesquisaExistente.setDataFim(pesquisaAtualizada.getDataFim());
         pesquisaExistente.setEntrevistasPrevistas(pesquisaAtualizada.getEntrevistasPrevistas());
@@ -94,22 +127,76 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- ATUALIZAR PLANO AMOSTRAL (Tela Configurar Pesquisa) ---
+    // plano amostral
     public void atualizarPlanoAmostral(String codigoPesquisa, PlanoAmostral planoAmostral)
             throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
 
-        p.setPlanoAmostral(planoAmostral);
         if (planoAmostral != null) {
+            planoAmostral.validarSomasPorCategoria(p.getEntrevistasPrevistas());
             p.setMetodologia(planoAmostral.getDescricaoMetodologia());
         }
+        p.setPlanoAmostral(planoAmostral);
         repository.salvarTodas(pesquisas);
     }
 
-    // --- BUSCA COM FILTROS COMBINADOS (Compatibilidade com chamada simples) ---
+    public void definirMetaPlanoAmostral(String codigoPesquisa, String categoria, String grupo, int quantidadeMinima)
+            throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        if (quantidadeMinima < 0) {
+            throw new PesquisaInvalidaException("A quantidade mínima da meta não pode ser negativa.");
+        }
+        if ("Região".equalsIgnoreCase(categoria)) {
+            boolean regiaoAssociada = p.getRegioesAssociadas() != null && p.getRegioesAssociadas().stream()
+                    .anyMatch(r -> r.equalsIgnoreCase(grupo.trim()));
+            if (!regiaoAssociada) {
+                throw new PesquisaInvalidaException(
+                        "A região '" + grupo + "' não está associada à abrangência desta pesquisa."
+                );
+            }
+        }
+        PlanoAmostral plano = p.getPlanoAmostral();
+        if (plano == null) {
+            plano = new PlanoAmostral(p.getMetodologia());
+            p.setPlanoAmostral(plano);
+        }
+
+        Integer valorAnterior = plano.getMetasPorCategoria().containsKey(categoria)
+                ? plano.getMetasPorCategoria().get(categoria).get(grupo)
+                : null;
+
+        plano.definirMeta(categoria, grupo, quantidadeMinima);
+        try {
+            plano.validarSomasPorCategoria(p.getEntrevistasPrevistas());
+        } catch (PesquisaInvalidaException e) {
+            if (valorAnterior != null) {
+                plano.definirMeta(categoria, grupo, valorAnterior);
+            } else {
+                plano.removerMeta(categoria, grupo);
+            }
+            throw e;
+        }
+
+        repository.salvarTodas(pesquisas);
+    }
+
+    public void removerMetaPlanoAmostral(String codigoPesquisa, String categoria, String grupo)
+            throws PesquisaInvalidaException, PersistenciaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        verificarBloqueioProcessada(p);
+
+        if (p.getPlanoAmostral() != null) {
+            p.getPlanoAmostral().removerMeta(categoria, grupo);
+            repository.salvarTodas(pesquisas);
+        }
+    }
+
+    // busca
     public List<Pesquisa> buscarComFiltros(String termo, Cargo cargo, String tipo, String situacao,
-                                           Regiao regiao, Integer qtdMinEntrevistados,
+                                           String regiao, Integer qtdMinEntrevistados,
                                            LocalDate dataInicio, LocalDate dataFim,
                                            boolean apenasAbaixoDaMeta, List<Entrevista> todasEntrevistas) {
         return buscarComFiltrosMultiplos(
@@ -117,14 +204,13 @@ public class PesquisaController {
                 cargo != null ? Collections.singletonList(cargo) : Collections.emptyList(),
                 (tipo != null && !tipo.trim().isEmpty()) ? Collections.singletonList(tipo) : Collections.emptyList(),
                 (situacao != null && !situacao.trim().isEmpty()) ? Collections.singletonList(situacao) : Collections.emptyList(),
-                regiao != null ? Collections.singletonList(regiao) : Collections.emptyList(),
+                (regiao != null && !regiao.trim().isEmpty()) ? Collections.singletonList(regiao) : Collections.emptyList(),
                 qtdMinEntrevistados, dataInicio, dataFim, apenasAbaixoDaMeta, todasEntrevistas
         );
     }
 
-    // --- BUSCA COM FILTROS MÚLTIPLOS POR CHECKBOX (RF 08, 09, 10) ---
     public List<Pesquisa> buscarComFiltrosMultiplos(String termo, List<Cargo> cargos, List<String> tipos,
-                                                    List<String> situacoes, List<Regiao> regioes,
+                                                    List<String> situacoes, List<String> regioes,
                                                     Integer qtdMinEntrevistados, LocalDate dataInicio, LocalDate dataFim,
                                                     boolean apenasAbaixoDaMeta, List<Entrevista> todasEntrevistas) {
         sincronizarEntrevistasRealizadas(todasEntrevistas);
@@ -148,40 +234,48 @@ public class PesquisaController {
                 .collect(Collectors.toList());
     }
 
-    private boolean correspondeAlgumaRegiao(Pesquisa p, List<Regiao> regioesFiltro) {
+    private boolean correspondeAlgumaRegiao(Pesquisa p, List<String> regioesFiltro) {
         if (regioesFiltro == null || regioesFiltro.isEmpty()) {
             return true;
         }
-        for (Regiao r : regioesFiltro) {
-            if (r == Regiao.NACIONAL) {
-                boolean isNacional = "Nacional".equalsIgnoreCase(p.getAbrangencia())
-                        || p.getRegioesAssociadas().contains(Regiao.NACIONAL)
-                        || p.getRegioesAssociadas().size() == 5;
-                if (isNacional) return true;
-            } else {
-                if (p.getRegioesAssociadas().contains(r) ||
-                        (p.getAbrangencia() != null && p.getAbrangencia().toLowerCase().contains(r.getDescricao().toLowerCase()))) {
-                    return true;
-                }
+        for (String r : regioesFiltro) {
+            if (r == null || r.trim().isEmpty()) continue;
+            String regBusca = r.trim();
+
+            boolean bateNaLista = p.getRegioesAssociadas() != null && p.getRegioesAssociadas().stream()
+                    .anyMatch(assoc -> assoc != null && assoc.equalsIgnoreCase(regBusca));
+
+            boolean bateNaAbrangencia = p.getAbrangencia() != null && (
+                    "Nacional".equalsIgnoreCase(p.getAbrangencia().trim()) ||
+                            "Todas".equalsIgnoreCase(p.getAbrangencia().trim()) ||
+                            Arrays.stream(p.getAbrangencia().split(","))
+                                    .map(String::trim)
+                                    .anyMatch(item -> item.equalsIgnoreCase(regBusca))
+            );
+
+            if (bateNaLista || bateNaAbrangencia) {
+                return true;
             }
         }
         return false;
     }
 
-    // --- BUSCAR POR CÓDIGO ---
+    //busca codigo
     public Pesquisa buscarPorCodigo(String codigo) throws PesquisaInvalidaException {
         if (codigo == null || codigo.trim().isEmpty()) {
             throw new PesquisaInvalidaException("Código informado é inválido.");
         }
+        String codLimpo = codigo.trim();
         for (Pesquisa p : pesquisas) {
-            if (p.getCodigo().equalsIgnoreCase(codigo)) {
+            if (p.getCodigo().equalsIgnoreCase(codLimpo)
+                    || codLimpo.toLowerCase().startsWith(p.getCodigo().toLowerCase() + " - ")) {
                 return p;
             }
         }
         throw new PesquisaInvalidaException("Nenhuma pesquisa encontrada com o código: " + codigo);
     }
 
-    // --- 3. DELETAR ---
+    //deletar
     public void deletar(String codigo) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa pesquisaParaRemover = buscarPorCodigo(codigo);
         if ("Processada".equalsIgnoreCase(pesquisaParaRemover.getSituacao())) {
@@ -195,37 +289,44 @@ public class PesquisaController {
         deletar(codigo);
     }
 
-    // --- 4. VERIFICAÇÃO PARA O MÓDULO DE COLETA ---
+    // verifica se pode receber uma entrevista
     public boolean podeReceberEntrevista(String codigoPesquisa) throws PesquisaInvalidaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
-        return !"Encerrada".equalsIgnoreCase(p.getSituacao()) &&
-                !"Processada".equalsIgnoreCase(p.getSituacao());
+        if (!"Em coleta".equalsIgnoreCase(p.getSituacao())) {
+            return false;
+        }
+        return p.getEntrevistasRealizadas() < p.getEntrevistasPrevistas();
     }
 
-    // --- 5. ASSOCIAÇÃO DE REGIÕES ---
-    public void associarRegiao(String codigoPesquisa, Regiao regiao) throws PesquisaInvalidaException, PersistenciaException {
+    // associa as regiões
+    public void associarRegiao(String codigoPesquisa, String regiao) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
 
-        if (regiao == null) {
+        if (regiao == null || regiao.trim().isEmpty()) {
             throw new PesquisaInvalidaException("Selecione uma região válida.");
         }
-        if (p.getRegioesAssociadas().contains(regiao)) {
-            throw new PesquisaInvalidaException("A região " + regiao + " já está associada a esta pesquisa.");
+        String regLimpa = regiao.trim();
+        boolean jaExiste = p.getRegioesAssociadas().stream()
+                .anyMatch(r -> r.equalsIgnoreCase(regLimpa));
+        if (jaExiste) {
+            throw new PesquisaInvalidaException("A região '" + regLimpa + "' já está associada a esta pesquisa.");
         }
-        p.getRegioesAssociadas().add(regiao);
+        p.getRegioesAssociadas().add(regLimpa);
         repository.salvarTodas(pesquisas);
     }
 
-    public void removerRegiao(String codigoPesquisa, Regiao regiao) throws PesquisaInvalidaException, PersistenciaException {
+    public void removerRegiao(String codigoPesquisa, String regiao) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
 
-        p.getRegioesAssociadas().remove(regiao);
-        repository.salvarTodas(pesquisas);
+        if (regiao != null) {
+            p.getRegioesAssociadas().removeIf(r -> r.equalsIgnoreCase(regiao.trim()));
+            repository.salvarTodas(pesquisas);
+        }
     }
 
-    // --- 6. ASSOCIAÇÃO DE CANDIDATURAS ---
+    // associa os candidatos
     public void associarCandidatura(String codigoPesquisa, Candidatura candidatura) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
@@ -261,6 +362,11 @@ public class PesquisaController {
         if (candidatura != null) {
             p.getCandidaturasAssociadas().removeIf(c -> c.getNumero() == candidatura.getNumero());
             p.getNumerosCandidaturasSalvas().remove(Integer.valueOf(candidatura.getNumero()));
+
+            for (Pergunta q : p.getPerguntas()) {
+                q.getCandidaturasAssociadas().removeIf(c -> c.getNumero() == candidatura.getNumero());
+                q.getNumerosCandidaturasSalvas().remove(Integer.valueOf(candidatura.getNumero()));
+            }
             repository.salvarTodas(pesquisas);
         }
     }
@@ -276,8 +382,6 @@ public class PesquisaController {
                             .ifPresent(c -> p.getCandidaturasAssociadas().add(c));
                 }
             }
-
-            // Reconstrói também as candidaturas vinculadas a cada pergunta
             for (Pergunta q : p.getPerguntas()) {
                 if (q.getCandidaturasAssociadas().isEmpty() && !q.getNumerosCandidaturasSalvas().isEmpty()) {
                     List<Candidatura> vinculadas = new ArrayList<>();
@@ -293,7 +397,7 @@ public class PesquisaController {
         }
     }
 
-    // --- 7. GESTÃO DE PERGUNTAS E OPÇÕES DE RESPOSTA ---
+    // crud perguntas
     public void adicionarPergunta(String codigoPesquisa, Pergunta pergunta) throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
@@ -316,11 +420,12 @@ public class PesquisaController {
 
     public void editarPergunta(String codigoPesquisa, String idPergunta, String novoEnunciado, String novoTipo, List<OpcaoResposta> novasOpcoes)
             throws PesquisaInvalidaException, PersistenciaException {
-        editarPergunta(codigoPesquisa, idPergunta, novoEnunciado, novoTipo, novasOpcoes, null, null);
+        editarPergunta(codigoPesquisa, idPergunta, novoEnunciado, novoTipo, novasOpcoes, false, null);
     }
 
     public void editarPergunta(String codigoPesquisa, String idPergunta, String novoEnunciado, String novoTipo,
-                               List<OpcaoResposta> novasOpcoes, Boolean paraTodosCandidatos, List<Candidatura> candidaturasAssociadas)
+                               List<OpcaoResposta> novasOpcoes, boolean paraTodosCandidatos,
+                               List<Candidatura> candidaturasAssociadas)
             throws PesquisaInvalidaException, PersistenciaException {
         Pesquisa p = buscarPorCodigo(codigoPesquisa);
         verificarBloqueioProcessada(p);
@@ -342,9 +447,7 @@ public class PesquisaController {
         if (novasOpcoes != null) {
             alvo.setOpcoes(novasOpcoes);
         }
-        if (paraTodosCandidatos != null) {
-            alvo.setParaTodosCandidatos(paraTodosCandidatos);
-        }
+        alvo.setParaTodosCandidatos(paraTodosCandidatos);
         if (candidaturasAssociadas != null) {
             alvo.setCandidaturasAssociadas(candidaturasAssociadas);
         }
@@ -362,7 +465,24 @@ public class PesquisaController {
         repository.salvarTodas(pesquisas);
     }
 
-    // --- INTEGRAÇÃO COM COLETA E META AMOSTRAL ---
+    public List<Pergunta> buscarPerguntasPorCandidato(String codigoPesquisa, Candidatura candidato) throws PesquisaInvalidaException {
+        if (candidato == null) {
+            return Collections.emptyList();
+        }
+        return buscarPerguntasPorCandidatos(codigoPesquisa, Collections.singletonList(candidato));
+    }
+
+    public List<Pergunta> buscarPerguntasPorCandidatos(String codigoPesquisa, List<Candidatura> candidatos) throws PesquisaInvalidaException {
+        Pesquisa p = buscarPorCodigo(codigoPesquisa);
+        if (candidatos == null || candidatos.isEmpty()) {
+            return new ArrayList<>(p.getPerguntas());
+        }
+        return p.getPerguntas().stream()
+                .filter(q -> q.isParaTodosCandidatos() || candidatos.stream().anyMatch(q::refereSeAoCandidato))
+                .collect(Collectors.toList());
+    }
+
+    // integração
     public void sincronizarEntrevistasRealizadas(List<Entrevista> todasEntrevistas) {
         if (todasEntrevistas == null) return;
         for (Pesquisa p : pesquisas) {
@@ -379,20 +499,27 @@ public class PesquisaController {
 
     public boolean estaAbaixoDaMetaAmostral(Pesquisa pesquisa, List<Entrevista> todasEntrevistas) {
         if (pesquisa == null || pesquisa.getPlanoAmostral() == null ||
-                pesquisa.getPlanoAmostral().getMetasPorGrupo().isEmpty()) {
+                (pesquisa.getPlanoAmostral().getMetasPorGrupo().isEmpty()
+                        && pesquisa.getPlanoAmostral().getMetasPorCategoria().isEmpty())) {
             return false;
         }
 
+        String codPesquisa = pesquisa.getCodigo().trim();
         Map<String, Integer> contagemPorGrupo = new HashMap<>();
         if (todasEntrevistas != null) {
             for (Entrevista e : todasEntrevistas) {
-                if (pesquisa.getCodigo().equalsIgnoreCase(e.getCodigoPesquisa()) && e.getParticipante() != null) {
-                    Participante part = e.getParticipante();
-                    incrementarGrupo(contagemPorGrupo, part.getRegiao());
-                    incrementarGrupo(contagemPorGrupo, part.getFaixaEtaria());
-                    incrementarGrupo(contagemPorGrupo, part.getGenero());
-                    incrementarGrupo(contagemPorGrupo, part.getEscolaridade());
-                    incrementarGrupo(contagemPorGrupo, part.getFaixaRenda());
+                if (e != null && e.getCodigoPesquisa() != null && e.getParticipante() != null) {
+                    String codEnt = e.getCodigoPesquisa().trim();
+                    boolean mesmaPesquisa = codPesquisa.equalsIgnoreCase(codEnt)
+                            || codEnt.toLowerCase().startsWith(codPesquisa.toLowerCase() + " - ");
+                    if (mesmaPesquisa) {
+                        Participante part = e.getParticipante();
+                        incrementarGrupo(contagemPorGrupo, part.getRegiao());
+                        incrementarGrupo(contagemPorGrupo, part.getFaixaEtaria());
+                        incrementarGrupo(contagemPorGrupo, part.getGenero());
+                        incrementarGrupo(contagemPorGrupo, part.getEscolaridade());
+                        incrementarGrupo(contagemPorGrupo, part.getFaixaRenda());
+                    }
                 }
             }
         }
@@ -404,8 +531,74 @@ public class PesquisaController {
             mapa.put(chave, mapa.getOrDefault(chave, 0) + 1);
         }
     }
+    public List<String> obterStatusGruposPlanoAmostral(Pesquisa pesquisa, List<Entrevista> todasEntrevistas) {
+        if (pesquisa == null || pesquisa.getPlanoAmostral() == null) {
+            return Collections.emptyList();
+        }
 
-    // --- LISTAR TODAS ---
+        PlanoAmostral plano = pesquisa.getPlanoAmostral();
+        if (plano.getMetasPorCategoria().isEmpty() && plano.getMetasPorGrupo().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Map<String, Integer> contagemPorGrupo = contarParticipantesPorGrupo(pesquisa, todasEntrevistas);
+        List<String> detalhes = new ArrayList<>();
+
+        if (!plano.getMetasPorCategoria().isEmpty()) {
+            for (Map.Entry<String, Map<String, Integer>> catEntry : plano.getMetasPorCategoria().entrySet()) {
+                String categoria = catEntry.getKey();
+                for (Map.Entry<String, Integer> metaEntry : catEntry.getValue().entrySet()) {
+                    String grupo = metaEntry.getKey();
+                    int minimo = metaEntry.getValue();
+                    int realizadas = contagemPorGrupo.getOrDefault(grupo, 0);
+                    if (realizadas < minimo) {
+                        detalhes.add(" [" + categoria + "] " + grupo + ": " + realizadas + "/" + minimo
+                                + " (ABAIXO DA META - faltam " + (minimo - realizadas) + ")");
+                    } else {
+                        detalhes.add("[" + categoria + "] " + grupo + ": " + realizadas + "/" + minimo + " (Atingida)");
+                    }
+                }
+            }
+        } else {
+            for (Map.Entry<String, Integer> metaEntry : plano.getMetasPorGrupo().entrySet()) {
+                String grupo = metaEntry.getKey();
+                int minimo = metaEntry.getValue();
+                int realizadas = contagemPorGrupo.getOrDefault(grupo, 0);
+                if (realizadas < minimo) {
+                    detalhes.add(" " + grupo + ": " + realizadas + "/" + minimo
+                            + " (ABAIXO DA META - faltam " + (minimo - realizadas) + ")");
+                } else {
+                    detalhes.add(" " + grupo + ": " + realizadas + "/" + minimo + " (Atingida)");
+                }
+            }
+        }
+        return detalhes;
+    }
+
+    private Map<String, Integer> contarParticipantesPorGrupo(Pesquisa pesquisa, List<Entrevista> todasEntrevistas) {
+        String codPesquisa = pesquisa.getCodigo().trim();
+        Map<String, Integer> contagemPorGrupo = new HashMap<>();
+        if (todasEntrevistas != null) {
+            for (Entrevista e : todasEntrevistas) {
+                if (e != null && e.getCodigoPesquisa() != null && e.getParticipante() != null) {
+                    String codEnt = e.getCodigoPesquisa().trim();
+                    boolean mesmaPesquisa = codPesquisa.equalsIgnoreCase(codEnt)
+                            || codEnt.toLowerCase().startsWith(codPesquisa.toLowerCase() + " - ");
+                    if (mesmaPesquisa) {
+                        Participante part = e.getParticipante();
+                        incrementarGrupo(contagemPorGrupo, part.getRegiao());
+                        incrementarGrupo(contagemPorGrupo, part.getFaixaEtaria());
+                        incrementarGrupo(contagemPorGrupo, part.getGenero());
+                        incrementarGrupo(contagemPorGrupo, part.getEscolaridade());
+                        incrementarGrupo(contagemPorGrupo, part.getFaixaRenda());
+                    }
+                }
+            }
+        }
+        return contagemPorGrupo;
+    }
+
+    // lista pesquisas
     public List<Pesquisa> listarTodas() throws PesquisaInvalidaException {
         if (pesquisas.isEmpty()) {
             throw new PesquisaInvalidaException("Nenhuma pesquisa cadastrada no sistema.");
@@ -413,12 +606,11 @@ public class PesquisaController {
         return new ArrayList<>(pesquisas);
     }
 
-    // Versão segura para TableView (retorna lista vazia sem lançar exceção)
     public List<Pesquisa> getPesquisas() {
         return new ArrayList<>(pesquisas);
     }
 
-    // --- VALIDAÇÕES DE REGRAS DE NEGÓCIO ---
+    // regras de ngc
     private void validarPesquisa(Pesquisa pesquisa) throws PesquisaInvalidaException {
         if (pesquisa == null) {
             throw new PesquisaInvalidaException("A pesquisa não pode ser nula.");
@@ -428,25 +620,7 @@ public class PesquisaController {
         }
         validarCamposEditaveis(pesquisa);
     }
-    public List<Pergunta> buscarPerguntasPorCandidato(String codigoPesquisa, Candidatura candidato)
-            throws PesquisaInvalidaException {
-        if (candidato == null) {
-            return buscarPorCodigo(codigoPesquisa).getPerguntas();
-        }
-        return buscarPerguntasPorCandidatos(codigoPesquisa, Collections.singletonList(candidato));
-    }
 
-    public List<Pergunta> buscarPerguntasPorCandidatos(String codigoPesquisa, List<Candidatura> candidatosFiltro)
-            throws PesquisaInvalidaException {
-        Pesquisa p = buscarPorCodigo(codigoPesquisa);
-        if (candidatosFiltro == null || candidatosFiltro.isEmpty()) {
-            return new ArrayList<>(p.getPerguntas());
-        }
-        return p.getPerguntas().stream()
-                .filter(q -> q.isParaTodosCandidatos() ||
-                        candidatosFiltro.stream().anyMatch(q::refereSeAoCandidato))
-                .collect(Collectors.toList());
-    }
     private void verificarBloqueioProcessada(Pesquisa p) throws PesquisaInvalidaException {
         if ("Processada".equalsIgnoreCase(p.getSituacao())) {
             throw new PesquisaInvalidaException("Esta pesquisa está 'Processada' e seus dados não podem ser modificados.");
@@ -481,6 +655,11 @@ public class PesquisaController {
         }
         if (pesquisa.getSituacao() == null || !contemIgnorandoCase(SITUACOES_VALIDAS, pesquisa.getSituacao())) {
             throw new PesquisaInvalidaException("Situação inválida. Opções aceitas: " + SITUACOES_VALIDAS);
+        }
+        boolean semRegioes = (pesquisa.getRegioesAssociadas() == null || pesquisa.getRegioesAssociadas().isEmpty())
+                && (pesquisa.getAbrangencia() == null || pesquisa.getAbrangencia().trim().isEmpty());
+        if (semRegioes) {
+            throw new PesquisaInvalidaException("Selecione pelo menos uma região de abrangência.");
         }
         if (pesquisa.getEntrevistasPrevistas() <= 0) {
             throw new PesquisaInvalidaException("A quantidade de entrevistas previstas deve ser maior que zero.");

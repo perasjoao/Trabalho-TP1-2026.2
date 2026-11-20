@@ -140,6 +140,53 @@
                                                 </HBox>
                                             </content>
                                         </Tab>
+
+                                        <!-- Aba 3: Plano Amostral (Metas por Parâmetro do Administrador) -->
+                                        <Tab text="Plano Amostral">
+                                            <content>
+                                                <HBox spacing="16.0">
+                                                    <padding>
+                                                        <Insets bottom="10.0" left="6.0" right="6.0" top="12.0" />
+                                                    </padding>
+                                                    <children>
+                                                        <VBox prefWidth="300.0" spacing="10.0">
+                                                            <children>
+                                                                <Label fx:id="lblResumoPrevistas" style="-fx-font-weight: bold; -fx-text-fill: #1e293b;" text="Entrevistas previstas: -" />
+                                                                <Label styleClass="label-campo" text="Categoria do parâmetro:" />
+                                                                <ComboBox fx:id="cbCategoriaMeta" maxWidth="1.7976931348623157E308" onAction="#aoSelecionarCategoriaMeta" prefHeight="34.0" promptText="Selecione a categoria" />
+
+                                                                <Label styleClass="label-campo" text="Parâmetro / Grupo:" />
+                                                                <ComboBox fx:id="cbGrupoMeta" maxWidth="1.7976931348623157E308" prefHeight="34.0" promptText="Selecione o grupo" />
+
+                                                                <Label styleClass="label-campo" text="Quantidade mínima de entrevistas:" />
+                                                                <TextField fx:id="txtQtdMinimaMeta" promptText="Ex: 10" styleClass="campo-texto" />
+
+                                                                <Label fx:id="lblSomaCategoria" style="-fx-text-fill: #475569; -fx-font-size: 12px;" text="Soma da categoria: 0 / 0" wrapText="true" />
+
+                                                                <HBox spacing="8.0">
+                                                                    <children>
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#definirMetaAmostral" styleClass="botao-acao" text="Definir Meta" HBox.hgrow="ALWAYS" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#removerMetaAmostral" style="-fx-background-color: #fee2e2; -fx-text-fill: #b91c1c; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-padding: 8 12; -fx-cursor: hand;" text="Remover" HBox.hgrow="ALWAYS" />
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </VBox>
+
+                                                        <TableView fx:id="tblMetasAmostrais" HBox.hgrow="ALWAYS">
+                                                            <columnResizePolicy>
+                                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                                            </columnResizePolicy>
+                                                            <columns>
+                                                                <TableColumn fx:id="colCategoriaMeta" prefWidth="130.0" text="Categoria" />
+                                                                <TableColumn fx:id="colGrupoMeta" prefWidth="180.0" text="Parâmetro / Grupo" />
+                                                                <TableColumn fx:id="colQtdMinimaMeta" prefWidth="110.0" text="Meta Mínima" />
+                                                                <TableColumn fx:id="colSomaCategoriaMeta" prefWidth="130.0" text="Soma / Previsto" />
+                                                            </columns>
+                                                        </TableView>
+                                                    </children>
+                                                </HBox>
+                                            </content>
+                                        </Tab>
                                     </tabs>
                                 </TabPane>
                             </children>
