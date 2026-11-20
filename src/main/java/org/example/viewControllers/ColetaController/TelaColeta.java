@@ -18,7 +18,7 @@ import java.util.Optional;
 
 //base das telas da coleta: navegacao, mensagens e leitura de campos
 //cada tela herda daqui e so cuida dos proprios campos
-public abstract class TelaColeta {
+public abstract class TelaColeta {// classe principal das telas de coleta, que tem metodos uteis pra todas as telas, como trocar de tela, mostrar alerta, ler campos etc
 
     protected static final String MENU_COLETA = "/view.Coleta/MenuColeta.fxml";
     protected static final String CONFIG_AMOSTRA = "/view.Coleta/ConfigAmostra.fxml";

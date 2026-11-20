@@ -21,7 +21,7 @@ public class RespostaEspecial extends Resposta {
         return "Especial";
     }
 
-    @Override
+    @Override //sobrescreve o comportamento padrao, que é contar no percentual
     public boolean contaNoPercentual() {
         return false;
     }

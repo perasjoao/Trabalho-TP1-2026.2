@@ -144,7 +144,7 @@ public class ConsultaEntrevistasController extends TelaColeta implements Initial
     }
 
     //junta so os filtros preenchidos; o que ficar em "Todas" nao filtra nada
-    private Predicate<Entrevista> montarFiltro() {
+    private Predicate<Entrevista> montarFiltro() {// comeca com um filtro que aceita tudo, e vai adicionando os filtros que o usuario preencheu em sequencia com o and, pra ir filtrando cada vez mais
         Predicate<Entrevista> filtro = entrevistaFiltro -> true;
 
         String pesquisa = valorFiltro(cbFiltroPesquisa);

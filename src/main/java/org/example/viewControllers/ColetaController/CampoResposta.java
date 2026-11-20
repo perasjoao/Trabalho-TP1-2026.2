@@ -38,7 +38,7 @@ public abstract class CampoResposta {
     }
 
     //devolve null se a pergunta ficou sem resposta
-    public Resposta getResposta() {
+    public Resposta getResposta() {//testa qual tipo de resposta foi marcada, e devolve a verificacao de cada subclasse, que sabe ler o seu proprio campo
         Toggle marcado = grupo.getSelectedToggle();
         if (marcado != null && marcado.getUserData() instanceof String especial) {
             return new RespostaEspecial(pergunta.getId(), pergunta.getEnunciado(), especial);
@@ -50,7 +50,7 @@ public abstract class CampoResposta {
         return pergunta;
     }
 
-    protected abstract void adicionarEntrada(FlowPane linha);
+    protected abstract void adicionarEntrada(FlowPane linha);//sempre um tipo especifico, mas cada subclasse monta de um jeito diferente
 
     protected abstract Resposta lerEntrada();
 
