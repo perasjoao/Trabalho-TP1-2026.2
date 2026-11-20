@@ -5,10 +5,10 @@
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -96,16 +96,11 @@
                                         </ComboBox>
 
                                         <Label styleClass="label-campo" text="Abrangência / Regiões:" GridPane.rowIndex="5" />
-                                        <FlowPane hgap="14.0" vgap="6.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                                            <children>
-                                                <CheckBox fx:id="chkNorte" onAction="#aoAlterarRegiao" text="Norte" />
-                                                <CheckBox fx:id="chkNordeste" onAction="#aoAlterarRegiao" text="Nordeste" />
-                                                <CheckBox fx:id="chkCentroOeste" onAction="#aoAlterarRegiao" text="Centro-Oeste" />
-                                                <CheckBox fx:id="chkSudeste" onAction="#aoAlterarRegiao" text="Sudeste" />
-                                                <CheckBox fx:id="chkSul" onAction="#aoAlterarRegiao" text="Sul" />
-                                                <CheckBox fx:id="chkNacional" onAction="#aoAlterarNacional" style="-fx-font-weight: bold;" text="Nacional" />
-                                            </children>
-                                        </FlowPane>
+                                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="76.0" prefHeight="58.0" style="-fx-background-color: transparent; -fx-background: transparent;" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                            <content>
+                                                <FlowPane fx:id="fpRegioes" hgap="14.0" vgap="6.0" />
+                                            </content>
+                                        </ScrollPane>
 
                                         <Label styleClass="label-campo" text="Período de coleta:" GridPane.rowIndex="6" />
                                         <HBox spacing="12.0" GridPane.columnIndex="1" GridPane.rowIndex="6">

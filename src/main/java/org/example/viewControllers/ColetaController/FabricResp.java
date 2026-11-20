@@ -6,7 +6,7 @@ import org.example.models.researchModels.Pergunta;
 //se aparecer um tipo novo, e so criar outra subclasse de CampoResposta e incluir aqui
 
 public final class FabricResp {// é o mestre de obra da bagaca, que escolhe qual operario vai montar a casa de acordo com o tipo da pergunta
-    }
+
 
     private FabricResp() {
     }
@@ -16,4 +16,5 @@ public final class FabricResp {// é o mestre de obra da bagaca, que escolhe qua
             return new CampoTextoLivre(pergunta);
         }
         return new CampoEscolha(pergunta);
+    }
 }

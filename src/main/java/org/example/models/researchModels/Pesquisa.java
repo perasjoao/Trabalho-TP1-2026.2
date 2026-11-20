@@ -2,7 +2,6 @@ package org.example.models.researchModels;
 
 import org.example.models.candidatos.Candidatura;
 import org.example.models.comum.Cargo;
-import org.example.models.comum.Regiao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,9 +20,9 @@ public class Pesquisa {
     private int entrevistasRealizadas;
     private PlanoAmostral planoAmostral;
     private List<Pergunta> perguntas;
-    private List<Regiao> regioesAssociadas;
+    private List<String> regioesAssociadas;
     private List<Candidatura> candidaturasAssociadas;
-    private List<Integer> numerosCandidaturasSalvas; // Apoio para reconstrução após leitura do TXT
+    private List<Integer> numerosCandidaturasSalvas;
 
     public Pesquisa(String codigo, String nome, Cargo cargo, String tipo, String situacao,
                     String abrangencia, LocalDate dataInicio, LocalDate dataFim,
@@ -97,12 +96,12 @@ public class Pesquisa {
     public List<Pergunta> getPerguntas() { return perguntas; }
     public void setPerguntas(List<Pergunta> perguntas) { this.perguntas = perguntas; }
 
-    public List<Regiao> getRegioesAssociadas() {
+    public List<String> getRegioesAssociadas() {
         return regioesAssociadas;
     }
 
-    public void setRegioesAssociadas(List<Regiao> regioesAssociadas) {
-        this.regioesAssociadas = regioesAssociadas;
+    public void setRegioesAssociadas(List<String> regioesAssociadas) {
+        this.regioesAssociadas = (regioesAssociadas != null) ? regioesAssociadas : new ArrayList<>();
     }
 
     public List<Candidatura> getCandidaturasAssociadas() {
@@ -120,6 +119,7 @@ public class Pesquisa {
     public void setNumerosCandidaturasSalvas(List<Integer> numerosCandidaturasSalvas) {
         this.numerosCandidaturasSalvas = numerosCandidaturasSalvas;
     }
+
     @Override
     public String toString() {
         return this.codigo + " - " + this.nome;

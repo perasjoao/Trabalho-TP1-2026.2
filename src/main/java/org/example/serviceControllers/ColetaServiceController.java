@@ -41,7 +41,6 @@ public class ColetaServiceController {
         return instancia;
     }
 
-    // ---------- amostra (entrevistador + participante da entrevista atual) ----------
 
     public void salvarConfiguracaoAmostra(Entrevistador entrevistador, Participante participante) {
         this.entrevistadorAtual = entrevistador;
@@ -78,7 +77,7 @@ public class ColetaServiceController {
         return participanteAtual;
     }
 
-    // ---------- entrevistas ----------
+
 
     //aplica as regras da coleta antes de gravar no arquivo
     public void registrarEntrevista(Entrevista entrevista, Pesquisa pesquisa)//faz todas as verificacoes... pesquisas que ja foram encerradas,codigo de entrevista igual,quantidade prevista etc
@@ -87,9 +86,9 @@ public class ColetaServiceController {
             throw new ColetaIncompletaException("Selecione a pesquisa da entrevista.");
         }
         String situacao = pesquisa.getSituacao();
-        if ("Encerrada".equalsIgnoreCase(situacao) || "Processada".equalsIgnoreCase(situacao)) {
-            throw new ColetaIncompletaException("A pesquisa " + pesquisa.getCodigo() + " está " + situacao.toLowerCase()
-                    + " e não recebe novas entrevistas.");
+        if (!"Em coleta".equalsIgnoreCase(situacao)) {
+            throw new ColetaIncompletaException("A pesquisa " + pesquisa.getCodigo() + " está com situação '" + situacao
+                    + "'. Apenas pesquisas 'Em coleta' podem receber novas entrevistas.");
         }
 
         String codigoPesquisa = pesquisa.getCodigo();

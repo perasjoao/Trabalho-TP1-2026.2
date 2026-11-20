@@ -1,5 +1,6 @@
 package org.example.viewControllers.ResearchController;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,22 +19,22 @@ import org.example.models.candidatos.Candidatura;
 import org.example.models.researchModels.OpcaoResposta;
 import org.example.models.researchModels.Pergunta;
 import org.example.models.researchModels.Pesquisa;
+import org.example.models.researchModels.PlanoAmostral;
+import org.example.serviceControllers.ParametroController;
 import org.example.serviceControllers.candidatos.CandidatoController;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConfigurarPesquisaController {
 
     private final CandidatoController candidatoController = new CandidatoController();
+    private final ParametroController parametroController = new ParametroController();
 
     @FXML private ComboBox<Pesquisa> cbPesquisa;
 
-    // Aba 1: Perguntas
+    // perguntas
     @FXML private TextField txtEnunciadoPergunta;
     @FXML private ComboBox<String> cbTipoPergunta;
     @FXML private TextField txtNovaOpcao;
@@ -47,9 +48,21 @@ public class ConfigurarPesquisaController {
     @FXML private TableColumn<Pergunta, String> colOpcoesPergunta;
     @FXML private TableColumn<Pergunta, String> colCandidatosPergunta;
 
-    // Aba 2: Candidatos
+    // candidatos
     @FXML private ListView<Candidatura> listCandidatosDisponiveis;
     @FXML private ListView<Candidatura> listCandidatosAssociados;
+
+    // plano amostral
+    @FXML private Label lblResumoPrevistas;
+    @FXML private ComboBox<String> cbCategoriaMeta;
+    @FXML private ComboBox<String> cbGrupoMeta;
+    @FXML private TextField txtQtdMinimaMeta;
+    @FXML private Label lblSomaCategoria;
+    @FXML private TableView<MetaAmostralItem> tblMetasAmostrais;
+    @FXML private TableColumn<MetaAmostralItem, String> colCategoriaMeta;
+    @FXML private TableColumn<MetaAmostralItem, String> colGrupoMeta;
+    @FXML private TableColumn<MetaAmostralItem, Number> colQtdMinimaMeta;
+    @FXML private TableColumn<MetaAmostralItem, String> colSomaCategoriaMeta;
 
     private Pesquisa pesquisaAtual;
     private final ObservableList<OpcaoResposta> opcoesEmEdicao = FXCollections.observableArrayList();
@@ -95,6 +108,26 @@ public class ConfigurarPesquisaController {
                 preencherCheckboxesCandidatosDaPergunta(selecionada);
             }
         });
+
+        // config plano amostral
+        cbCategoriaMeta.setItems(FXCollections.observableArrayList(
+                "Região", "Faixa etária", "Escolaridade", "Faixa de renda", "Gênero"
+        ));
+
+        colCategoriaMeta.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().categoria));
+        colGrupoMeta.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().grupo));
+        colQtdMinimaMeta.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().quantidadeMinima));
+        colSomaCategoriaMeta.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().resumoCategoria));
+
+        tblMetasAmostrais.getSelectionModel().selectedItemProperty().addListener((obs, antiga, selecionada) -> {
+            if (selecionada != null) {
+                cbCategoriaMeta.setValue(selecionada.categoria);
+                carregarGruposDaCategoria(selecionada.categoria);
+                cbGrupoMeta.setValue(selecionada.grupo);
+                txtQtdMinimaMeta.setText(String.valueOf(selecionada.quantidadeMinima));
+                atualizarLabelSomaCategoria();
+            }
+        });
     }
 
     private void configurarCellFactoryCandidatura(ListView<Candidatura> listView) {
@@ -127,18 +160,18 @@ public class ConfigurarPesquisaController {
     private void atualizarTodasAsAbas() {
         if (pesquisaAtual == null) return;
 
-        // 1. Vincula candidaturas reais às pesquisas e perguntas carregadas do TXT
+
         List<Candidatura> todasCandidaturas = candidatoController.listar();
         GerenciarPesquisasController.getPesquisaController().vincularCandidaturasCarregadas(todasCandidaturas);
 
-        // 2. Reconstrói checkboxes de candidatos na aba de Perguntas
+
         reconstruirCheckboxesCandidatos();
 
-        // 3. Atualiza tabela de perguntas e limpa formulário
+
         tblPerguntas.setItems(FXCollections.observableArrayList(pesquisaAtual.getPerguntas()));
         limparFormularioPergunta();
 
-        // 4. Atualiza listas da aba Candidatos
+
         List<Candidatura> candAssociadas = pesquisaAtual.getCandidaturasAssociadas();
         List<Candidatura> candDisponiveis = todasCandidaturas.stream()
                 .filter(c -> c.getCargo() == pesquisaAtual.getCargo())
@@ -147,6 +180,9 @@ public class ConfigurarPesquisaController {
 
         listCandidatosDisponiveis.setItems(FXCollections.observableArrayList(candDisponiveis));
         listCandidatosAssociados.setItems(FXCollections.observableArrayList(candAssociadas));
+
+
+        atualizarTabelaPlanoAmostral();
     }
 
     private void reconstruirCheckboxesCandidatos() {
@@ -214,7 +250,7 @@ public class ConfigurarPesquisaController {
         return selecionadas;
     }
 
-    // ==================== ABA 1: PERGUNTAS ====================
+    // aba perguntas
 
     @FXML
     public void adicionarOpcao(ActionEvent event) {
@@ -294,11 +330,20 @@ public class ConfigurarPesquisaController {
             mostrarAlerta(Alert.AlertType.WARNING, "Atenção", "Selecione uma pergunta na tabela para excluir.");
             return;
         }
-        try {
-            GerenciarPesquisasController.getPesquisaController().removerPergunta(pesquisaAtual.getCodigo(), selecionada.getId());
-            atualizarTodasAsAbas();
-        } catch (PesquisaInvalidaException | PersistenciaException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+
+        Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacao.setTitle("Confirmar Exclusão");
+        confirmacao.setHeaderText("Excluir pergunta " + selecionada.getId() + "?");
+        confirmacao.setContentText("\"" + selecionada.getEnunciado() + "\"\n\nEsta ação não poderá ser desfeita.");
+
+        Optional<ButtonType> resultado = confirmacao.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                GerenciarPesquisasController.getPesquisaController().removerPergunta(pesquisaAtual.getCodigo(), selecionada.getId());
+                atualizarTodasAsAbas();
+            } catch (PesquisaInvalidaException | PersistenciaException e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+            }
         }
     }
 
@@ -320,7 +365,7 @@ public class ConfigurarPesquisaController {
         atualizandoCheckboxesCandidatos = false;
     }
 
-    // ==================== ABA 2: CANDIDATOS ====================
+    // aba candidatos
 
     @FXML
     public void associarCandidato(ActionEvent event) {
@@ -354,7 +399,151 @@ public class ConfigurarPesquisaController {
         }
     }
 
-    // ==================== BOTÕES INFERIORES ====================
+    // aba plano
+
+    @FXML
+    public void aoSelecionarCategoriaMeta(ActionEvent event) {
+        String categoria = cbCategoriaMeta.getValue();
+        carregarGruposDaCategoria(categoria);
+        atualizarLabelSomaCategoria();
+    }
+
+    private void carregarGruposDaCategoria(String categoria) {
+        cbGrupoMeta.getItems().clear();
+        cbGrupoMeta.setValue(null);
+        if (categoria == null) return;
+
+        List<String> opcoes;
+        switch (categoria) {
+            case "Região":
+                opcoes = (pesquisaAtual != null && pesquisaAtual.getRegioesAssociadas() != null)
+                        ? pesquisaAtual.getRegioesAssociadas()
+                        : Collections.emptyList();
+                break;
+            case "Faixa etária":
+                opcoes = parametroController.listarFaixasEtarias();
+                break;
+            case "Escolaridade":
+                opcoes = parametroController.listarEscolaridades();
+                break;
+            case "Faixa de renda":
+                opcoes = parametroController.listarFaixasRenda();
+                break;
+            case "Gênero":
+                opcoes = Arrays.asList("Masculino", "Feminino", "Outro");
+                break;
+            default:
+                opcoes = Collections.emptyList();
+        }
+
+        if (opcoes != null && !opcoes.isEmpty()) {
+            cbGrupoMeta.setItems(FXCollections.observableArrayList(opcoes));
+        } else {
+            String msg = "Região".equals(categoria)
+                    ? "Nenhuma região está associada a esta pesquisa."
+                    : "Nenhum item cadastrado pelo Administrador na categoria '" + categoria + "'.";
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Sem opções disponíveis", msg);
+        }
+    }
+
+    @FXML
+    public void definirMetaAmostral(ActionEvent event) {
+        if (!verificarPesquisaSelecionada()) return;
+
+        String categoria = cbCategoriaMeta.getValue();
+        String grupo = cbGrupoMeta.getValue();
+        if (categoria == null || grupo == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Atenção", "Selecione a categoria e o parâmetro/grupo.");
+            return;
+        }
+
+        int qtdMinima;
+        try {
+            qtdMinima = Integer.parseInt(txtQtdMinimaMeta.getText().trim());
+        } catch (Exception e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Valor inválido", "Informe um número inteiro válido para a quantidade mínima.");
+            return;
+        }
+
+        try {
+            GerenciarPesquisasController.getPesquisaController().definirMetaPlanoAmostral(
+                    pesquisaAtual.getCodigo(), categoria, grupo, qtdMinima
+            );
+            txtQtdMinimaMeta.clear();
+            atualizarTabelaPlanoAmostral();
+        } catch (PesquisaInvalidaException | PersistenciaException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Regra de Negócio", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void removerMetaAmostral(ActionEvent event) {
+        if (!verificarPesquisaSelecionada()) return;
+
+        MetaAmostralItem selecionada = tblMetasAmostrais.getSelectionModel().getSelectedItem();
+        if (selecionada == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Atenção", "Selecione uma meta na tabela para remover.");
+            return;
+        }
+
+        try {
+            GerenciarPesquisasController.getPesquisaController().removerMetaPlanoAmostral(
+                    pesquisaAtual.getCodigo(), selecionada.categoria, selecionada.grupo
+            );
+            txtQtdMinimaMeta.clear();
+            atualizarTabelaPlanoAmostral();
+        } catch (PesquisaInvalidaException | PersistenciaException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro", e.getMessage());
+        }
+    }
+
+    private void atualizarTabelaPlanoAmostral() {
+        if (pesquisaAtual == null) return;
+
+        int previstas = pesquisaAtual.getEntrevistasPrevistas();
+        lblResumoPrevistas.setText("Entrevistas previstas na pesquisa: " + previstas);
+
+        List<MetaAmostralItem> linhas = new ArrayList<>();
+        PlanoAmostral plano = pesquisaAtual.getPlanoAmostral();
+        if (plano != null) {
+            for (Map.Entry<String, Map<String, Integer>> catEntry : plano.getMetasPorCategoria().entrySet()) {
+                String cat = catEntry.getKey();
+                int somaCat = plano.getSomaCategoria(cat);
+                String resumo = somaCat + " / " + previstas;
+                for (Map.Entry<String, Integer> grpEntry : catEntry.getValue().entrySet()) {
+                    linhas.add(new MetaAmostralItem(cat, grpEntry.getKey(), grpEntry.getValue(), resumo));
+                }
+            }
+        }
+        tblMetasAmostrais.setItems(FXCollections.observableArrayList(linhas));
+        atualizarLabelSomaCategoria();
+    }
+
+    private void atualizarLabelSomaCategoria() {
+        if (pesquisaAtual == null) return;
+        int previstas = pesquisaAtual.getEntrevistasPrevistas();
+        String cat = cbCategoriaMeta.getValue();
+        int soma = (cat != null && pesquisaAtual.getPlanoAmostral() != null)
+                ? pesquisaAtual.getPlanoAmostral().getSomaCategoria(cat)
+                : 0;
+        lblSomaCategoria.setText("Soma da categoria" + (cat != null ? " (" + cat + ")" : "") + ": " + soma + " / " + previstas);
+    }
+
+    public static class MetaAmostralItem {
+        public final String categoria;
+        public final String grupo;
+        public final int quantidadeMinima;
+        public final String resumoCategoria;
+
+        public MetaAmostralItem(String categoria, String grupo, int quantidadeMinima, String resumoCategoria) {
+            this.categoria = categoria;
+            this.grupo = grupo;
+            this.quantidadeMinima = quantidadeMinima;
+            this.resumoCategoria = resumoCategoria;
+        }
+    }
+
+    // botoes de baixo
 
     @FXML
     public void salvarConfiguracao(ActionEvent event) {
