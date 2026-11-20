@@ -115,4 +115,18 @@ public class Menu implements Initializable {
         tela.setHeight(height);
 
     }
+
+    public void sair(ActionEvent event) throws IOException {
+        // Limpa o usuário logado na sessão atual
+        Sessao.getAutenticacao().logout();
+
+        // Retorna para a tela de Login mantendo o tamanho da janela
+        Parent root = FXMLLoader.load(getClass().getResource("/view/Administration/Login.fxml"));
+        Stage tela = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        double width = tela.getWidth();
+        double height = tela.getHeight();
+        tela.getScene().setRoot(root);
+        tela.setWidth(width);
+        tela.setHeight(height);
+    }
 }

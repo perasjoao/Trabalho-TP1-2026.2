@@ -27,6 +27,7 @@
                   <Button fx:id="botaoColeta" mnemonicParsing="false" onAction="#AbrirColeta" styleClass="botao" text="Coleta" />
                   <Button fx:id="botaoAnalise" mnemonicParsing="false" onAction="#AbrirAnalise" styleClass="botao" text="Análise Estatística" />
                   <Button fx:id="botaoCandidato" mnemonicParsing="false" onAction="#AbrirCandidatos" styleClass="botao" text="Candidatos e Partidos" />
+                  <Button mnemonicParsing="false" onAction="#sair" styleClass="botao" style="-fx-background-color: #c62828;" text="Sair" />
                </children>
             </VBox>
          </children>
