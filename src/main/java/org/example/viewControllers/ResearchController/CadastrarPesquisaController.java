@@ -7,13 +7,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import org.example.exceptions.PersistenciaException;
 import org.example.exceptions.PesquisaInvalidaException;
 import org.example.models.comum.Cargo;
-import org.example.models.comum.Regiao;
 import org.example.models.researchModels.Pesquisa;
 import org.example.models.researchModels.PlanoAmostral;
+import org.example.serviceControllers.ParametroController;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -29,13 +30,7 @@ public class CadastrarPesquisaController {
     @FXML private ComboBox<Cargo> cbCargo;
     @FXML private ComboBox<String> cbTipo;
     @FXML private ComboBox<String> cbSituacao;
-
-    @FXML private CheckBox chkNorte;
-    @FXML private CheckBox chkNordeste;
-    @FXML private CheckBox chkCentroOeste;
-    @FXML private CheckBox chkSudeste;
-    @FXML private CheckBox chkSul;
-    @FXML private CheckBox chkNacional;
+    @FXML private FlowPane fpRegioes;
 
     @FXML private DatePicker dpDataInicio;
     @FXML private DatePicker dpDataFim;
@@ -43,50 +38,75 @@ public class CadastrarPesquisaController {
     @FXML private TextArea txtMetodologia;
 
     private Pesquisa pesquisaEdicao;
+    private CheckBox chkSelecionarTodas;
+    private final List<CheckBox> checkBoxesRegioes = new ArrayList<>();
+    private boolean atualizandoCheckBoxes = false;
 
     @FXML
     public void initialize() {
         cbCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
         cbSituacao.setValue("Planejada");
+        carregarCheckBoxesRegioes();
     }
 
-    @FXML
-    public void aoAlterarNacional(ActionEvent event) {
-        boolean marcado = chkNacional.isSelected();
-        chkNorte.setSelected(marcado);
-        chkNordeste.setSelected(marcado);
-        chkCentroOeste.setSelected(marcado);
-        chkSudeste.setSelected(marcado);
-        chkSul.setSelected(marcado);
-    }
+    private void carregarCheckBoxesRegioes() {
+        fpRegioes.getChildren().clear();
+        checkBoxesRegioes.clear();
 
-    @FXML
-    public void aoAlterarRegiao(ActionEvent event) {
-        boolean todasMarcadas = chkNorte.isSelected()
-                && chkNordeste.isSelected()
-                && chkCentroOeste.isSelected()
-                && chkSudeste.isSelected()
-                && chkSul.isSelected();
-        chkNacional.setSelected(todasMarcadas);
-    }
+        List<String> regioesCadastradas = new ParametroController().listarRegioes();
 
-    private List<Regiao> obterRegioesSelecionadas() {
-        List<Regiao> selecionadas = new ArrayList<>();
-        if (chkNorte.isSelected()) selecionadas.add(Regiao.NORTE);
-        if (chkNordeste.isSelected()) selecionadas.add(Regiao.NORDESTE);
-        if (chkCentroOeste.isSelected()) selecionadas.add(Regiao.CENTRO_OESTE);
-        if (chkSudeste.isSelected()) selecionadas.add(Regiao.SUDESTE);
-        if (chkSul.isSelected()) selecionadas.add(Regiao.SUL);
-        return selecionadas;
-    }
+        chkSelecionarTodas = new CheckBox("Selecionar todas");
+        chkSelecionarTodas.setStyle("-fx-font-weight: bold;");
+        chkSelecionarTodas.selectedProperty().addListener((obs, estava, agora) -> {
+            if (atualizandoCheckBoxes) return;
+            atualizandoCheckBoxes = true;
+            for (CheckBox chk : checkBoxesRegioes) {
+                chk.setSelected(agora);
+            }
+            atualizandoCheckBoxes = false;
+        });
 
-    private String montarTextoAbrangencia(List<Regiao> regioes) {
-        if (chkNacional.isSelected() || regioes.size() == 5) {
-            return "Nacional";
+        for (String regiao : regioesCadastradas) {
+            adicionarCheckBoxRegiao(regiao);
         }
-        return regioes.stream()
-                .map(Regiao::getDescricao)
-                .collect(Collectors.joining(", "));
+
+        fpRegioes.getChildren().add(chkSelecionarTodas);
+    }
+
+    private CheckBox adicionarCheckBoxRegiao(String regiao) {
+        CheckBox chk = new CheckBox(regiao);
+        chk.selectedProperty().addListener((obs, estava, agora) -> sincronizarSelecionarTodas());
+        checkBoxesRegioes.add(chk);
+        if (chkSelecionarTodas != null && fpRegioes.getChildren().contains(chkSelecionarTodas)) {
+            int idxTodas = fpRegioes.getChildren().indexOf(chkSelecionarTodas);
+            fpRegioes.getChildren().add(idxTodas, chk);
+        } else {
+            fpRegioes.getChildren().add(chk);
+        }
+        return chk;
+    }
+
+    private void sincronizarSelecionarTodas() {
+        if (atualizandoCheckBoxes || chkSelecionarTodas == null) return;
+        atualizandoCheckBoxes = true;
+        boolean todas = !checkBoxesRegioes.isEmpty()
+                && checkBoxesRegioes.stream().allMatch(CheckBox::isSelected);
+        chkSelecionarTodas.setSelected(todas);
+        atualizandoCheckBoxes = false;
+    }
+
+    private List<String> obterRegioesSelecionadas() {
+        return checkBoxesRegioes.stream()
+                .filter(CheckBox::isSelected)
+                .map(CheckBox::getText)
+                .collect(Collectors.toList());
+    }
+
+    private String montarTextoAbrangencia(List<String> regioes) {
+        if (!checkBoxesRegioes.isEmpty() && regioes.size() == checkBoxesRegioes.size() && regioes.size() > 1) {
+            return "Todas (" + regioes.size() + " regiões)";
+        }
+        return String.join(", ", regioes);
     }
 
     public void setPesquisaEdicao(Pesquisa pesquisa) {
@@ -104,16 +124,30 @@ public class CadastrarPesquisaController {
             txtEntrevistasPrevistas.setText(String.valueOf(pesquisa.getEntrevistasPrevistas()));
             txtMetodologia.setText(pesquisa.getMetodologia());
 
-            List<Regiao> regs = pesquisa.getRegioesAssociadas();
-            boolean isNacional = "Nacional".equalsIgnoreCase(pesquisa.getAbrangencia())
-                    || (regs != null && regs.contains(Regiao.NACIONAL));
+            List<String> regsSalvas = pesquisa.getRegioesAssociadas();
+            boolean marcarTodasLegado = "Nacional".equalsIgnoreCase(pesquisa.getAbrangencia())
+                    || "Todas".equalsIgnoreCase(pesquisa.getAbrangencia());
 
-            chkNorte.setSelected(isNacional || (regs != null && regs.contains(Regiao.NORTE)));
-            chkNordeste.setSelected(isNacional || (regs != null && regs.contains(Regiao.NORDESTE)));
-            chkCentroOeste.setSelected(isNacional || (regs != null && regs.contains(Regiao.CENTRO_OESTE)));
-            chkSudeste.setSelected(isNacional || (regs != null && regs.contains(Regiao.SUDESTE)));
-            chkSul.setSelected(isNacional || (regs != null && regs.contains(Regiao.SUL)));
-            aoAlterarRegiao(null);
+            atualizandoCheckBoxes = true;
+            for (CheckBox chk : checkBoxesRegioes) {
+                boolean contem = marcarTodasLegado || (regsSalvas != null && regsSalvas.stream()
+                        .anyMatch(r -> r.equalsIgnoreCase(chk.getText())));
+                chk.setSelected(contem);
+            }
+
+
+            if (regsSalvas != null) {
+                for (String regSalva : regsSalvas) {
+                    boolean jaExiste = checkBoxesRegioes.stream()
+                            .anyMatch(c -> c.getText().equalsIgnoreCase(regSalva));
+                    if (!jaExiste && !regSalva.equalsIgnoreCase("Todas")) {
+                        CheckBox extra = adicionarCheckBoxRegiao(regSalva);
+                        extra.setSelected(true);
+                    }
+                }
+            }
+            atualizandoCheckBoxes = false;
+            sincronizarSelecionarTodas();
         } else {
             lblTitulo.setText("CADASTRO DE PESQUISA");
             txtCodigo.setDisable(false);
@@ -133,9 +167,9 @@ public class CadastrarPesquisaController {
             LocalDate dataFim = dpDataFim.getValue();
             String metodologia = txtMetodologia.getText() != null ? txtMetodologia.getText().trim() : "";
 
-            List<Regiao> regioesSelecionadas = obterRegioesSelecionadas();
+            List<String> regioesSelecionadas = obterRegioesSelecionadas();
             if (regioesSelecionadas.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Abrangência obrigatória", "Selecione pelo menos uma região (ou Nacional).");
+                mostrarAlerta(Alert.AlertType.WARNING, "Abrangência obrigatória", "Selecione pelo menos uma região.");
                 return;
             }
             String abrangencia = montarTextoAbrangencia(regioesSelecionadas);
@@ -166,7 +200,7 @@ public class CadastrarPesquisaController {
                         abrangencia, dataInicio, dataFim,
                         entrevistasPrevistas, metodologia, pesquisaEdicao.getPerguntas()
                 );
-                pesquisaEdicao.setRegioesAssociadas(regioesSelecionadas);
+                atualizada.setRegioesAssociadas(regioesSelecionadas);
                 GerenciarPesquisasController.getPesquisaController().atualizar(pesquisaEdicao.getCodigo(), atualizada);
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Pesquisa atualizada com sucesso!");
             }

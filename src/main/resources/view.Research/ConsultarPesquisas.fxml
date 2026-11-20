@@ -13,9 +13,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="620.0" prefWidth="940.0"
+<AnchorPane prefHeight="650.0" prefWidth="1020.0"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.viewControllers.ResearchController.ConsultasPesquisasController">
     <stylesheets>
@@ -60,12 +61,7 @@
 
                                                 <Separator />
                                                 <Label styleClass="label-campo" text="Região:" />
-                                                <CheckBox fx:id="chkRegiaoNorte" text="Norte" />
-                                                <CheckBox fx:id="chkRegiaoNordeste" text="Nordeste" />
-                                                <CheckBox fx:id="chkRegiaoCentroOeste" text="Centro-Oeste" />
-                                                <CheckBox fx:id="chkRegiaoSudeste" text="Sudeste" />
-                                                <CheckBox fx:id="chkRegiaoSul" text="Sul" />
-                                                <CheckBox fx:id="chkRegiaoNacional" text="Nacional" />
+                                                <VBox fx:id="vboxFiltroRegioes" spacing="5.0" />
 
                                                 <Separator />
                                                 <Label styleClass="label-campo" text="Cargo:" />
@@ -90,7 +86,7 @@
                                                 <Separator />
                                                 <Label styleClass="label-campo" text="Amostra / Meta:" />
                                                 <TextField fx:id="txtQtdEntrevistados" promptText="Qtd. de entrevistados" styleClass="campo-texto" />
-                                                <CheckBox fx:id="chkAbaixoMeta" mnemonicParsing="false" text="Abaixo da meta da amostra" />
+                                                <CheckBox fx:id="chkAbaixoMeta" mnemonicParsing="false" style="-fx-font-weight: bold;" text="Abaixo da meta da amostra" />
                                             </children>
                                         </VBox>
                                     </content>
@@ -105,10 +101,16 @@
                             </children>
                         </VBox>
 
-                        <!-- Painel Principal: Tabela de Acompanhamento -->
-                        <VBox spacing="12.0" styleClass="card-painel" HBox.hgrow="ALWAYS">
+                        <!-- Painel Principal: Tabela e Detalhe de Metas -->
+                        <VBox spacing="10.0" styleClass="card-painel" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label styleClass="titulo-secao" text="Acompanhamento de Pesquisas" />
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Label styleClass="titulo-secao" text="Acompanhamento de Pesquisas" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="lblAlertaMetas" style="-fx-padding: 4 10 4 10; -fx-background-radius: 6; -fx-font-weight: bold;" text="" />
+                                    </children>
+                                </HBox>
 
                                 <TableView fx:id="tblPesquisas" VBox.vgrow="ALWAYS">
                                     <columnResizePolicy>
@@ -120,13 +122,25 @@
                                         <TableColumn fx:id="colTipo" prefWidth="75.0" text="Tipo" />
                                         <TableColumn fx:id="colRegiao" prefWidth="70.0" text="Região" />
                                         <TableColumn fx:id="colCargo" prefWidth="70.0" text="Cargo" />
-                                        <TableColumn fx:id="colSituacao" prefWidth="70.0" text="Situação" />
+                                        <TableColumn fx:id="colSituacao" prefWidth="68.0" text="Situação" />
                                         <TableColumn fx:id="colPeriodo" prefWidth="80.0" text="Período" />
-                                        <TableColumn fx:id="colPrevisto" prefWidth="60.0" text="Previsto" />
-                                        <TableColumn fx:id="colRealizado" prefWidth="65.0" text="Realizado" />
+                                        <TableColumn fx:id="colPrevisto" prefWidth="55.0" text="Previsto" />
+                                        <TableColumn fx:id="colRealizado" prefWidth="60.0" text="Realizado" />
                                         <TableColumn fx:id="colPercentual" prefWidth="48.0" text="\%" />
+                                        <TableColumn fx:id="colMetaAmostral" prefWidth="95.0" text="Meta Amostral" />
                                     </columns>
                                 </TableView>
+
+                                <!-- Card de Detalhamento por Grupo da Amostra -->
+                                <VBox fx:id="vboxDetalheMeta" spacing="4.0"
+                                      style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12 8 12;">
+                                    <children>
+                                        <Label fx:id="lblDetalheMetaTitulo" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;"
+                                               text="Detalhamento das Metas do Plano Amostral" />
+                                        <Label fx:id="lblDetalheMetaConteudo" wrapText="true" style="-fx-text-fill: #495057;"
+                                               text="Selecione uma pesquisa na tabela acima para visualizar o progresso de cada grupo da amostra." />
+                                    </children>
+                                </VBox>
 
                                 <HBox alignment="CENTER_LEFT">
                                     <children>

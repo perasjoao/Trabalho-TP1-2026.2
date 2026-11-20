@@ -61,12 +61,7 @@
 
                                                 <Separator />
                                                 <Label styleClass="label-campo" text="Região:" />
-                                                <CheckBox fx:id="chkRegiaoNorte" text="Norte" />
-                                                <CheckBox fx:id="chkRegiaoNordeste" text="Nordeste" />
-                                                <CheckBox fx:id="chkRegiaoCentroOeste" text="Centro-Oeste" />
-                                                <CheckBox fx:id="chkRegiaoSudeste" text="Sudeste" />
-                                                <CheckBox fx:id="chkRegiaoSul" text="Sul" />
-                                                <CheckBox fx:id="chkRegiaoNacional" text="Nacional" />
+                                                <VBox fx:id="vboxFiltroRegioes" spacing="5.0" />
 
                                                 <Separator />
                                                 <Label styleClass="label-campo" text="Cargo:" />
