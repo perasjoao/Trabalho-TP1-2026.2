@@ -11,6 +11,8 @@ import org.example.models.coleta.Resposta;
 import org.example.models.coleta.RespostaEspecial;
 import org.example.models.researchModels.Pergunta;
 
+import java.util.List;
+
 //parte visual de uma pergunta na tela de registro
 //toda pergunta tem as opcoes especiais (nao sabe etc.); o resto depende do tipo,
 //e cada subclasse monta e le a sua entrada do seu jeito
@@ -44,6 +46,13 @@ public abstract class CampoResposta {
             return new RespostaEspecial(pergunta.getId(), pergunta.getEnunciado(), especial);
         }
         return lerEntrada();
+    }
+
+    //a maioria das perguntas gera uma resposta so; a multipla escolha sobrescreve
+    //pra devolver uma resposta pra cada opcao marcada. lista vazia = sem resposta
+    public List<Resposta> getRespostas() {
+        Resposta resposta = getResposta();
+        return resposta == null ? List.of() : List.of(resposta);
     }
 
     public Pergunta getPergunta() {

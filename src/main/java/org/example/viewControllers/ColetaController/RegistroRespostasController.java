@@ -140,11 +140,11 @@ public class RegistroRespostasController extends TelaColeta implements Initializ
 
         List<Resposta> respostas = new ArrayList<>();
         for (int i = 0; i < campos.size(); i++) {
-            Resposta resp = campos.get(i).getResposta();
-            if (resp == null) {
+            List<Resposta> resp = campos.get(i).getRespostas();
+            if (resp.isEmpty()) {
                 throw new ColetaIncompletaException("Falta responder a pergunta " + (i + 1) + ".");
             }
-            respostas.add(resp);
+            respostas.addAll(resp);
         }
 
         Entrevista entrevista = new Entrevista(codigo, pesquisa.getCodigo(),

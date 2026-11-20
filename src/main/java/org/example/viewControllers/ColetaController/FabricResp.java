@@ -14,6 +14,9 @@ public final class FabricResp {// é o mestre de obra da bagaca, que escolhe qua
         if ("Resposta Livre".equalsIgnoreCase(pergunta.getTipo())) {
             return new CampoTextoLivre(pergunta);
         }
+        if ("Múltipla Escolha".equalsIgnoreCase(pergunta.getTipo()) || "Multipla Escolha".equalsIgnoreCase(pergunta.getTipo())) {
+            return new CampoMultiplaEscolha(pergunta);
+        }
         return new CampoEscolha(pergunta);
     }
 }
